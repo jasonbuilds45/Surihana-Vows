@@ -131,7 +131,7 @@ export default async function PlatformPage() {
                   </h2>
                   <p className="mt-4 max-w-sm text-sm leading-7 text-stone-300">
                     A cinematic keepsake from {weddingConfig.brideName.split(" ")[0]} and{" "}
-                    {weddingConfig.groomName.split(" ")[0]}'s celebration in {weddingConfig.venueCity}.
+                    {weddingConfig.groomName.split(" ")[0]}&apos;s celebration in {weddingConfig.venueCity}.
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-3">

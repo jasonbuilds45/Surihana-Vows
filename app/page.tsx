@@ -153,7 +153,7 @@ export default async function HomePage() {
                   {weddingConfig.groomName}
                 </h2>
                 <p style={{ fontSize: "1.0625rem", color: I2, lineHeight: 1.80, maxWidth: "30rem", marginBottom: "2rem", fontFamily: BF, fontStyle: "italic" }}>
-                  "{weddingConfig.introQuote}"
+                  {`“${weddingConfig.introQuote}”`}
                 </p>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: ".625rem" }}>
                   {[
@@ -415,7 +415,7 @@ export default async function HomePage() {
               Will you<br />be there?
             </h2>
             <p style={{ fontSize: "clamp(.9rem,1.8vw,1.125rem)", color: "rgba(255,255,255,.52)", maxWidth: "34rem", margin: "0 auto 3rem", lineHeight: 1.78, fontFamily: BF }}>
-              Let {bf} and {gf} know — every face is part of the story.
+              Let {bf} and {gf} know &mdash; every face is part of the story.
             </p>
             <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "center", gap: "1rem" }}>
               <Link href="/rsvp" style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "16px 40px", borderRadius: 999, background: R, color: W, fontSize: "1rem", fontWeight: 700, fontFamily: BF, textDecoration: "none", boxShadow: "0 8px 32px rgba(192,54,74,.35)", transition: "transform .18s" }}>

@@ -182,7 +182,7 @@ export function PredictionsBoard({ questions, revealAfter, brideName, groomName 
                   })}
                 </div>
                 {voted && (
-                  <p className="text-xs italic text-stone-400">Locked in. Let's see if you're right!</p>
+                  <p className="text-xs italic text-stone-400">Locked in. Let&apos;s see if you&apos;re right!</p>
                 )}
               </Card>
             );
@@ -204,7 +204,7 @@ export function PredictionsBoard({ questions, revealAfter, brideName, groomName 
             <Trophy className="h-6 w-6 text-amber-600" />
           </div>
           <div>
-            <h2 className="font-display text-2xl text-stone-950">The Crowd's Verdict</h2>
+            <h2 className="font-display text-2xl text-stone-950">The Crowd&apos;s Verdict</h2>
             <p className="text-xs text-stone-500 uppercase tracking-tighter">Live from the guestbook</p>
           </div>
         </div>

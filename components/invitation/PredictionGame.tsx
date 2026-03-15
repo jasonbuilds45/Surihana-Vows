@@ -227,7 +227,7 @@ export function PredictionGame({
           )}
           {currentState.voteState === "already_voted" && (
             <p className="text-xs italic" style={{ color: "var(--color-text-muted)" }}>
-              Looks like you've already shared your thought on this one!
+              Looks like you&apos;ve already shared your thought on this one!
             </p>
           )}
         </div>
