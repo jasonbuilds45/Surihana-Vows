@@ -243,7 +243,7 @@ export default async function InvitePage({ params }: InvitePageProps) {
           {/* Full event cards */}
           <div className="grid gap-5">
             {invite.events.map((event) => (
-              <EventCard key={event.id} event={event} />
+              <EventCard key={event.id} event={{ ...event, description: event.description ?? undefined, dress_code: event.dress_code ?? undefined }} />
             ))}
           </div>
         </Container>
