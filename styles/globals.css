@@ -1,0 +1,753 @@
+/* =============================================================================
+   SURIHANA VOWS — Complete Design System
+   Light theme: Ivory white · Warm linen · Deep rose accent · Rich charcoal
+   NO @apply directives — pure CSS only, guaranteed to render everywhere
+   ============================================================================= */
+
+/* ==========================================================================
+   1. DESIGN TOKENS
+   ========================================================================== */
+:root {
+  /* Backgrounds */
+  --bg:           #FFFFFF;
+  --bg-warm:      #FAF8F6;
+  --bg-linen:     #F4EFE9;
+  --bg-blush:     #FDF0EF;
+
+  /* Accent — deep rose red */
+  --rose:         #C0364A;
+  --rose-hov:     #A82C3E;
+  --rose-lgt:     #D94F62;
+  --rose-pale:    #FDEAEC;
+  --rose-mid:     #F5C5CB;
+  --rose-fade:    rgba(192, 54, 74, 0.10);
+  --rose-glow:    rgba(192, 54, 74, 0.20);
+
+  /* Dark section */
+  --dark:         #1A1012;
+  --dark-card:    #2A1820;
+
+  /* Typography — WCAG AA minimum 4.5:1 contrast on white */
+  --ink:          #1A1012;   /* 16.8:1 on white */
+  --ink-2:        #3D2530;   /* 8.1:1 on white  */
+  --ink-3:        #7A5460;   /* 5.2:1 on white  */
+  --ink-4:        #AA8490;   /* 3.1:1 — use only for placeholders */
+
+  /* Borders */
+  --bdr:          #E4D8D4;
+  --bdr-md:       #D0C0BC;
+  --bdr-str:      #B89898;
+
+  /* Shadows */
+  --sh-xs:   0 1px 3px rgba(80,20,30,0.07);
+  --sh-sm:   0 2px 8px rgba(80,20,30,0.09);
+  --sh-md:   0 4px 20px rgba(80,20,30,0.11);
+  --sh-lg:   0 10px 40px rgba(80,20,30,0.13);
+  --sh-xl:   0 20px 64px rgba(80,20,30,0.15);
+  --sh-2xl:  0 36px 96px rgba(80,20,30,0.17);
+  --sh-rose: 0 8px 32px rgba(192,54,74,0.24);
+
+  /* Layout */
+  --max-w:    1280px;
+  --pad-x:    clamp(1.25rem, 5vw, 4rem);
+
+  /* Motion */
+  --spring:   cubic-bezier(0.34, 1.56, 0.64, 1);
+  --expo:     cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* ── Legacy bridge: every old CSS variable now maps to our tokens ── */
+  --color-background:        var(--bg);
+  --color-surface:           var(--bg-warm);
+  --color-surface-soft:      var(--bg-linen);
+  --color-surface-pink:      var(--bg-blush);
+  --color-surface-blush:     var(--bg-blush);
+  --color-surface-lavender:  #F5EEF8;
+  --color-surface-mint:      #EDF5F0;
+  --color-surface-sky:       #EDF4FA;
+  --color-surface-amber:     #FBF5E8;
+  --color-surface-dark:      var(--dark);
+  --color-surface-midnight:  var(--dark);
+  --color-border:            var(--bdr);
+  --color-border-medium:     var(--bdr-md);
+  --color-border-strong:     var(--bdr-str);
+  --color-primary:           var(--rose);
+  --color-primary-hover:     var(--rose-hov);
+  --color-primary-light:     var(--rose-lgt);
+  --color-primary-soft:      var(--rose-pale);
+  --color-primary-muted:     var(--rose-fade);
+  --color-primary-glow:      var(--rose-glow);
+  --color-secondary:         #7A3090;
+  --color-secondary-soft:    #F5EEF8;
+  --color-violet:            #7A3090;
+  --color-violet-light:      #9A50B0;
+  --color-violet-soft:       #F5EEF8;
+  --color-lavender:          #7A3090;
+  --color-lavender-light:    #9A50B0;
+  --color-lavender-soft:     #F5EEF8;
+  --color-lavender-mid:      #EBE0F0;
+  --color-gold:              #B8820A;
+  --color-gold-light:        #D4A020;
+  --color-gold-bright:       #F0C040;
+  --color-gold-soft:         #FBF5E8;
+  --color-gold-deep:         #9A6C08;
+  --color-gold-muted:        rgba(184,130,10,0.12);
+  --color-champagne:         #F0C040;
+  --color-champagne-deep:    #B8820A;
+  --color-peach:             #D47060;
+  --color-peach-light:       #E8A090;
+  --color-peach-soft:        #FDF0EE;
+  --color-sage:              #3A8060;
+  --color-sage-light:        #5A9878;
+  --color-sage-soft:         #EDF5F0;
+  --color-sage-mid:          #C8E8D8;
+  --color-sky:               #2878B0;
+  --color-sky-light:         #4898C8;
+  --color-sky-soft:          #EDF4FA;
+  --color-sky-mid:           #BDD8F0;
+  --color-amber:             #B8820A;
+  --color-amber-soft:        #FBF5E8;
+  --color-amber-mid:         #F0D898;
+  --color-coral:             #C85040;
+  --color-coral-soft:        #FDF0EE;
+  --color-coral-mid:         #F0B8A8;
+  --color-rose:              var(--rose);
+  --color-rose-soft:         var(--rose-pale);
+  --color-blush:             #D47060;
+  --color-blush-soft:        #FDF0EE;
+  --color-plum:              #7A3090;
+  --color-plum-soft:         #F5EEF8;
+  --color-accent:            var(--rose);
+  --color-accent-hover:      var(--rose-hov);
+  --color-accent-soft:       var(--rose-mid);
+  --color-accent-light:      var(--rose-pale);
+  --color-accent-muted:      var(--rose-fade);
+  --color-text-primary:      var(--ink);
+  --color-text-secondary:    var(--ink-2);
+  --color-text-muted:        var(--ink-3);
+  --color-text-light:        var(--ink-4);
+  --color-text-inverse:      #FFFFFF;
+
+  /* OKLCH compat aliases */
+  --c-canvas:        var(--bg);
+  --c-canvas-deep:   var(--bg-warm);
+  --c-canvas-blush:  var(--bg-blush);
+  --c-surface-0:     var(--bg);
+  --c-surface-1:     var(--bg-warm);
+  --c-surface-2:     var(--bg-linen);
+  --c-surface-3:     var(--bdr);
+  --c-dark-0:        var(--dark);
+  --c-dark-1:        var(--dark);
+  --c-dark-2:        var(--dark-card);
+  --c-dark-surface:  var(--dark-card);
+  --c-primary:       var(--rose);
+  --c-primary-hover: var(--rose-hov);
+  --c-primary-light: var(--rose-lgt);
+  --c-primary-soft:  var(--rose-pale);
+  --c-primary-muted: var(--rose-fade);
+  --c-primary-glow:  var(--rose-glow);
+  --c-gold:          #B8820A;
+  --c-gold-bright:   #F0C040;
+  --c-gold-matte:    #9A6C08;
+  --c-gold-soft:     #FBF5E8;
+  --c-violet:        #7A3090;
+  --c-violet-light:  #9A50B0;
+  --c-violet-soft:   #F5EEF8;
+  --c-sage:          #3A8060;
+  --c-sage-light:    #5A9878;
+  --c-sage-soft:     #EDF5F0;
+  --c-sky:           #2878B0;
+  --c-sky-soft:      #EDF4FA;
+  --c-amber:         #B8820A;
+  --c-amber-soft:    #FBF5E8;
+  --c-coral:         #C85040;
+  --c-coral-soft:    #FDF0EE;
+  --c-ink:           var(--ink);
+  --c-ink-2:         var(--ink-2);
+  --c-ink-3:         var(--ink-3);
+  --c-ink-4:         var(--ink-4);
+  --c-ink-inv:       #FFFFFF;
+  --c-border:        var(--bdr);
+  --c-border-med:    var(--bdr-md);
+  --c-border-strong: var(--bdr-str);
+  --canvas:          #FFFFFF;
+  --surface:         #FAF8F6;
+  --accent:          #C0364A;
+  --accent-hov:      #A82C3E;
+  --accent-sft:      #FDEAEC;
+  --accent-mid:      #F5C5CB;
+  --accent-mdt:      rgba(192,54,74,0.10);
+  --accent-glw:      rgba(192,54,74,0.20);
+  --ink:             #1A1012;
+  --ink-2:           #3D2530;
+  --ink-3:           #7A5460;
+  --ink-4:           #AA8490;
+
+  /* Shadow compat */
+  --shadow-xs:            var(--sh-xs);
+  --shadow-sm:            var(--sh-sm);
+  --shadow-md:            var(--sh-md);
+  --shadow-lg:            var(--sh-lg);
+  --shadow-xl:            var(--sh-xl);
+  --shadow-2xl:           var(--sh-2xl);
+  --shadow-card:          var(--sh-md);
+  --shadow-soft:          var(--sh-md);
+  --shadow-float:         var(--sh-lg);
+  --shadow-deep:          var(--sh-xl);
+  --shadow-neu-sm:        var(--sh-sm);
+  --shadow-neu-md:        var(--sh-md);
+  --shadow-neu-lg:        var(--sh-lg);
+  --shadow-neu-inset:     inset 0 2px 6px rgba(80,20,30,0.08);
+  --shadow-neu-pressed:   inset 0 3px 10px rgba(80,20,30,0.14);
+  --shadow-glow-pink:     var(--sh-rose);
+  --shadow-glow-gold:     0 0 32px rgba(184,130,10,0.22);
+  --shadow-glow-violet:   0 0 32px rgba(122,48,144,0.22);
+  --shadow-glow-accent:   var(--sh-rose);
+  --glow-yellow:          var(--sh-rose);
+  --glow-yellow-sm:       var(--sh-rose);
+  --glow-accent:          var(--sh-rose);
+
+  /* Layout compat */
+  --max-w:      1280px;
+  --pad-x:      clamp(1.25rem, 5vw, 4rem);
+  --page-max:   1280px;
+  --page-pad:   clamp(1.25rem, 5vw, 4rem);
+  --nav-height: 64px;
+
+  /* Motion compat */
+  --ease-spring:    var(--spring);
+  --ease-out-quint: var(--expo);
+  --out-expo:       var(--expo);
+  --t-fast:         140ms;
+  --t-med:          280ms;
+  --t-slow:         500ms;
+  --duration-fast:  140ms;
+  --duration-med:   280ms;
+}
+
+/* ==========================================================================
+   2. BASE RESET
+   ========================================================================== */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent;
+  overflow-x: hidden;
+  font-size: 16px;
+  color-scheme: light;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  line-height: 1.6;
+  min-height: 100dvh;
+}
+
+img, video { display: block; max-width: 100%; }
+a { color: inherit; text-decoration: none; }
+button { font: inherit; cursor: pointer; }
+
+:focus-visible {
+  outline: 2.5px solid var(--rose);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+::selection {
+  background: var(--rose-mid);
+  color: var(--ink);
+}
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg-linen); }
+::-webkit-scrollbar-thumb { background: var(--bdr-md); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: var(--rose); }
+
+/* ==========================================================================
+   3. LAYOUT SHELL
+   ========================================================================== */
+.site-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}
+
+.site-shell > main {
+  flex: 1;
+  display: block; /* ensure visibility */
+}
+
+/* ==========================================================================
+   4. TYPOGRAPHY UTILITIES
+   ========================================================================== */
+
+/* Eyebrow / label */
+.tag-label, .eyebrow {
+  font-family: var(--font-body), sans-serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--rose);
+}
+
+/* Display font shorthand */
+.font-display { font-family: var(--font-display), Georgia, serif; }
+
+.display-name {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: clamp(3rem, 11vw, 8rem);
+  font-weight: 700;
+  line-height: 0.92;
+  letter-spacing: -0.025em;
+  color: var(--ink);
+}
+
+/* Shimmer — rose */
+.shimmer-gold,
+.shimmer-pink,
+.shimmer-rainbow {
+  background: linear-gradient(90deg, var(--rose-hov) 0%, var(--rose) 30%, #E87080 50%, var(--rose) 70%, var(--rose-hov) 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 4s linear infinite;
+}
+
+/* ==========================================================================
+   5. BUTTONS — explicit CSS, no @apply
+   ========================================================================== */
+
+/* ── Primary: rose pill ── */
+.btn-primary,
+.btn-vault,
+.btn-magnetic {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.875rem 2rem;
+  border-radius: 999px;
+  background: var(--rose);
+  color: #FFFFFF;
+  font-family: var(--font-body), sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  position: relative;
+  overflow: hidden;
+  transition: transform 140ms var(--spring), box-shadow 280ms ease, background 140ms ease;
+}
+
+.btn-primary:hover,
+.btn-vault:hover,
+.btn-magnetic:hover {
+  transform: scale(1.02);
+  background: var(--rose-hov);
+  box-shadow: var(--sh-rose);
+  color: #FFFFFF;
+}
+
+.btn-primary:active,
+.btn-vault:active {
+  transform: scale(0.97);
+  background: var(--rose-hov);
+}
+
+/* ── Ghost: outlined on light bg ── */
+.btn-ghost,
+.btn-vault-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.875rem 2rem;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink);
+  font-family: var(--font-body), sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: 1.5px solid var(--bdr-md);
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 280ms ease;
+}
+
+.btn-ghost:hover,
+.btn-vault-ghost:hover {
+  border-color: var(--rose);
+  color: var(--rose);
+  background: var(--rose-pale);
+}
+
+/* ── Ghost dark: for dark backgrounds ── */
+.btn-ghost-dark,
+.btn-vault-dark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.875rem 2rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.90);
+  font-family: var(--font-body), sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: 1.5px solid rgba(255, 255, 255, 0.25);
+  cursor: pointer;
+  text-decoration: none;
+  backdrop-filter: blur(8px);
+  transition: all 280ms ease;
+}
+
+.btn-ghost-dark:hover,
+.btn-vault-dark:hover {
+  background: rgba(255, 255, 255, 0.20);
+  border-color: rgba(255, 255, 255, 0.50);
+  color: #FFFFFF;
+}
+
+/* ==========================================================================
+   6. CARDS — explicit CSS, no @apply
+   ========================================================================== */
+
+/* Standard white card */
+.card,
+.luxury-card,
+.neu-card {
+  background: var(--bg);
+  border-radius: 20px;
+  border: 1px solid var(--bdr);
+  overflow: hidden;
+  box-shadow: var(--sh-sm);
+  transition: transform 280ms var(--expo), border-color 280ms ease, box-shadow 280ms ease;
+}
+
+.card:hover,
+.luxury-card:hover,
+.neu-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--rose-mid);
+  box-shadow: var(--sh-lg);
+}
+
+/* Warm linen card */
+.card-warm,
+.neu-surface {
+  background: var(--bg-warm);
+  border-radius: 20px;
+  border: 1px solid var(--bdr);
+  overflow: hidden;
+  box-shadow: var(--sh-sm);
+}
+
+/* Rose accent card */
+.card-accent,
+.card-yellow {
+  background: var(--rose);
+  border-radius: 20px;
+  overflow: hidden;
+  color: #FFFFFF;
+  box-shadow: var(--sh-md), var(--sh-rose);
+  transition: transform 280ms var(--expo), box-shadow 280ms ease;
+}
+
+.card-accent:hover,
+.card-yellow:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--sh-xl), var(--sh-rose);
+}
+
+/* Blush tinted card */
+.card-blush {
+  background: var(--bg-blush);
+  border-radius: 20px;
+  border: 1px solid var(--rose-mid);
+  overflow: hidden;
+}
+
+/* Glass card */
+.card-glass,
+.luxury-card-glass,
+.neu-glass {
+  background: rgba(255, 255, 255, 0.80);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.70);
+  box-shadow: var(--sh-md);
+}
+
+/* Dark card */
+.luxury-card-dark,
+.neu-card-dark {
+  background: var(--dark);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: var(--sh-2xl);
+}
+
+/* ==========================================================================
+   7. FORM FIELDS
+   ========================================================================== */
+
+.field,
+.form-field,
+.field-kinetic {
+  display: block;
+  width: 100%;
+  background: #FFFFFF;
+  border: 1.5px solid var(--bdr-md);
+  border-radius: 12px;
+  padding: 0.9375rem 1.25rem;
+  color: var(--ink);
+  font-family: var(--font-body), sans-serif;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  outline: none;
+  transition: border-color 200ms ease, box-shadow 200ms ease;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.field::placeholder,
+.form-field::placeholder,
+.field-kinetic::placeholder {
+  color: var(--ink-4);
+}
+
+.field:focus,
+.form-field:focus,
+.field-kinetic:focus {
+  border-color: var(--rose);
+  box-shadow: 0 0 0 3px var(--rose-fade);
+}
+
+/* ==========================================================================
+   8. SIGNATURE ACCENT STRIPE
+   ========================================================================== */
+
+.rainbow-stripe,
+.snap-stripe {
+  height: 3px;
+  background: linear-gradient(
+    90deg,
+    var(--rose-lgt) 0%,
+    var(--rose)     25%,
+    #B8820A         50%,
+    var(--rose)     75%,
+    var(--rose-lgt) 100%
+  );
+  flex-shrink: 0;
+}
+
+.rainbow-stripe-thin {
+  height: 1.5px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--rose-mid) 25%,
+    var(--rose)     50%,
+    var(--rose-mid) 75%,
+    transparent
+  );
+  flex-shrink: 0;
+}
+
+.gold-stripe {
+  height: 3px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--rose-mid) 20%,
+    var(--rose)     50%,
+    var(--rose-mid) 80%,
+    transparent
+  );
+  flex-shrink: 0;
+}
+
+.gold-stripe-thin {
+  height: 1.5px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--rose-mid) 30%,
+    var(--rose)     50%,
+    var(--rose-mid) 70%,
+    transparent
+  );
+  flex-shrink: 0;
+}
+
+/* ==========================================================================
+   9. SCROLL REVEAL — intersection-observer powered
+   ========================================================================== */
+
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.7s var(--expo), transform 0.7s var(--expo);
+}
+[data-reveal].revealed                 { opacity: 1; transform: none; }
+[data-reveal="scale"]                  { transform: scale(0.93) translateY(14px); }
+[data-reveal="scale"].revealed         { transform: none; }
+[data-reveal="left"]                   { transform: translateX(-36px); }
+[data-reveal="left"].revealed          { transform: none; }
+[data-reveal="right"]                  { transform: translateX(36px); }
+[data-reveal="right"].revealed         { transform: none; }
+[data-reveal-delay="1"] { transition-delay: 0.08s; }
+[data-reveal-delay="2"] { transition-delay: 0.18s; }
+[data-reveal-delay="3"] { transition-delay: 0.28s; }
+[data-reveal-delay="4"] { transition-delay: 0.40s; }
+[data-reveal-delay="5"] { transition-delay: 0.52s; }
+[data-reveal-delay="6"] { transition-delay: 0.65s; }
+
+/* ==========================================================================
+   10. PAGE HERO (sub-pages)
+   ========================================================================== */
+
+.page-hero {
+  position: relative;
+  overflow: hidden;
+  padding: 5rem var(--pad-x) 4rem;
+  background: var(--bg);
+  border-bottom: 1px solid var(--bdr);
+}
+
+.page-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 70% 90% at 50% 0%, var(--rose-fade) 0%, transparent 65%);
+  pointer-events: none;
+}
+
+.page-hero-inner {
+  position: relative;
+  z-index: 1;
+  max-width: var(--max-w);
+  margin: 0 auto;
+}
+
+/* ==========================================================================
+   11. ORNAMENTAL DIVIDER
+   ========================================================================== */
+
+.section-divider {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  max-width: 320px;
+  margin: 0 auto;
+}
+
+.section-divider::before,
+.section-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--rose-mid));
+}
+
+.section-divider::after {
+  background: linear-gradient(90deg, var(--rose-mid), transparent);
+}
+
+/* ==========================================================================
+   12. UTILITY CLASSES
+   ========================================================================== */
+
+.bg-theme-bg       { background: var(--bg); }
+.bg-theme-surface  { background: var(--bg-warm); }
+.bg-theme-muted    { background: var(--bg-linen); }
+.bg-theme-dark     { background: var(--dark); }
+.bg-theme-accent   { background: var(--rose); }
+
+.text-theme-primary   { color: var(--ink) !important; }
+.text-theme-secondary { color: var(--ink-2) !important; }
+.text-theme-muted     { color: var(--ink-3) !important; }
+.text-theme-accent    { color: var(--rose) !important; }
+.text-theme-inverse   { color: #FFFFFF !important; }
+
+.border-theme      { border-color: var(--bdr); }
+.shadow-theme-soft { box-shadow: var(--sh-md); }
+.shadow-theme-card { box-shadow: var(--sh-md); }
+
+.preserve-3d   { transform-style: preserve-3d; }
+.perspective   { perspective: 1000px; }
+.perspective-lg { perspective: 1600px; }
+
+/* Inner content max-width wrapper */
+.inner {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* ==========================================================================
+   13. ANIMATIONS
+   ========================================================================== */
+
+@keyframes shimmer       { 0% { background-position: -200% center; } 100% { background-position: 200% center; } }
+@keyframes goldShimmer   { 0% { background-position: -200% center; } 100% { background-position: 200% center; } }
+@keyframes shimmerPink   { 0% { background-position: -200% center; } 100% { background-position: 200% center; } }
+@keyframes fadeUp        { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
+@keyframes fadeIn        { from { opacity: 0; } to { opacity: 1; } }
+@keyframes scaleIn       { from { opacity: 0; transform: scale(0.93); } to { opacity: 1; transform: none; } }
+@keyframes slideInLeft   { from { opacity: 0; transform: translateX(-36px); } to { opacity: 1; transform: none; } }
+@keyframes slideInRight  { from { opacity: 0; transform: translateX(36px); }  to { opacity: 1; transform: none; } }
+@keyframes float         { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+@keyframes subtlePing    { 0% { transform: scale(1); opacity: 0.8; } 70%, 100% { transform: scale(1.6); opacity: 0; } }
+@keyframes heartbeat     { 0%, 100% { transform: scale(1); } 14% { transform: scale(1.12); } 28% { transform: scale(1); } 42% { transform: scale(1.08); } }
+@keyframes slideDown     { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: none; } }
+@keyframes marquee       { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+@keyframes sealTap       { 0% { transform: scale(1); } 40% { transform: scale(0.93) rotate(-3deg); } 70% { transform: scale(1.07) rotate(1deg); } 100% { transform: scale(1); } }
+@keyframes vaultRingSpin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+@keyframes pulseDot      { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.85); } }
+@keyframes glowPulse     { 0%, 100% { box-shadow: var(--sh-md); } 50% { box-shadow: var(--sh-xl), var(--sh-rose); } }
+@keyframes envelopeOpen  { 0% { transform: translateY(30px) rotateX(-12deg); opacity: 0; } 100% { transform: none; opacity: 1; } }
+@keyframes sealReveal    { 0% { transform: scale(0.85) rotate(-3deg); opacity: 0; } 60% { transform: scale(1.04) rotate(1deg); opacity: 1; } 100% { transform: none; opacity: 1; } }
+@keyframes nameReveal    { 0% { clip-path: inset(0 100% 0 0); opacity: 0; } 100% { clip-path: inset(0 0 0 0); opacity: 1; } }
+@keyframes rippleOut     { from { transform: scale(0); opacity: 1; } to { transform: scale(3); opacity: 0; } }
+
+/* Animation utility classes */
+.animate-fade-up      { animation: fadeUp      0.7s  var(--expo) both; }
+.animate-fade-in      { animation: fadeIn       0.5s  ease both; }
+.animate-scale-in     { animation: scaleIn      0.5s  var(--expo) both; }
+.animate-slide-left   { animation: slideInLeft  0.65s var(--expo) both; }
+.animate-slide-right  { animation: slideInRight 0.65s var(--expo) both; }
+.animate-float        { animation: float        6s    ease-in-out infinite; }
+.animate-ping-soft,
+.animate-subtle-ping  { animation: subtlePing   2.5s  ease-in-out infinite; }
+.animate-heartbeat    { animation: heartbeat    2s    ease-in-out infinite; }
+.animate-slide-down   { animation: slideDown    0.4s  var(--expo) both; }
+.animate-glow-pulse   { animation: glowPulse    3s    ease-in-out infinite; }
+.animate-spin         { animation: vaultRingSpin 1s   linear infinite; }
+.animate-seal-reveal  { animation: sealReveal   0.6s  var(--spring) both; }
+.animate-envelope-open { animation: envelopeOpen 0.8s var(--expo) both; }
+.animate-name-reveal  { animation: nameReveal   1.2s  var(--expo) both; }
+.animate-slide-in-up  { animation: fadeUp       0.5s  var(--expo) both; }
+
+.delay-0   { animation-delay: 0s; }
+.delay-100 { animation-delay: 0.10s; }
+.delay-200 { animation-delay: 0.22s; }
+.delay-300 { animation-delay: 0.34s; }
+.delay-400 { animation-delay: 0.48s; }
+.delay-500 { animation-delay: 0.62s; }
+.delay-600 { animation-delay: 0.78s; }

@@ -1,0 +1,85 @@
+{
+  "id": "11111111-1111-1111-1111-111111111111",
+  "brideName": "Marion Jemima",
+  "groomName": "Livingston",
+  "celebrationTitle": "Surihana Vows",
+  "heroTitle": "A cinematic celebration of promises, family, and forever.",
+  "heroSubtitle": "Join us in Chennai for three days of music, blessings, and a love story told in light.",
+  "introQuote": "Some stories begin softly. Ours arrived with monsoon skies, midnight coffee, and a promise to keep choosing wonder.",
+  "weddingDate": "2026-12-18",
+  "weddingTime": "18:30",
+  "venueName": "Blue Bay Beach Resort",
+  "venueAddress": "Vadanemelli Village, Mahabalipuram",
+  "venueCity": "Chennai, Tamilnadu",
+  "mapLink": "https://maps.google.com/?q=Blue+Bay+Beach+Resort+Mahabalipuram+Chennai",
+  "dressCode": "Jewel tones, modern Indian formal, and evening elegance.",
+  "contactEmail": "family@surihana.vows",
+  "thankYouMessage": "Every face we saw across the courtyard reminded us why we chose to celebrate surrounded by the people we love most. Thank you for making the journey — near or far — and for filling our first chapter with so much warmth, laughter, and light. We carry every moment with us.",
+  "palette": {
+    "background": "#f8f1e7",
+    "surface": "#fffaf5",
+    "accent": "#8a5a44",
+    "accentSoft": "#d4b39b"
+  },
+  "highlights": [
+    "Personalized guest invitations with RSVP tracking",
+    "Live wedding day hub with countdown, livestream, and guest messages",
+    "Private family vault for anniversaries, albums, and preserved memories"
+  ],
+  "story": [
+    {
+      "year": "2021",
+      "title": "A delayed flight and a quiet hello",
+      "description": "They met at an airport lounge after two weather-delayed departures, sharing a charger, a conversation, and eventually the same taxi into the city.",
+      "imageUrl": "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1200&q=80"
+    },
+    {
+      "year": "2022",
+      "title": "Letters, playlists, and long-distance courage",
+      "description": "Between cities and calendars, they built a ritual of voice notes at dawn and handwritten letters on Sundays.",
+      "imageUrl": "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&w=1200&q=80"
+    },
+    {
+      "year": "2024",
+      "title": "A yes beneath lantern light",
+      "description": "Suriya proposed during a family dinner on a terrace lit by floating lanterns, while Hana's grandmother hummed her favorite old ghazal nearby.",
+      "imageUrl": "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=1200&q=80"
+    }
+  ],
+  "stages": [
+    {
+      "title": "Invitation Website",
+      "description": "A personalized microsite for every guest with the couple story, schedule, travel guidance, and RSVP."
+    },
+    {
+      "title": "Wedding Day Live Hub",
+      "description": "A shared live experience with streaming, timeline updates, guestbook notes, and a real-time celebration feed."
+    },
+    {
+      "title": "Private Family Memory Vault",
+      "description": "A secured archive that continues the story with albums, family letters, anniversaries, and cinematic keepsakes."
+    }
+  ],
+  "rituals": [
+    {
+      "title": "The Tying of the Thali",
+      "description": "The central moment of a Tamil wedding. The groom ties a sacred thread — the thali — around the bride's neck, symbolising their union before God and family.",
+      "emoji": "🧵"
+    },
+    {
+      "title": "Kashi Yatra",
+      "description": "The groom playfully sets off on a pilgrimage to Kashi, renouncing worldly life. The bride's father intercepts him and invites him to accept family life instead.",
+      "emoji": "🛶"
+    },
+    {
+      "title": "Oonjal",
+      "description": "The couple sit together on a decorated swing, showered with rose petals by family. It symbolises the gentle rhythms of a shared life.",
+      "emoji": "🌸"
+    },
+    {
+      "title": "Saptapadi — The Seven Steps",
+      "description": "The couple walk seven steps together around the sacred fire, each step representing a vow — nourishment, strength, prosperity, wisdom, children, health, and friendship.",
+      "emoji": "🔥"
+    }
+  ]
+}

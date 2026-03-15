@@ -1,0 +1,49 @@
+/* =============================================================================
+ * app/globals.css
+ *
+ * Entry point for all styles. Import order matters:
+ *   1. Tailwind layers (must come first)
+ *   2. Theme CSS — loaded here as the warm default so the app works
+ *      without any <html> data-theme attribute.
+ *
+ * ── Switching themes (Phase 6.7) ─────────────────────────────────────────────
+ * To use a different theme for a wedding:
+ *
+ *   Option A — CSS import (affects the whole build):
+ *     Replace `@import "../themes/warm/theme.css"` below with the
+ *     desired theme, e.g. `@import "../themes/jewel/theme.css"`.
+ *     Then set data-theme="jewel" on <html> in app/layout.tsx.
+ *
+ *   Option B — Runtime toggle (multiple themes in one build):
+ *     Import ALL theme files here. The cascade picks the active one via
+ *     the [data-theme="<n>"] selector in each theme file.
+ *     Then set data-theme on <html> dynamically (e.g. from a cookie or
+ *     wedding config at the layout level).
+ *
+ * The warm theme is the safest default: it matches the existing Tailwind
+ * hardcoded colours (canvas, bronze, sand) so legacy class names still work.
+ * ============================================================================= */
+
+/* 1. Tailwind layers */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 2. Warm theme tokens — defines all --color-* custom properties on :root.
+      styles/globals.css also defines these as the fallback, so this import
+      is belt-and-suspenders for components that load before styles/globals.css. */
+@import "../themes/warm/theme.css";
+
+/*
+ * To activate a different theme, uncomment ONE of the lines below AND
+ * set the matching data-theme attribute on <html> in app/layout.tsx:
+ *
+ * @import "../themes/minimal/theme.css";
+ * @import "../themes/jewel/theme.css";
+ *
+ * Or import all three for runtime switching:
+ *
+ * @import "../themes/warm/theme.css";
+ * @import "../themes/minimal/theme.css";
+ * @import "../themes/jewel/theme.css";
+ */

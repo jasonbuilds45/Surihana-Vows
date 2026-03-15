@@ -1,0 +1,42 @@
+[
+  {
+    "id": "welcome-sunset",
+    "eventName": "Sunset Welcome Soiree",
+    "date": "2026-12-17",
+    "time": "17:30",
+    "venue": "Palm Garden, Blue Bay Beach Resort, Mahabalipuram",
+    "mapLink": "https://maps.google.com/?q=Blue+Bay+Beach+Resort+Mahabalipuram",
+    "description": "An intimate evening of live strings, coconut lanterns, and sea-breeze views as families gather along the Bay of Bengal for the first time.",
+    "dressCode": "Smart casual — light fabrics recommended"
+  },
+  {
+    "id": "mehendi-brunch",
+    "eventName": "Mehendi & Sangeet Morning",
+    "date": "2026-12-18",
+    "time": "10:00",
+    "venue": "Beachside Pavilion, Blue Bay Beach Resort",
+    "mapLink": "https://maps.google.com/?q=Blue+Bay+Beach+Resort+Mahabalipuram",
+    "description": "Henna artists, Kollywood classics, brunch stations, and the sound of waves as the wedding morning begins.",
+    "dressCode": "Festive daywear — yellows, greens, and pinks"
+  },
+  {
+    "id": "wedding-ceremony",
+    "eventName": "Vows at Golden Hour",
+    "date": "2026-12-18",
+    "time": "18:30",
+    "venue": "Shore Mandapam, Blue Bay Beach Resort",
+    "mapLink": "https://maps.google.com/?q=Blue+Bay+Beach+Resort+Mahabalipuram",
+    "description": "The ceremony begins as the shore glows with kuthuvilakku lamps, silk drapery, and the sky turning rose gold over the ocean.",
+    "dressCode": "Formal Indian — jewel tones and evening elegance"
+  },
+  {
+    "id": "reception-night",
+    "eventName": "Moonlight Reception",
+    "date": "2026-12-18",
+    "time": "21:00",
+    "venue": "Grand Ballroom, Blue Bay Beach Resort",
+    "mapLink": "https://maps.google.com/?q=Blue+Bay+Beach+Resort+Mahabalipuram",
+    "description": "Dinner, speeches, and a late-night dance floor under marigold chandeliers, with the sound of the ocean just beyond the doors.",
+    "dressCode": "Evening glamour"
+  }
+]

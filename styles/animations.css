@@ -1,0 +1,63 @@
+/* =============================================================================
+ * styles/animations.css — Surihana Vows
+ * ============================================================================= */
+
+@keyframes sealReveal {
+  0% { transform: scale(0.85) rotate(-3deg); opacity: 0; }
+  60% { transform: scale(1.04) rotate(1deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+@keyframes envelopeOpen {
+  0% { transform: translateY(30px) rotateX(-12deg); opacity: 0; }
+  100% { transform: translateY(0) rotateX(0deg); opacity: 1; }
+}
+
+@keyframes nameReveal {
+  0% { clip-path: inset(0 100% 0 0); opacity: 0; }
+  100% { clip-path: inset(0 0% 0 0); opacity: 1; }
+}
+
+@keyframes goldShimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes subtlePing {
+  0% { transform: scale(1); opacity: 0.8; }
+  70% { transform: scale(1.6); opacity: 0; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+
+@keyframes slideInUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-seal-reveal     { animation: sealReveal 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+.animate-envelope-open   { animation: envelopeOpen 0.8s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.animate-name-reveal     { animation: nameReveal 1.2s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.animate-subtle-ping     { animation: subtlePing 2s ease-in-out infinite; }
+.animate-slide-in-up     { animation: slideInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.animate-fade-in         { animation: fadeIn 0.6s ease both; }
+
+.shimmer-text {
+  background: linear-gradient(
+    90deg,
+    var(--color-accent-soft) 0%,
+    var(--color-accent) 30%,
+    #fff8e6 50%,
+    var(--color-accent) 70%,
+    var(--color-accent-soft) 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: goldShimmer 4s linear infinite;
+}

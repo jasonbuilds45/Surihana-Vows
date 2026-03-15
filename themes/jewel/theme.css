@@ -1,0 +1,44 @@
+/*
+ * themes/jewel/theme.css — Surihana Vows Luxury Edition
+ *
+ * Deep midnight indigo × marigold gold × ivory.
+ * Every surface, shadow, and border is calibrated for
+ * the WhatsApp-to-mobile-browser guest journey.
+ */
+
+[data-theme="jewel"] {
+  --color-background:    #0a0714;
+  --color-surface:       #130e24;
+  --color-surface-muted: #1c1538;
+  --color-surface-raised:#241c46;
+  --color-border:        rgba(232, 163, 32, 0.12);
+  --color-border-bright: rgba(232, 163, 32, 0.28);
+
+  --color-accent:        #e8a320;
+  --color-accent-soft:   #f5cc6e;
+  --color-accent-hover:  #c88a10;
+  --color-accent-dim:    rgba(232, 163, 32, 0.15);
+
+  --color-text-primary:  #f5ede0;
+  --color-text-secondary:#c4b49a;
+  --color-text-muted:    #6b5e4e;
+  --color-text-inverse:  #0a0714;
+
+  --gradient-hero:
+    radial-gradient(ellipse 120% 80% at 50% 0%,
+      rgba(60, 30, 100, 0.55) 0%,
+      rgba(10, 7, 20, 0.0) 60%);
+
+  --gradient-card:
+    linear-gradient(135deg,
+      rgba(255,255,255,0.04) 0%,
+      rgba(255,255,255,0.01) 100%);
+
+  --shadow-soft: 0 8px 40px rgba(0, 0, 0, 0.45);
+  --shadow-card: 0 16px 64px rgba(0, 0, 0, 0.55);
+  --shadow-gold: 0 0 40px rgba(232, 163, 32, 0.14);
+  --shadow-glow: 0 0 80px rgba(232, 163, 32, 0.20);
+
+  --radius-card: 1.25rem;
+  --radius-pill: 9999px;
+}

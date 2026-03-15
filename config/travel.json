@@ -1,0 +1,96 @@
+{
+  "sections": [
+    {
+      "title": "Hotel Blocks",
+      "description": "We reserved preferred rates at Radisson Blu Temple Bay, Intercontinental Chennai, and The Leela Palace for guests arriving from out of town.",
+      "link": "https://example.com/hotel-blocks",
+      "linkLabel": "View hotel options"
+    },
+    {
+      "title": "Airport Transfers",
+      "description": "Private transfers from Chennai International Airport can be arranged through our concierge partner. Share your arrival time and we will coordinate the pickup.",
+      "link": "https://example.com/transfers",
+      "linkLabel": "Arrange transfers"
+    },
+    {
+      "title": "City Guide",
+      "description": "We put together our favourite cafes, temple visits, Marina Beach walks, and rooftop dinners around Chennai for a memorable long weekend.",
+      "link": "https://example.com/city-guide",
+      "linkLabel": "Open city guide"
+    }
+  ],
+  "essentials": [
+    {
+      "id": "ess-001",
+      "title": "Government Hospital Mahabalipuram",
+      "description": "4 km from venue. Open 24 hours. Emergency services available.",
+      "link": "https://maps.google.com/?q=Government+Hospital+Mahabalipuram",
+      "icon": "hospital",
+      "category": "essentials"
+    },
+    {
+      "id": "ess-002",
+      "title": "Apollo Pharmacy",
+      "description": "1.2 km from venue. Open until midnight. Prescription and OTC medicines.",
+      "link": "https://maps.google.com/?q=Apollo+Pharmacy+Mahabalipuram",
+      "icon": "pharmacy",
+      "category": "essentials"
+    },
+    {
+      "id": "ess-003",
+      "title": "Mahabalipuram Police Station",
+      "description": "2 km from venue. Emergency: 100",
+      "link": "https://maps.google.com/?q=Mahabalipuram+Police+Station",
+      "icon": "police",
+      "category": "essentials"
+    },
+    {
+      "id": "ess-004",
+      "title": "Nearest Bus Stop",
+      "description": "500 m from the venue gate on East Coast Road.",
+      "link": "https://maps.google.com/?q=Mahabalipuram+Bus+Stand",
+      "icon": "bus",
+      "category": "essentials"
+    },
+    {
+      "id": "ess-005",
+      "title": "Chennai Airport",
+      "description": "Approx 50 km from venue. Terminal 1 & 2. Cab approx 60-90 minutes.",
+      "link": "https://maps.google.com/?q=Chennai+International+Airport",
+      "icon": "train",
+      "category": "essentials"
+    },
+    {
+      "id": "ess-006",
+      "title": "Wedding Coordinator",
+      "description": "Reach out if you need any help during your stay. Available from 8 AM to 10 PM.",
+      "link": "tel:+919876543210",
+      "icon": "phone",
+      "category": "essentials"
+    }
+  ],
+  "faq": [
+    {
+      "question": "Which airport should we fly into?",
+      "answer": "Fly into Chennai International Airport (MAA). It is roughly 50–60 km from Blue Bay Beach Resort, Mahabalipuram, depending on traffic."
+    },
+    {
+      "question": "Is transportation provided between venues?",
+      "answer": "Yes. Shuttle loops begin 45 minutes before every scheduled event and return after the final departure."
+    },
+    {
+      "question": "Can children attend?",
+      "answer": "Children are welcome at all events. Please indicate the number of children in your RSVP so we can make the right arrangements."
+    },
+    {
+      "question": "What is the nearest railway station?",
+      "answer": "Chennai Egmore and Chennai Central are the main stations, both approximately 55 km from the venue. Local trains to Chengalpattu are another option."
+    }
+  ],
+  "arrivalTips": [
+    "December evenings in Chennai are pleasant but can be breezy near the coast — pack a light layer for outdoor events after sunset.",
+    "East Coast Road (ECR) is the main route to Mahabalipuram. Expect moderate traffic on weekends; plan to arrive 30 minutes early.",
+    "Please keep a screenshot of your personalized invite link for quick check-in at the venue entrance.",
+    "Parking is available at the resort premises. Overflow parking is at the adjacent lot 200 m from the gate."
+  ]
+}

@@ -1,0 +1,40 @@
+/*
+ * themes/minimal/theme.css
+ *
+ * Minimal — a quiet, editorial palette of ivory, cool white, and deep charcoal.
+ * Suited to modern European or garden weddings where restraint is the luxury.
+ *
+ * To activate: set `data-theme="minimal"` on <html> in app/layout.tsx.
+ */
+
+[data-theme="minimal"] {
+  /* ── Page surfaces ────────────────────────────────────────────────────── */
+  --color-background:    #f9f8f6;   /* off-white linen */
+  --color-surface:       #ffffff;
+  --color-surface-muted: #f2f1ef;   /* cool light grey */
+  --color-border:        rgba(0, 0, 0, 0.08);
+
+  /* ── Brand accent ─────────────────────────────────────────────────────── */
+  --color-accent:        #2d2d2d;   /* near-black — understated authority */
+  --color-accent-soft:   #c8c3bc;   /* warm grey */
+  --color-accent-hover:  #111111;
+
+  /* ── Text ─────────────────────────────────────────────────────────────── */
+  --color-text-primary:  #1a1a1a;
+  --color-text-secondary:#5a5a5a;
+  --color-text-muted:    #9a9a9a;
+  --color-text-inverse:  #ffffff;
+
+  /* ── Hero gradient ────────────────────────────────────────────────────── */
+  --gradient-hero:
+    radial-gradient(
+      circle at top left,
+      rgba(255, 255, 255, 0.98),
+      rgba(249, 248, 246, 0.92) 50%,
+      rgba(242, 241, 239, 0.95) 100%
+    );
+
+  /* ── Shadows — lighter for this clean palette ─────────────────────────── */
+  --shadow-soft: 0 20px 60px rgba(0, 0, 0, 0.06);
+  --shadow-card: 0 20px 60px rgba(0, 0, 0, 0.10);
+}

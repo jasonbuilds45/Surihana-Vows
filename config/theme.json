@@ -1,0 +1,57 @@
+{
+  "brand": {
+    "siteName": "Surihana Vows",
+    "tagline": "Invitation, live celebration, and family archive in one cinematic digital home."
+  },
+  "navigation": [
+    {
+      "label": "Home",
+      "href": "/"
+    },
+    {
+      "label": "Story",
+      "href": "/story"
+    },
+    {
+      "label": "Events",
+      "href": "/events"
+    },
+    {
+      "label": "Travel",
+      "href": "/travel"
+    },
+    {
+      "label": "Gallery",
+      "href": "/gallery"
+    },
+    {
+      "label": "Guestbook",
+      "href": "/guestbook"
+    },
+    {
+      "label": "Live",
+      "href": "/live"
+    },
+    {
+      "label": "Predictions",
+      "href": "/predictions"
+    }
+  ],
+  "stages": [
+    {
+      "stage": "Stage 1",
+      "headline": "Personalized invitation journeys",
+      "description": "Every guest receives a tailored link with RSVP, schedule, and a polished cinematic entrance."
+    },
+    {
+      "stage": "Stage 2",
+      "headline": "Real-time wedding day storytelling",
+      "description": "The experience transforms into a live event hub for streaming, updates, and guest participation."
+    },
+    {
+      "stage": "Stage 3",
+      "headline": "A private archive for the family",
+      "description": "After the wedding, the same platform becomes a protected memory vault with posts, albums, and milestones."
+    }
+  ]
+}

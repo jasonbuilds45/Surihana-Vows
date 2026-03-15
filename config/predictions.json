@@ -1,0 +1,61 @@
+{
+  "enabled": true,
+  "revealAfter": "2026-12-18T22:00:00+05:30",
+  "questions": [
+    {
+      "id": "who_cries_first",
+      "question": "Who will cry first during the vows?",
+      "emoji": "😭",
+      "options": [
+        { "value": "bride",    "label": "Hana" },
+        { "value": "groom",   "label": "Suriya" },
+        { "value": "both",    "label": "Both at the same moment" },
+        { "value": "neither", "label": "Neither — they're ice" }
+      ]
+    },
+    {
+      "id": "who_is_late",
+      "question": "Who will be fashionably late?",
+      "emoji": "⏰",
+      "options": [
+        { "value": "bride",       "label": "The bride — worth the wait" },
+        { "value": "guests",      "label": "A group of guests" },
+        { "value": "nobody",      "label": "Nobody — everyone's early" },
+        { "value": "band",        "label": "The live musicians" }
+      ]
+    },
+    {
+      "id": "dance_floor",
+      "question": "Who owns the dance floor at the reception?",
+      "emoji": "💃",
+      "options": [
+        { "value": "uncles",  "label": "The uncles, obviously" },
+        { "value": "bride",   "label": "Hana — no contest" },
+        { "value": "groom",   "label": "Suriya — surprise move" },
+        { "value": "kids",    "label": "The youngest guests" }
+      ]
+    },
+    {
+      "id": "speech_tears",
+      "question": "Which speech will make the room cry the most?",
+      "emoji": "🎤",
+      "options": [
+        { "value": "parents_bride", "label": "Hana's parents" },
+        { "value": "parents_groom", "label": "Suriya's parents" },
+        { "value": "best_man",      "label": "Best man / groomsmen" },
+        { "value": "surprise",      "label": "An unexpected guest" }
+      ]
+    },
+    {
+      "id": "first_argument",
+      "question": "What will their first married-life disagreement be about?",
+      "emoji": "🤔",
+      "options": [
+        { "value": "ac_temp",    "label": "AC temperature" },
+        { "value": "directions", "label": "Which way to go" },
+        { "value": "cooking",    "label": "What to have for dinner" },
+        { "value": "never",      "label": "They'll never argue" }
+      ]
+    }
+  ]
+}

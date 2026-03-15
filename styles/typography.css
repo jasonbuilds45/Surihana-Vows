@@ -1,0 +1,21 @@
+.font-display {
+  font-family: var(--font-display), serif;
+}
+
+h1,
+h2,
+h3,
+h4,
+.display-copy {
+  font-family: var(--font-display), serif;
+}
+
+p,
+span,
+a,
+button,
+input,
+textarea,
+select {
+  font-family: var(--font-body), sans-serif;
+}
