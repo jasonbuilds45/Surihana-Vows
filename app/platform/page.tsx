@@ -29,6 +29,7 @@ export const metadata: Metadata = {
 };
 
 export default async function PlatformPage() {
+  // Fetching all necessary data in parallel for better performance
   const [overview, guestMessages, slides, highlightVideo] = await Promise.all([
     getInvitationOverview(),
     getGuestMessages(),
@@ -40,7 +41,7 @@ export default async function PlatformPage() {
     <div className="pb-20">
       <Container className="space-y-12 py-10 lg:py-14">
 
-        {/* ── Platform hero ─────────────────────────────────────────────── */}
+        {/* ── Platform Hero Section ────────────────────────────────────── */}
         <div className="grid gap-8 lg:grid-cols-[1.05fr,0.95fr] lg:items-center">
           <div className="space-y-8">
             <div className="space-y-4">
@@ -73,6 +74,7 @@ export default async function PlatformPage() {
               </Link>
             </div>
 
+            {/* Platform Stages Cards */}
             <div className="grid gap-4 sm:grid-cols-3">
               <article className="rounded-[1.75rem] border border-white/60 bg-white/75 p-5 shadow-soft">
                 <Heart className="h-5 w-5 text-stone-700" />
@@ -101,11 +103,13 @@ export default async function PlatformPage() {
           <SlideShow slides={slides} />
         </div>
 
+        {/* ── Story Section ────────────────────────────────────────────── */}
         <StorySection
           quote="An invitation should feel like entering a story, not filling out a form."
           story={overview.story}
         />
 
+        {/* ── Highlight Video Section (Conditional) ─────────────────────── */}
         {highlightVideo ? (
           <section className="overflow-hidden rounded-[2.5rem] border border-white/60 bg-stone-950 shadow-[0_24px_80px_rgba(73,45,34,0.18)]">
             <div className="grid lg:grid-cols-[0.42fr,0.58fr]">
@@ -150,6 +154,7 @@ export default async function PlatformPage() {
           </section>
         ) : null}
 
+        {/* ── Guest Book Section ────────────────────────────────────────── */}
         <section className="grid gap-6 lg:grid-cols-[0.9fr,1.1fr]">
           <div className="rounded-[2rem] border border-white/60 bg-stone-950 p-8 text-white shadow-[0_24px_80px_rgba(73,45,34,0.16)]">
             <p className="text-xs uppercase tracking-[0.35em] text-stone-300">Guest messages</p>
@@ -164,7 +169,7 @@ export default async function PlatformPage() {
           <MessageList messages={guestMessages} />
         </section>
 
-        {/* Developer links */}
+        {/* ── Developer Shortcuts Footer ────────────────────────────────── */}
         <div className="rounded-[2rem] border border-stone-200 bg-stone-50 p-6">
           <p className="text-xs uppercase tracking-[0.35em] text-stone-500">Developer shortcuts</p>
           <div className="mt-4 flex flex-wrap gap-3">

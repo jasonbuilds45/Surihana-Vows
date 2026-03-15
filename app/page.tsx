@@ -44,12 +44,12 @@ export default async function HomePage() {
   const hero = slides[0]?.imageUrl ?? "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=1600&q=80";
 
   const features = [
-    { icon: Heart,         label: "Personal invite",  desc: "A cinematic wax-seal envelope, crafted just for you.",       href: "/invite/john-family" },
+    { icon: Heart,         label: "Personal invite",  desc: "A cinematic wax-seal envelope, crafted just for you.",      href: "/invite/john-family" },
     { icon: Calendar,      label: "Full itinerary",   desc: "Three days of events with maps, dress codes and saves.",      href: "/events" },
-    { icon: MessageSquare, label: "Guestbook",        desc: "Leave a blessing that stays with the couple forever.",        href: "/guestbook" },
-    { icon: Camera,        label: "Photo gallery",    desc: "Every professional and candid photo, curated & downloadable.",href: "/gallery" },
-    { icon: MapPin,        label: "Travel guide",     desc: "Hotels, transport, nearby essentials — arrive in style.",    href: "/travel" },
-    { icon: Sparkles,      label: "Predictions",      desc: "Cast your guesses before the vows. Revealed at reception.",  href: "/predictions" },
+    { icon: MessageSquare, label: "Guestbook",         desc: "Leave a blessing that stays with the couple forever.",        href: "/guestbook" },
+    { icon: Camera,         label: "Photo gallery",    desc: "Every professional and candid photo, curated & downloadable.",href: "/gallery" },
+    { icon: MapPin,         label: "Travel guide",     desc: "Hotels, transport, nearby essentials — arrive in style.",    href: "/travel" },
+    { icon: Sparkles,       label: "Predictions",      desc: "Cast your guesses before the vows. Revealed at reception.",  href: "/predictions" },
   ];
 
   return (
@@ -61,16 +61,13 @@ export default async function HomePage() {
         .feat-cell:hover{background:${BG}!important}
       `}</style>
 
-      {/* ═══════════════════════════════════════════════════════
-          HERO — full-viewport parallax + names
-      ═══════════════════════════════════════════════════════ */}
+      {/* HERO Section */}
       <ParallaxHero
         backgroundSrc={hero}
         minHeight="100vh"
         speed={0.35}
         overlay="linear-gradient(to bottom,rgba(26,16,18,.28) 0%,rgba(26,16,18,.08) 35%,rgba(26,16,18,.55) 68%,rgba(26,16,18,.96) 100%)"
       >
-        {/* Ticker */}
         <div style={{ borderBottom: "1px solid rgba(255,255,255,.10)", overflow: "hidden", padding: "9px 0", background: "rgba(26,16,18,.20)", backdropFilter: "blur(8px)" }}>
           <div style={{ display: "flex", gap: "3rem", whiteSpace: "nowrap", animation: "marquee 35s linear infinite" }}>
             {Array(8).fill(`${weddingConfig.celebrationTitle} · ${formatDate(weddingConfig.weddingDate)} · ${weddingConfig.venueName} · ${weddingConfig.venueCity}`).map((t, i) => (
@@ -81,12 +78,10 @@ export default async function HomePage() {
           </div>
         </div>
 
-        {/* Content */}
         <div className="flex-1 flex flex-col justify-end" style={{ padding: "0 clamp(1.25rem,5vw,4rem) 4rem" }}>
           <div style={{ maxWidth: "1280px", margin: "0 auto", width: "100%" }}>
             <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: "2.5rem", alignItems: "flex-end" }} className="hg">
               <div>
-                {/* Date pill */}
                 <div className="animate-fade-in" style={{ display: "inline-flex", alignItems: "center", gap: ".625rem", padding: "6px 18px", borderRadius: 999, marginBottom: "1.5rem", background: "rgba(255,255,255,.12)", border: "1px solid rgba(255,255,255,.22)", backdropFilter: "blur(16px)" }}>
                   <div style={{ width: 7, height: 7, borderRadius: "50%", background: "#F5C5CB" }} className="animate-ping-soft" />
                   <span style={{ fontSize: ".62rem", letterSpacing: ".28em", textTransform: "uppercase", color: "rgba(255,255,255,.88)", fontFamily: BF, fontWeight: 600 }}>
@@ -112,7 +107,6 @@ export default async function HomePage() {
                 </div>
               </div>
 
-              {/* Countdown — desktop */}
               <div id="hero-cd" style={{ display: "none" }} className="animate-fade-up delay-400">
                 <div style={{ background: "rgba(255,255,255,.11)", backdropFilter: "blur(24px)", border: "1px solid rgba(255,255,255,.22)", borderRadius: 24, padding: "1.75rem 2rem", minWidth: 280 }}>
                   <p style={{ fontSize: ".58rem", letterSpacing: ".32em", textTransform: "uppercase", color: "rgba(255,255,255,.55)", fontWeight: 700, textAlign: "center", marginBottom: "1.25rem", fontFamily: BF }}>
@@ -125,7 +119,6 @@ export default async function HomePage() {
           </div>
         </div>
 
-        {/* Stat bar */}
         <div style={{ background: "rgba(26,16,18,.85)", backdropFilter: "blur(20px)", borderTop: "1px solid rgba(255,255,255,.08)" }}>
           <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 clamp(1.25rem,5vw,4rem)", display: "grid", gridTemplateColumns: "1fr 1fr 1fr" }}>
             {[
@@ -145,10 +138,7 @@ export default async function HomePage() {
         </div>
       </ParallaxHero>
 
-
-      {/* ═══════════════════════════════════════════════════════
-          INVITATION — warm linen
-      ═══════════════════════════════════════════════════════ */}
+      {/* INVITATION Section */}
       <section style={{ background: BG, padding: "6rem clamp(1.25rem,5vw,4rem)", borderBottom: `1px solid ${BD}` }}>
         <div style={{ maxWidth: "1280px", margin: "0 auto" }}>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "4rem", alignItems: "center" }} className="r2">
@@ -204,10 +194,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-
-      {/* ═══════════════════════════════════════════════════════
-          DETAILS — linen, 3 TiltCards
-      ═══════════════════════════════════════════════════════ */}
+      {/* DETAILS Section */}
       <section style={{ background: LN, padding: "6rem clamp(1.25rem,5vw,4rem)", borderBottom: `1px solid ${BD}` }}>
         <div style={{ maxWidth: "1280px", margin: "0 auto" }}>
           <ScrollReveal>
@@ -216,7 +203,6 @@ export default async function HomePage() {
             </p>
           </ScrollReveal>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "1.5rem" }} className="r3">
-
             <ScrollReveal variant="left" delay={1}>
               <TiltCard intensity={10} style={{ background: W, border: `1px solid ${BD}` }}>
                 <div style={{ padding: "2.5rem", display: "flex", flexDirection: "column", justifyContent: "space-between", minHeight: 260 }}>
@@ -269,10 +255,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-
-      {/* ═══════════════════════════════════════════════════════
-          LOVE STORY — white, alternating
-      ═══════════════════════════════════════════════════════ */}
+      {/* LOVE STORY Section */}
       <section style={{ background: W, padding: "6rem clamp(1.25rem,5vw,4rem)" }}>
         <div style={{ maxWidth: "1280px", margin: "0 auto" }}>
           <ScrollReveal>
@@ -305,7 +288,6 @@ export default async function HomePage() {
               <ScrollReveal variant={i % 2 === 0 ? "right" : "left"} delay={2}>
                 {beat.imageUrl ? (
                   <div style={{ position: "relative", borderRadius: 24, overflow: "hidden", aspectRatio: "4/3", order: i % 2 === 0 ? 1 : 0, boxShadow: "0 12px 48px rgba(80,20,30,.13)" }}>
-                    {/* No event handlers on Image — use CSS hover via wrapper */}
                     <Image src={beat.imageUrl} alt={beat.title} fill className="object-cover story-img" sizes="50vw" />
                   </div>
                 ) : null}
@@ -315,10 +297,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-
-      {/* ═══════════════════════════════════════════════════════
-          GALLERY — white, mosaic (no event handlers on Image)
-      ═══════════════════════════════════════════════════════ */}
+      {/* GALLERY Section */}
       {slides.length > 1 && (
         <section style={{ background: BG, padding: "6rem clamp(1.25rem,5vw,4rem) 0", borderTop: `1px solid ${BD}` }}>
           <div style={{ maxWidth: "1280px", margin: "0 auto" }}>
@@ -336,13 +315,11 @@ export default async function HomePage() {
               </div>
             </ScrollReveal>
           </div>
-          {/* Edge-to-edge mosaic — no event handlers on Image */}
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: "3px" }} className="r3">
             {slides.slice(0, 6).map((slide, i) => (
               <ScrollReveal key={slide.imageUrl} variant="scale" delay={(Math.min((i % 3) + 1, 6)) as 1|2|3|4|5|6}>
                 <Link href="/gallery" style={{ display: "block", position: "relative", aspectRatio: i === 0 || i === 4 ? "3/4" : "1/1", overflow: "hidden", background: LN }}>
                   <Image src={slide.imageUrl} alt={slide.title} fill className="object-cover gallery-img" sizes="33vw" />
-                  {/* Static caption overlay — no JS event needed */}
                   <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top,rgba(26,16,18,.65) 0%,transparent 45%)", display: "flex", alignItems: "flex-end", padding: "1.25rem" }}>
                     <p style={{ fontFamily: DF, fontSize: "1rem", color: W, fontWeight: 600, lineHeight: 1.2, opacity: 0.85 }}>{slide.title}</p>
                   </div>
@@ -359,10 +336,7 @@ export default async function HomePage() {
         </section>
       )}
 
-
-      {/* ═══════════════════════════════════════════════════════
-          FEATURES — 6-cell grid
-      ═══════════════════════════════════════════════════════ */}
+      {/* FEATURES Section */}
       <section style={{ background: BG, padding: "6rem clamp(1.25rem,5vw,4rem)", borderTop: `1px solid ${BD}` }}>
         <div style={{ maxWidth: "1280px", margin: "0 auto" }}>
           <ScrollReveal>
@@ -396,10 +370,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-
-      {/* ═══════════════════════════════════════════════════════
-          GUESTBOOK — white
-      ═══════════════════════════════════════════════════════ */}
+      {/* GUESTBOOK Section */}
       <section style={{ background: W, padding: "6rem clamp(1.25rem,5vw,4rem)", borderTop: `1px solid ${BD}` }}>
         <div style={{ maxWidth: "1280px", margin: "0 auto" }}>
           <ScrollReveal>
@@ -431,10 +402,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-
-      {/* ═══════════════════════════════════════════════════════
-          RSVP CTA — dark ink, massive serif type
-      ═══════════════════════════════════════════════════════ */}
+      {/* RSVP CTA Section */}
       <section style={{ position: "relative", overflow: "hidden", padding: "7rem clamp(1.25rem,5vw,4rem)", textAlign: "center", background: I }}>
         <div aria-hidden style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%,-50%)", width: 600, height: 400, borderRadius: "50%", background: "radial-gradient(circle,rgba(192,54,74,.12) 0%,transparent 65%)", pointerEvents: "none" }} />
         <div style={{ height: 3, background: STRIPE_BG, position: "absolute", top: 0, left: 0, right: 0 }} />
@@ -461,7 +429,6 @@ export default async function HomePage() {
         </div>
         <div style={{ height: 3, background: STRIPE_BG, position: "absolute", bottom: 0, left: 0, right: 0 }} />
       </section>
-
     </div>
   );
 }

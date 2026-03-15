@@ -287,7 +287,7 @@ export default async function InvitePage({ params }: InvitePageProps) {
                   Will you be there?
                 </h2>
                 <p className="mt-3 text-sm leading-7" style={{ color: "var(--color-text-secondary)" }}>
-                  Let {brideFirst} and {groomFirst} know you're coming so they can plan every detail with care.
+                  Let {brideFirst} and {groomFirst} know you&apos;re coming so they can plan every detail with care.
                 </p>
               </div>
 
