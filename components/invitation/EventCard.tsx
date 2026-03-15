@@ -6,7 +6,7 @@ import { CalendarButton } from "@/components/navigation/CalendarButton";
 import { Badge, GoldStripe, SectionLabel } from "@/components/ui";
 
 interface EventCardProps {
-  event: EventRow & { description?: string; dressCode?: string };
+  event: EventRow & { description?: string | null; dressCode?: string | null };
 }
 
 function buildOsmEmbedUrl(venueName: string) {
