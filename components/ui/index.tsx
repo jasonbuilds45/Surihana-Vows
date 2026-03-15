@@ -50,7 +50,7 @@ export function SectionDivider() {
 ══════════════════════════════════════════════════════════════════════════════ */
 
 /** Small all-caps eyebrow label above section headers */
-export function SectionLabel({ children, className = "" }: { children: ReactNode; className?: string }) {
+export function SectionLabel({ children, className = "", style }: { children: ReactNode; className?: string; style?: React.CSSProperties }) {
   return (
     <p
       className={className}
@@ -61,6 +61,7 @@ export function SectionLabel({ children, className = "" }: { children: ReactNode
         letterSpacing: "0.22em",
         textTransform: "uppercase",
         color: "var(--color-accent)",
+        ...style,
       }}
     >
       {children}
