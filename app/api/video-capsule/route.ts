@@ -100,7 +100,7 @@ export async function POST(request: NextRequest) {
     author_email: null,
     title,
     message:     capsulePayload,
-    post_type:   "video",
+    post_type:   "video" as const,
     unlock_date: new Date(revealDate as string).toISOString(),
     is_revealed: false,
     created_at:  new Date().toISOString(),
