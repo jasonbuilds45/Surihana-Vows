@@ -216,7 +216,6 @@ export function VaultLock({ initials = "SV", onOpen, label = "Tap to open your i
               <div
                 style={{
                   width: 8,
-                  height: 14,
                   borderRadius: "0 0 4px 4px",
                   background: state === "open"
                     ? "linear-gradient(180deg, oklch(72% 0.15 75), oklch(62% 0.12 70))"
