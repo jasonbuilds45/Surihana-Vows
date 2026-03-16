@@ -10,14 +10,11 @@ function normalizeOptionalString(value: unknown) {
 export async function GET(request: NextRequest) {
   try {
     const session = await getAuthorizedSessionFromRequest(request);
-    if (!session || session.role !== "admin") {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Admin authentication is required."
-        },
-        { status: 401 }
-      );
+    if (!session) {
+      return NextResponse.json({ success: false, message: "Authentication required." }, { status: 401 });
+    }
+    if (session.role !== "admin") {
+      return NextResponse.json({ success: false, message: "Admin access required." }, { status: 403 });
     }
 
     const weddingId = request.nextUrl.searchParams.get("weddingId") ?? DEMO_WEDDING_ID;
@@ -37,14 +34,11 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const session = await getAuthorizedSessionFromRequest(request);
-    if (!session || session.role !== "admin") {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Admin authentication is required."
-        },
-        { status: 401 }
-      );
+    if (!session) {
+      return NextResponse.json({ success: false, message: "Authentication required." }, { status: 401 });
+    }
+    if (session.role !== "admin") {
+      return NextResponse.json({ success: false, message: "Admin access required." }, { status: 403 });
     }
 
     const payload = (await request.json()) as Record<string, unknown>;

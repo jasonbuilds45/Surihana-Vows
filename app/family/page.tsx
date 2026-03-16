@@ -18,8 +18,12 @@ import { formatDate } from "@/utils/formatDate";
 
 export default async function FamilyPage() {
   const session = await getSessionFromCookieStore(cookies());
-  if (!session || !roleCanAccess(session.role, "/family")) {
-    redirect("/login?redirect=%2Ffamily");
+  // Both admin and family roles can access the family vault
+  if (!session) {
+    redirect("/login?hint=vault&redirect=%2Ffamily");
+  }
+  if (session.role !== "admin" && session.role !== "family") {
+    redirect("/login?hint=vault&redirect=%2Ffamily");
   }
 
   const [familyVault, capsules] = await Promise.all([

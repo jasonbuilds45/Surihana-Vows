@@ -16,14 +16,11 @@ function normalizeOptionalString(value: unknown) {
 export async function PATCH(request: NextRequest, { params }: GuestRouteProps) {
   try {
     const session = await getAuthorizedSessionFromRequest(request);
-    if (!session || session.role !== "admin") {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Admin authentication is required."
-        },
-        { status: 401 }
-      );
+    if (!session) {
+      return NextResponse.json({ success: false, message: "Authentication required." }, { status: 401 });
+    }
+    if (session.role !== "admin") {
+      return NextResponse.json({ success: false, message: "Admin access required." }, { status: 403 });
     }
 
     const payload = (await request.json()) as Record<string, unknown>;
@@ -72,14 +69,11 @@ export async function PATCH(request: NextRequest, { params }: GuestRouteProps) {
 export async function DELETE(request: NextRequest, { params }: GuestRouteProps) {
   try {
     const session = await getAuthorizedSessionFromRequest(request);
-    if (!session || session.role !== "admin") {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Admin authentication is required."
-        },
-        { status: 401 }
-      );
+    if (!session) {
+      return NextResponse.json({ success: false, message: "Authentication required." }, { status: 401 });
+    }
+    if (session.role !== "admin") {
+      return NextResponse.json({ success: false, message: "Admin access required." }, { status: 403 });
     }
 
     const data = await deleteGuestRecord(params.id);

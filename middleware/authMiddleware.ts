@@ -1,7 +1,10 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getDefaultPathForRole, getSessionFromRequest, getSafeRedirectPath, roleCanAccess } from "@/lib/auth";
 
-const PROTECTED_PREFIXES = ["/family", "/admin", "/api/admin"] as const;
+const PROTECTED_PREFIXES = ["/family", "/admin", "/api/admin", "/api/auth/login"] as const;
+
+// API routes that require auth but are called from client — allow admin role too
+const ADMIN_API_PREFIXES = ["/api/admin"] as const;
 
 function matchesPrefix(pathname: string, prefix: string) {
   return pathname === prefix || pathname.startsWith(`${prefix}/`);
