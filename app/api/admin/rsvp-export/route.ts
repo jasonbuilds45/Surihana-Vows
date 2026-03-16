@@ -11,15 +11,11 @@ function escapeCsvValue(value: string | number | boolean | null | undefined) {
 
 export async function GET(request: NextRequest) {
   const session = await getAuthorizedSessionFromRequest(request);
-
-  if (!session || session.role !== "admin") {
-    return NextResponse.json(
-      {
-        success: false,
-        message: "Admin authentication is required."
-      },
-      { status: 401 }
-    );
+  if (!session) {
+    return NextResponse.json({ success: false, message: "Authentication required." }, { status: 401 });
+  }
+  if (session.role !== "admin") {
+    return NextResponse.json({ success: false, message: "Admin access required." }, { status: 403 });
   }
 
   try {

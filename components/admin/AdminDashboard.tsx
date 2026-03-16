@@ -39,7 +39,7 @@ export function AdminDashboard({
   const [recentActivity, setRecentActivity] = useState(initialActivity);
 
   async function refreshAnalytics() {
-    const res = await fetch(`/api/analytics?weddingId=${encodeURIComponent(weddingId)}`, { cache: "no-store" });
+    const res = await fetch(`/api/analytics?weddingId=${encodeURIComponent(weddingId)}`, { cache: "no-store", credentials: "include" });
     if (!res.ok) return;
     const payload = (await res.json()) as AnalyticsResponse;
     if (!payload.success || !payload.data) return;

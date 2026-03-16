@@ -1,9 +1,9 @@
 "use client";
 
 import type { FormEvent } from "react";
-import { startTransition, useMemo, useState } from "react";
-import { Copy, Link2, Pencil, Plus, RefreshCcw, Save, Trash2, X } from "lucide-react";
-import { Card, SectionLabel, Field, Btn, EmptyState } from "@/components/ui";
+import { startTransition, useRef, useMemo, useState } from "react";
+import { Copy, Download, FileUp, Link2, Pencil, Plus, RefreshCcw, Save, Trash2, X } from "lucide-react";
+import { Card, SectionLabel, Btn } from "@/components/ui";
 
 export interface GuestTableRow {
   id: string;
@@ -40,6 +40,12 @@ interface GuestApiResponse {
   };
 }
 
+interface ImportResult {
+  added: number;
+  skipped: number;
+  errors: string[];
+}
+
 interface GuestTableProps {
   initialRows: GuestTableRow[];
   weddingId: string;
@@ -50,10 +56,24 @@ interface GuestFormState { guestName: string; familyName: string; phone: string;
 const emptyForm: GuestFormState = { guestName: "", familyName: "", phone: "", guestRole: "" };
 
 function normalizeRow(data: NonNullable<GuestApiResponse["data"]>): GuestTableRow {
-  return { id: data.id, guestName: data.guest_name, familyName: data.family_name, phone: data.phone, inviteCode: data.invite_code, inviteLink: data.invite_link, inviteOpened: data.invite_opened, deviceType: data.device_type, attending: data.attending ?? null, guestCount: data.guest_count ?? null };
+  return {
+    id: data.id, guestName: data.guest_name, familyName: data.family_name,
+    phone: data.phone, inviteCode: data.invite_code, inviteLink: data.invite_link,
+    inviteOpened: data.invite_opened, deviceType: data.device_type,
+    attending: data.attending ?? null, guestCount: data.guest_count ?? null,
+  };
 }
+
 function sortRows(rows: GuestTableRow[]) {
-  return rows.slice().sort((a, b) => `${a.guestName} ${a.familyName ?? ""}`.trim().toLowerCase().localeCompare(`${b.guestName} ${b.familyName ?? ""}`.trim().toLowerCase()));
+  return rows.slice().sort((a, b) =>
+    `${a.guestName} ${a.familyName ?? ""}`.trim().toLowerCase()
+      .localeCompare(`${b.guestName} ${b.familyName ?? ""}`.trim().toLowerCase())
+  );
+}
+
+function escapeCsv(v: string | null | undefined) {
+  const s = v == null ? "" : String(v);
+  return `"${s.replace(/"/g, '""')}"`;
 }
 
 const inputStyle: React.CSSProperties = {
@@ -63,165 +83,454 @@ const inputStyle: React.CSSProperties = {
   outline: "none", fontFamily: "var(--font-body), sans-serif",
 };
 
+const btnSm: React.CSSProperties = {
+  display: "inline-flex", alignItems: "center", gap: 6, borderRadius: "9999px",
+  padding: "6px 14px", fontSize: "0.6rem", letterSpacing: "0.18em",
+  textTransform: "uppercase", fontWeight: 600, cursor: "pointer",
+  border: "1.5px solid var(--color-border-medium)", background: "#fff",
+  color: "var(--color-text-secondary)",
+};
+
+const btnDanger: React.CSSProperties = {
+  ...btnSm, border: "1.5px solid #fca5a5", background: "#fef2f2", color: "#b91c1c",
+};
+
+const btnGreen: React.CSSProperties = {
+  ...btnSm, border: "1.5px solid rgba(107,142,110,0.35)",
+  background: "rgba(107,142,110,0.08)", color: "var(--color-sage)",
+};
+
 export function GuestTable({ initialRows, weddingId, onRefreshAnalytics }: GuestTableProps) {
-  const [rows, setRows] = useState(() => sortRows(initialRows));
-  const [form, setForm] = useState<GuestFormState>(emptyForm);
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [statusMsg, setStatusMsg] = useState<{ success: boolean; message: string } | null>(null);
+  const [rows, setRows]               = useState(() => sortRows(initialRows));
+  const [form, setForm]               = useState<GuestFormState>(emptyForm);
+  const [editingId, setEditingId]     = useState<string | null>(null);
+  const [statusMsg, setStatusMsg]     = useState<{ success: boolean; message: string } | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [importing, setImporting]     = useState(false);
+  const fileInputRef                  = useRef<HTMLInputElement>(null);
 
   function setField(k: keyof GuestFormState, v: string) { setForm((f) => ({ ...f, [k]: v })); }
   function resetForm() { setForm(emptyForm); setEditingId(null); }
 
+  // ── Add / Edit guest ──────────────────────────────────────────────────────
   async function handleSubmit(e: FormEvent) {
-    e.preventDefault(); setIsSubmitting(true); setStatusMsg(null);
+    e.preventDefault();
+    setIsSubmitting(true);
+    setStatusMsg(null);
     try {
       const endpoint = editingId ? `/api/admin/guests/${editingId}` : "/api/admin/guests";
-      const res = await fetch(endpoint, { method: editingId ? "PATCH" : "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ weddingId, guestName: form.guestName, familyName: form.familyName, phone: form.phone, guestRole: form.guestRole || null }) });
+      const res = await fetch(endpoint, {
+        method: editingId ? "PATCH" : "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ weddingId, guestName: form.guestName, familyName: form.familyName, phone: form.phone, guestRole: form.guestRole || null }),
+      });
       const payload = (await res.json()) as GuestApiResponse;
       if (!res.ok || !payload.success || !payload.data) throw new Error(payload.message ?? "Unable to save.");
       const row = normalizeRow(payload.data);
-      startTransition(() => { setRows((cur) => sortRows(editingId ? cur.map((r) => r.id === editingId ? row : r) : [...cur, row])); });
-      resetForm(); setStatusMsg({ success: true, message: editingId ? "Guest updated." : "Guest added." });
+      startTransition(() => {
+        setRows((cur) => sortRows(editingId ? cur.map((r) => r.id === editingId ? row : r) : [...cur, row]));
+      });
+      resetForm();
+      setStatusMsg({ success: true, message: editingId ? "Guest updated." : "Guest added." });
       await onRefreshAnalytics?.();
-    } catch (err) { setStatusMsg({ success: false, message: err instanceof Error ? err.message : "Error." }); }
-    finally { setIsSubmitting(false); }
+    } catch (err) {
+      setStatusMsg({ success: false, message: err instanceof Error ? err.message : "Error." });
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
+  // ── Delete guest ──────────────────────────────────────────────────────────
   async function handleDelete(row: GuestTableRow) {
     if (!window.confirm(`Delete ${row.guestName}?`)) return;
     setIsSubmitting(true);
     try {
-      const res = await fetch(`/api/admin/guests/${row.id}`, { method: "DELETE" });
+      const res = await fetch(`/api/admin/guests/${row.id}`, { method: "DELETE", credentials: "include" });
       const p = (await res.json()) as { success: boolean; message?: string };
       if (!res.ok || !p.success) throw new Error(p.message ?? "Error");
       startTransition(() => { setRows((cur) => cur.filter((r) => r.id !== row.id)); });
       setStatusMsg({ success: true, message: "Guest removed." });
       if (editingId === row.id) resetForm();
       await onRefreshAnalytics?.();
-    } catch (err) { setStatusMsg({ success: false, message: err instanceof Error ? err.message : "Error." }); }
-    finally { setIsSubmitting(false); }
+    } catch (err) {
+      setStatusMsg({ success: false, message: err instanceof Error ? err.message : "Error." });
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
+  // ── Copy invite link ───────────────────────────────────────────────────────
   async function handleCopy(row: GuestTableRow) {
-    try { await navigator.clipboard.writeText(row.inviteLink); setStatusMsg({ success: true, message: `Copied link for ${row.guestName}.` }); }
-    catch { setStatusMsg({ success: false, message: "Cannot copy from this browser." }); }
+    try {
+      await navigator.clipboard.writeText(row.inviteLink);
+      setStatusMsg({ success: true, message: `Copied link for ${row.guestName}.` });
+    } catch {
+      setStatusMsg({ success: false, message: "Cannot copy from this browser." });
+    }
   }
 
+  // ── Regenerate invite code ────────────────────────────────────────────────
   async function handleRegenerate(row: GuestTableRow) {
     setIsSubmitting(true);
     try {
-      const res = await fetch(`/api/admin/guests/${row.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ weddingId, guestName: row.guestName, familyName: row.familyName, phone: row.phone, regenerateInviteCode: true }) });
+      const res = await fetch(`/api/admin/guests/${row.id}`, {
+        method: "PATCH", credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ weddingId, guestName: row.guestName, familyName: row.familyName, phone: row.phone, regenerateInviteCode: true }),
+      });
       const p = (await res.json()) as GuestApiResponse;
       if (!res.ok || !p.success || !p.data) throw new Error(p.message ?? "Error");
       startTransition(() => { setRows((cur) => sortRows(cur.map((r) => r.id === row.id ? normalizeRow(p.data!) : r))); });
       setStatusMsg({ success: true, message: "Invite link regenerated." });
-    } catch (err) { setStatusMsg({ success: false, message: err instanceof Error ? err.message : "Error." }); }
-    finally { setIsSubmitting(false); }
+    } catch (err) {
+      setStatusMsg({ success: false, message: err instanceof Error ? err.message : "Error." });
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
-  const btnSm: React.CSSProperties = { display: "inline-flex", alignItems: "center", gap: 6, borderRadius: "9999px", padding: "6px 14px", fontSize: "0.6rem", letterSpacing: "0.18em", textTransform: "uppercase", fontWeight: 600, cursor: "pointer", border: "1.5px solid var(--color-border-medium)", background: "#fff", color: "var(--color-text-secondary)" };
-  const btnDanger: React.CSSProperties = { ...btnSm, border: "1.5px solid #fca5a5", background: "#fef2f2", color: "#b91c1c" };
+  // ── Export RSVP CSV (with credentials) ───────────────────────────────────
+  async function handleExportRsvp() {
+    try {
+      setStatusMsg(null);
+      const res = await fetch(`/api/admin/rsvp-export?weddingId=${encodeURIComponent(weddingId)}`, {
+        credentials: "include",
+      });
+      if (!res.ok) throw new Error("Export failed — please try again.");
+      const blob = await res.blob();
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement("a");
+      a.href     = url;
+      a.download = "surihana-rsvp-export.csv";
+      a.click();
+      URL.revokeObjectURL(url);
+      setStatusMsg({ success: true, message: "RSVP list exported." });
+    } catch (err) {
+      setStatusMsg({ success: false, message: err instanceof Error ? err.message : "Export failed." });
+    }
+  }
+
+  // ── Export invite links CSV (client-side, no API needed) ─────────────────
+  function handleExportLinks() {
+    const header = ["Guest Name", "Family Name", "Phone", "Invite Code", "Invite Link", "Status"].join(",");
+    const lines  = rows.map((r) =>
+      [
+        escapeCsv(r.guestName),
+        escapeCsv(r.familyName),
+        escapeCsv(r.phone),
+        escapeCsv(r.inviteCode),
+        escapeCsv(r.inviteLink),
+        escapeCsv(r.inviteOpened ? "Opened" : "Not opened"),
+      ].join(",")
+    );
+    const csv  = [header, ...lines].join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement("a");
+    a.href     = url;
+    a.download = "surihana-invite-links.csv";
+    a.click();
+    URL.revokeObjectURL(url);
+    setStatusMsg({ success: true, message: `Exported ${rows.length} invite links.` });
+  }
+
+  // ── Import guests from CSV ────────────────────────────────────────────────
+  // Expected CSV columns (first row = header, case-insensitive):
+  //   guest_name (required), family_name, phone, guest_role
+  async function handleImportCsv(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    // Reset input so same file can be re-selected
+    if (fileInputRef.current) fileInputRef.current.value = "";
+
+    setImporting(true);
+    setStatusMsg(null);
+
+    try {
+      const text  = await file.text();
+      const lines = text.split(/\r?\n/).filter((l) => l.trim());
+      if (lines.length < 2) throw new Error("CSV must have a header row and at least one guest row.");
+
+      // Parse header
+      const headers = lines[0].split(",").map((h) => h.replace(/^"|"$/g, "").trim().toLowerCase().replace(/\s+/g, "_"));
+      const nameIdx   = headers.indexOf("guest_name");
+      const familyIdx = headers.indexOf("family_name");
+      const phoneIdx  = headers.indexOf("phone");
+      const roleIdx   = headers.indexOf("guest_role");
+
+      if (nameIdx === -1) throw new Error("CSV must have a 'guest_name' column.");
+
+      const validRoles = new Set(["family", "friends", "bride_side", "groom_side", "vip"]);
+      const result: ImportResult = { added: 0, skipped: 0, errors: [] };
+
+      for (let i = 1; i < lines.length; i++) {
+        // Handle quoted CSV values
+        const cols  = lines[i].match(/(".*?"|[^,]+|(?<=,)(?=,)|^(?=,)|(?<=,)$)/g) ?? lines[i].split(",");
+        const clean = (idx: number) => (cols[idx] ?? "").replace(/^"|"$/g, "").trim();
+
+        const guestName = clean(nameIdx);
+        if (!guestName || guestName.length < 2) {
+          result.skipped++;
+          continue;
+        }
+
+        const familyName = familyIdx !== -1 ? clean(familyIdx) : "";
+        const phone      = phoneIdx  !== -1 ? clean(phoneIdx)  : "";
+        const rawRole    = roleIdx   !== -1 ? clean(roleIdx).toLowerCase() : "";
+        const guestRole  = validRoles.has(rawRole) ? rawRole : null;
+
+        try {
+          const res = await fetch("/api/admin/guests", {
+            method: "POST",
+            credentials: "include",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ weddingId, guestName, familyName: familyName || null, phone: phone || null, guestRole }),
+          });
+          const payload = (await res.json()) as GuestApiResponse;
+          if (res.ok && payload.success && payload.data) {
+            startTransition(() => {
+              setRows((cur) => sortRows([...cur, normalizeRow(payload.data!)]));
+            });
+            result.added++;
+          } else {
+            result.errors.push(`Row ${i + 1} (${guestName}): ${payload.message ?? "Failed"}`);
+            result.skipped++;
+          }
+        } catch {
+          result.errors.push(`Row ${i + 1} (${guestName}): Network error`);
+          result.skipped++;
+        }
+      }
+
+      await onRefreshAnalytics?.();
+
+      const msg = `Imported ${result.added} guest${result.added !== 1 ? "s" : ""}` +
+        (result.skipped > 0 ? `, ${result.skipped} skipped` : "") +
+        (result.errors.length > 0 ? `. Errors: ${result.errors.slice(0, 2).join("; ")}` : ".");
+      setStatusMsg({ success: result.added > 0, message: msg });
+    } catch (err) {
+      setStatusMsg({ success: false, message: err instanceof Error ? err.message : "Import failed." });
+    } finally {
+      setImporting(false);
+    }
+  }
+
+  // ── Download CSV template ──────────────────────────────────────────────────
+  function handleDownloadTemplate() {
+    const csv = [
+      "guest_name,family_name,phone,guest_role",
+      "John,Smith,+91 98765 43210,friends",
+      "Priya,Sharma,+91 87654 32109,bride_side",
+      "Ahmed,Khan,,family",
+    ].join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement("a");
+    a.href     = url;
+    a.download = "guest-import-template.csv";
+    a.click();
+    URL.revokeObjectURL(url);
+  }
 
   return (
     <div className="space-y-5">
-
-      {/* Add / edit form */}
       <Card noPad>
         <div className="p-6 space-y-5">
-          <div className="flex flex-wrap items-center justify-between gap-4">
+
+          {/* ── Header row ── */}
+          <div className="flex flex-wrap items-start justify-between gap-4">
             <div className="space-y-1">
               <SectionLabel>Guest management</SectionLabel>
-              <h2 className="font-display text-3xl" style={{ color: "var(--color-text-primary)" }}>Guest list</h2>
+              <h2 className="font-display text-3xl" style={{ color: "var(--color-text-primary)" }}>
+                Guest list
+              </h2>
             </div>
-            <div className="flex items-center gap-3">
-              <span className="rounded-full px-4 py-1.5 text-xs font-semibold uppercase" style={{ letterSpacing: "0.2em", background: "var(--color-surface-dark)", color: "#fff" }}>
+
+            {/* Action buttons */}
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="rounded-full px-4 py-1.5 text-xs font-semibold uppercase"
+                style={{ letterSpacing: "0.2em", background: "var(--color-surface-dark)", color: "#fff" }}>
                 {rows.length} guests
               </span>
-              <a href={`/api/admin/rsvp-export?weddingId=${encodeURIComponent(weddingId)}`} style={btnSm}>
-                <Link2 className="h-3.5 w-3.5" /> Export CSV
-              </a>
+
+              {/* Import CSV */}
+              <button type="button" style={btnSm} onClick={() => fileInputRef.current?.click()} disabled={importing}>
+                <FileUp className="h-3.5 w-3.5" />
+                {importing ? "Importing…" : "Import CSV"}
+              </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".csv,text/csv"
+                style={{ display: "none" }}
+                onChange={handleImportCsv}
+              />
+
+              {/* Download template */}
+              <button type="button" style={btnSm} onClick={handleDownloadTemplate}>
+                <Download className="h-3.5 w-3.5" /> Template
+              </button>
+
+              {/* Export invite links */}
+              <button type="button" style={btnGreen} onClick={handleExportLinks}>
+                <Link2 className="h-3.5 w-3.5" /> Export Links
+              </button>
+
+              {/* Export RSVP CSV */}
+              <button type="button" style={btnSm} onClick={handleExportRsvp}>
+                <Download className="h-3.5 w-3.5" /> Export RSVP
+              </button>
             </div>
           </div>
 
+          {/* ── Import instructions ── */}
+          <div style={{ background: "var(--color-surface-soft)", border: "1px solid var(--color-border)", borderRadius: 12, padding: "10px 14px" }}>
+            <p style={{ fontSize: "0.72rem", color: "var(--color-text-muted)", fontFamily: "var(--font-body), sans-serif", lineHeight: 1.7 }}>
+              <strong style={{ color: "var(--color-text-secondary)" }}>Import:</strong> Upload a CSV with columns{" "}
+              <code style={{ background: "rgba(0,0,0,0.05)", padding: "1px 5px", borderRadius: 4, fontSize: "0.7rem" }}>guest_name</code>,{" "}
+              <code style={{ background: "rgba(0,0,0,0.05)", padding: "1px 5px", borderRadius: 4, fontSize: "0.7rem" }}>family_name</code>,{" "}
+              <code style={{ background: "rgba(0,0,0,0.05)", padding: "1px 5px", borderRadius: 4, fontSize: "0.7rem" }}>phone</code>,{" "}
+              <code style={{ background: "rgba(0,0,0,0.05)", padding: "1px 5px", borderRadius: 4, fontSize: "0.7rem" }}>guest_role</code>{" "}
+              — download the template to get started.{" "}
+              <strong style={{ color: "var(--color-text-secondary)" }}>Export Links:</strong> Downloads all invite links as a CSV you can share.{" "}
+              <strong style={{ color: "var(--color-text-secondary)" }}>Export RSVP:</strong> Full RSVP status report.
+            </p>
+          </div>
+
+          {/* ── Add / Edit form ── */}
           <form onSubmit={handleSubmit} className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {[
               { label: "Guest name *", field: "guestName" as const, placeholder: "John" },
               { label: "Family name",  field: "familyName" as const, placeholder: "Family" },
-              { label: "Phone",        field: "phone" as const,       placeholder: "+91 00000 00000" },
+              { label: "Phone",        field: "phone" as const,      placeholder: "+91 00000 00000" },
             ].map(({ label, field, placeholder }) => (
               <div key={field} className="space-y-1.5">
-                <label className="block text-xs font-semibold uppercase" style={{ letterSpacing: "0.15em", color: "var(--color-text-secondary)" }}>{label}</label>
-                <input style={inputStyle} value={form[field]} onChange={(e) => setField(field, e.target.value)} placeholder={placeholder} required={field === "guestName"} />
+                <label className="block text-xs font-semibold uppercase"
+                  style={{ letterSpacing: "0.15em", color: "var(--color-text-secondary)" }}>{label}</label>
+                <input style={inputStyle} value={form[field]}
+                  onChange={(e) => setField(field, e.target.value)}
+                  placeholder={placeholder} required={field === "guestName"} />
               </div>
             ))}
             <div className="space-y-1.5">
-              <label className="block text-xs font-semibold uppercase" style={{ letterSpacing: "0.15em", color: "var(--color-text-secondary)" }}>Role</label>
-              <select style={inputStyle} value={form.guestRole} onChange={(e) => setField("guestRole", e.target.value)}>
+              <label className="block text-xs font-semibold uppercase"
+                style={{ letterSpacing: "0.15em", color: "var(--color-text-secondary)" }}>Role</label>
+              <select style={inputStyle} value={form.guestRole}
+                onChange={(e) => setField("guestRole", e.target.value)}>
                 {ROLE_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
               </select>
             </div>
 
             <div className="sm:col-span-2 lg:col-span-4 flex flex-wrap gap-3">
               <Btn type="submit" variant="primary" size="sm" loading={isSubmitting}>
-                {editingId ? <><Save className="h-3.5 w-3.5" /> Save guest</> : <><Plus className="h-3.5 w-3.5" /> Add guest</>}
+                {editingId
+                  ? <><Save className="h-3.5 w-3.5" /> Save guest</>
+                  : <><Plus className="h-3.5 w-3.5" /> Add guest</>}
               </Btn>
-              {editingId && <Btn type="button" variant="ghost" size="sm" onClick={resetForm}><X className="h-3.5 w-3.5" /> Cancel</Btn>}
+              {editingId && (
+                <Btn type="button" variant="ghost" size="sm" onClick={resetForm}>
+                  <X className="h-3.5 w-3.5" /> Cancel
+                </Btn>
+              )}
             </div>
           </form>
 
           {statusMsg && (
-            <p className="rounded-xl px-4 py-3 text-sm" style={{ background: statusMsg.success ? "rgba(107,142,110,0.1)" : "#fef2f2", color: statusMsg.success ? "var(--color-sage)" : "#b91c1c", border: `1px solid ${statusMsg.success ? "rgba(107,142,110,0.2)" : "#fca5a5"}` }}>
+            <p className="rounded-xl px-4 py-3 text-sm" style={{
+              background: statusMsg.success ? "rgba(107,142,110,0.1)" : "#fef2f2",
+              color:      statusMsg.success ? "var(--color-sage)"      : "#b91c1c",
+              border:     `1px solid ${statusMsg.success ? "rgba(107,142,110,0.2)" : "#fca5a5"}`,
+            }}>
               {statusMsg.message}
             </p>
           )}
         </div>
 
-        {/* Table */}
+        {/* ── Guest table ── */}
         <div className="overflow-x-auto" style={{ borderTop: "1px solid var(--color-border)" }}>
-          <table className="min-w-full text-left text-sm" style={{ borderCollapse: "separate", borderSpacing: 0 }}>
-            <thead>
-              <tr style={{ background: "var(--color-surface-soft)" }}>
-                {["Guest", "Invite code", "Opened", "RSVP", "Actions"].map((h) => (
-                  <th key={h} className="px-5 py-3.5" style={{ fontSize: "0.6rem", letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--color-text-muted)", fontWeight: 600, borderBottom: "1px solid var(--color-border)" }}>{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((row, i) => (
-                <tr key={row.id} style={{ background: i % 2 === 0 ? "#ffffff" : "var(--color-surface-soft)" }}>
-                  <td className="px-5 py-4" style={{ borderBottom: "1px solid var(--color-border)" }}>
-                    <p className="font-semibold text-sm" style={{ color: "var(--color-text-primary)" }}>{row.guestName}{row.familyName ? ` ${row.familyName}` : ""}</p>
-                    {row.phone && <p className="text-xs mt-0.5" style={{ color: "var(--color-text-muted)" }}>{row.phone}</p>}
-                  </td>
-                  <td className="px-5 py-4" style={{ borderBottom: "1px solid var(--color-border)" }}>
-                    <p className="font-mono text-xs" style={{ color: "var(--color-text-secondary)", letterSpacing: "0.1em" }}>{row.inviteCode}</p>
-                    <a href={row.inviteLink} target="_blank" rel="noreferrer" className="text-xs mt-0.5 block" style={{ color: "var(--color-accent)", textDecoration: "underline" }}>Open invite</a>
-                  </td>
-                  <td className="px-5 py-4" style={{ borderBottom: "1px solid var(--color-border)" }}>
-                    <span className="inline-block rounded-full px-3 py-1 text-xs font-semibold" style={{ background: row.inviteOpened ? "rgba(107,142,110,0.12)" : "var(--color-surface-muted)", color: row.inviteOpened ? "var(--color-sage)" : "var(--color-text-muted)", border: `1px solid ${row.inviteOpened ? "rgba(107,142,110,0.25)" : "var(--color-border)"}` }}>
-                      {row.inviteOpened ? "Opened" : "Pending"}
-                    </span>
-                    {row.deviceType && <p className="text-xs mt-1 capitalize" style={{ color: "var(--color-text-muted)" }}>{row.deviceType}</p>}
-                  </td>
-                  <td className="px-5 py-4" style={{ borderBottom: "1px solid var(--color-border)" }}>
-                    {row.attending == null ? <span style={{ color: "var(--color-text-muted)" }} className="text-sm">—</span>
-                      : row.attending ? <span className="text-sm font-medium" style={{ color: "var(--color-sage)" }}>Attending ({row.guestCount})</span>
-                      : <span className="text-sm" style={{ color: "var(--color-blush)" }}>Declined</span>
-                    }
-                  </td>
-                  <td className="px-5 py-4" style={{ borderBottom: "1px solid var(--color-border)" }}>
-                    <div className="flex flex-wrap gap-1.5">
-                      <button style={btnSm} onClick={() => { setEditingId(row.id); setForm({ guestName: row.guestName, familyName: row.familyName ?? "", phone: row.phone ?? "", guestRole: "" }); setStatusMsg(null); }} type="button"><Pencil className="h-3 w-3" /> Edit</button>
-                      <button style={btnSm} onClick={() => handleCopy(row)} type="button"><Copy className="h-3 w-3" /> Copy</button>
-                      <button style={btnSm} onClick={() => handleRegenerate(row)} disabled={isSubmitting} type="button"><RefreshCcw className="h-3 w-3" /> Regen</button>
-                      <button style={btnDanger} onClick={() => handleDelete(row)} disabled={isSubmitting} type="button"><Trash2 className="h-3 w-3" /> Delete</button>
-                    </div>
-                  </td>
+          {rows.length === 0 ? (
+            <div className="py-12 text-center" style={{ color: "var(--color-text-muted)" }}>
+              <p className="text-sm">No guests yet. Add one above or import a CSV.</p>
+            </div>
+          ) : (
+            <table className="min-w-full text-left text-sm"
+              style={{ borderCollapse: "separate", borderSpacing: 0 }}>
+              <thead>
+                <tr style={{ background: "var(--color-surface-soft)" }}>
+                  {["Guest", "Invite link", "Opened", "RSVP", "Actions"].map((h) => (
+                    <th key={h} className="px-5 py-3.5" style={{
+                      fontSize: "0.6rem", letterSpacing: "0.2em", textTransform: "uppercase",
+                      color: "var(--color-text-muted)", fontWeight: 600,
+                      borderBottom: "1px solid var(--color-border)",
+                    }}>{h}</th>
+                  ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {rows.map((row, i) => (
+                  <tr key={row.id} style={{ background: i % 2 === 0 ? "#ffffff" : "var(--color-surface-soft)" }}>
+                    <td className="px-5 py-4" style={{ borderBottom: "1px solid var(--color-border)" }}>
+                      <p className="font-semibold text-sm" style={{ color: "var(--color-text-primary)" }}>
+                        {row.guestName}{row.familyName ? ` ${row.familyName}` : ""}
+                      </p>
+                      {row.phone && (
+                        <p className="text-xs mt-0.5" style={{ color: "var(--color-text-muted)" }}>{row.phone}</p>
+                      )}
+                    </td>
+                    <td className="px-5 py-4" style={{ borderBottom: "1px solid var(--color-border)", maxWidth: 260 }}>
+                      <p className="font-mono text-xs truncate" style={{ color: "var(--color-text-secondary)" }}>
+                        {row.inviteLink}
+                      </p>
+                      <div className="flex gap-2 mt-1">
+                        <button type="button" onClick={() => handleCopy(row)}
+                          style={{ fontSize: "0.65rem", color: "var(--color-accent)", background: "none", border: "none", cursor: "pointer", padding: 0 }}>
+                          Copy
+                        </button>
+                        <a href={row.inviteLink} target="_blank" rel="noreferrer"
+                          style={{ fontSize: "0.65rem", color: "var(--color-accent)", textDecoration: "underline" }}>
+                          Open
+                        </a>
+                      </div>
+                    </td>
+                    <td className="px-5 py-4" style={{ borderBottom: "1px solid var(--color-border)" }}>
+                      <span className="inline-block rounded-full px-3 py-1 text-xs font-semibold" style={{
+                        background: row.inviteOpened ? "rgba(107,142,110,0.12)" : "var(--color-surface-muted)",
+                        color:      row.inviteOpened ? "var(--color-sage)"       : "var(--color-text-muted)",
+                        border:     `1px solid ${row.inviteOpened ? "rgba(107,142,110,0.25)" : "var(--color-border)"}`,
+                      }}>
+                        {row.inviteOpened ? "Opened" : "Pending"}
+                      </span>
+                    </td>
+                    <td className="px-5 py-4" style={{ borderBottom: "1px solid var(--color-border)" }}>
+                      {row.attending == null
+                        ? <span style={{ color: "var(--color-text-muted)" }}>—</span>
+                        : row.attending
+                          ? <span className="text-sm font-medium" style={{ color: "var(--color-sage)" }}>Attending ({row.guestCount})</span>
+                          : <span className="text-sm" style={{ color: "var(--color-blush)" }}>Declined</span>
+                      }
+                    </td>
+                    <td className="px-5 py-4" style={{ borderBottom: "1px solid var(--color-border)" }}>
+                      <div className="flex flex-wrap gap-1.5">
+                        <button type="button" style={btnSm}
+                          onClick={() => { setEditingId(row.id); setForm({ guestName: row.guestName, familyName: row.familyName ?? "", phone: row.phone ?? "", guestRole: "" }); setStatusMsg(null); }}>
+                          <Pencil className="h-3 w-3" /> Edit
+                        </button>
+                        <button type="button" style={btnSm}
+                          onClick={() => handleRegenerate(row)} disabled={isSubmitting}>
+                          <RefreshCcw className="h-3 w-3" /> Regen
+                        </button>
+                        <button type="button" style={btnDanger}
+                          onClick={() => handleDelete(row)} disabled={isSubmitting}>
+                          <Trash2 className="h-3 w-3" /> Delete
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
       </Card>
     </div>
