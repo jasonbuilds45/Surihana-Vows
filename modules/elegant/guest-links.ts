@@ -182,7 +182,9 @@ export async function createGuestRecord(input: GuestMutationInput) {
     invite_opened: false,
     device_type: null,
     opened_at: null,
-    guest_role: input.guestRole ?? null
+    guest_role: input.guestRole ?? null,
+    city: null,
+    country: null
   };
 
   const client = getConfiguredSupabaseClient(true);
