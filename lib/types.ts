@@ -239,9 +239,11 @@ export interface RSVPSubmissionResult {
 }
 
 export interface GuestBookSubmission {
-  guestName: string;
-  message: string;
+  guestName:  string;
+  message:    string;
   weddingId?: string;
+  mediaUrl?:  string;
+  mediaType?: "image" | "video" | "audio";
 }
 
 export interface UploadPhotoSubmission {

@@ -35,12 +35,14 @@ export async function getGuestMessages(
 }
 
 export async function submitGuestMessage(input: GuestBookSubmission) {
-  const messagePayload: GuestMessageRow = {
-    id: crypto.randomUUID(),
+  const messagePayload: GuestMessageRow & { media_url?: string; media_type?: string } = {
+    id:         crypto.randomUUID(),
     guest_name: input.guestName.trim(),
-    message: input.message.trim(),
+    message:    input.message.trim(),
     wedding_id: input.weddingId ?? DEMO_WEDDING_ID,
-    created_at: new Date().toISOString()
+    created_at: new Date().toISOString(),
+    ...(input.mediaUrl  ? { media_url:  input.mediaUrl }  : {}),
+    ...(input.mediaType ? { media_type: input.mediaType } : {}),
   };
 
   const client = getConfiguredSupabaseClient(true);
