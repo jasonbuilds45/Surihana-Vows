@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { Menu, X } from "lucide-react";
 import { weddingConfig } from "@/lib/config";
+import { MagneticButton } from "@/components/interactive/MagneticButton";
 
 const SUPPRESS = ["/family", "/admin", "/vault/"];
 
@@ -61,7 +62,7 @@ export function Navbar() {
           transition: "transform 0.4s cubic-bezier(0.16,1,0.3,1)",
         }}
       >
-        {/* Elegant accent stripe */}
+        {/* Accent stripe */}
         <div
           style={{
             height: 2,
@@ -70,7 +71,7 @@ export function Navbar() {
           }}
         />
 
-        {/* Main bar */}
+        {/* Nav bar */}
         <div
           style={{
             background: ghost
@@ -163,13 +164,7 @@ export function Navbar() {
             </Link>
 
             {/* Desktop Nav */}
-            <nav
-              className="hidden lg:flex"
-              style={{
-                alignItems: "center",
-                gap: "0.3rem",
-              }}
-            >
+            <nav className="hidden lg:flex" style={{ gap: "0.3rem" }}>
               {NAV_LINKS.map(({ label, href }) => {
                 const active = pathname === href;
 
@@ -192,7 +187,6 @@ export function Navbar() {
                       background: active
                         ? "var(--color-accent-light)"
                         : "transparent",
-                      transition: "all 0.2s ease",
                     }}
                   >
                     {label}
@@ -203,24 +197,26 @@ export function Navbar() {
 
             {/* Actions */}
             <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-              <Link
-                href="/rsvp"
-                className="hidden sm:inline-flex"
-                style={{
-                  padding: "10px 22px",
-                  borderRadius: 999,
-                  background: "var(--color-accent)",
-                  color: "#fff",
-                  fontSize: "0.8rem",
-                  fontWeight: 600,
-                  textDecoration: "none",
-                  fontFamily: "var(--font-body), sans-serif",
-                  boxShadow:
-                    "0 6px 20px rgba(138,90,68,0.25)",
-                }}
-              >
-                RSVP
-              </Link>
+
+              {/* Magnetic RSVP */}
+              <MagneticButton className="hidden sm:block">
+                <Link
+                  href="/rsvp"
+                  style={{
+                    padding: "10px 22px",
+                    borderRadius: 999,
+                    background: "var(--color-accent)",
+                    color: "#fff",
+                    fontSize: "0.8rem",
+                    fontWeight: 600,
+                    textDecoration: "none",
+                    fontFamily: "var(--font-body), sans-serif",
+                    boxShadow: "0 6px 20px rgba(138,90,68,0.25)",
+                  }}
+                >
+                  RSVP
+                </Link>
+              </MagneticButton>
 
               {/* Mobile toggle */}
               <button
@@ -257,14 +253,7 @@ export function Navbar() {
               padding: "1.2rem clamp(1.25rem,5vw,4rem) 1.5rem",
             }}
           >
-            <nav
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: "0.3rem",
-                marginBottom: "1rem",
-              }}
-            >
+            <nav style={{ display: "flex", flexDirection: "column", gap: "0.3rem", marginBottom: "1rem" }}>
               {NAV_LINKS.map(({ label, href }) => {
                 const active = pathname === href;
 

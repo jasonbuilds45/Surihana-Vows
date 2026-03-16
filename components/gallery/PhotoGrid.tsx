@@ -5,6 +5,7 @@ import Image from "next/image";
 import type { PhotoRow } from "@/lib/types";
 import { ImageTransforms } from "@/lib/storage";
 import { LightBox } from "@/components/gallery/LightBox";
+import { TiltCard } from "@/components/interactive/TiltCard";
 
 interface PhotoGridProps {
   photos: PhotoRow[];
@@ -68,53 +69,55 @@ export function PhotoGrid({ photos }: PhotoGridProps) {
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
 
         {filtered.map((photo, index) => (
-          <button
-            key={photo.id}
-            type="button"
-            onClick={() => {
-              setActiveIndex(index);
-              setOpen(true);
-            }}
-            className="group relative aspect-square overflow-hidden rounded-2xl transition-all duration-500"
-            style={{
-              border: "1px solid var(--color-border)",
-              boxShadow: "var(--shadow-xs)",
-            }}
-          >
-            <Image
-              alt={`${photo.category} by ${photo.uploaded_by}`}
-              src={ImageTransforms.gridThumb(photo.image_url)}
-              fill
-              className="object-cover transition-transform duration-[1200ms] group-hover:scale-110"
-              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-            />
+          <TiltCard key={photo.id}>
 
-            {/* Soft gradient overlay */}
-            <div
-              className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-400"
-              style={{
-                background:
-                  "linear-gradient(to top, rgba(18,8,4,0.75) 0%, transparent 60%)",
+            <button
+              type="button"
+              onClick={() => {
+                setActiveIndex(index);
+                setOpen(true);
               }}
-            />
+              className="group relative aspect-square overflow-hidden rounded-2xl transition-all duration-500"
+              style={{
+                border: "1px solid var(--color-border)",
+                boxShadow: "var(--shadow-xs)",
+              }}
+            >
+              <Image
+                alt={`${photo.category} by ${photo.uploaded_by}`}
+                src={ImageTransforms.gridThumb(photo.image_url)}
+                fill
+                className="object-cover transition-transform duration-[1200ms] group-hover:scale-110"
+                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+              />
 
-            {/* Photographer / uploader */}
-            <div className="absolute inset-x-0 bottom-0 p-4 translate-y-3 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-400">
-
-              <p
-                className="truncate"
+              {/* Soft gradient overlay */}
+              <div
+                className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-400"
                 style={{
-                  fontSize: "0.55rem",
-                  letterSpacing: "0.28em",
-                  textTransform: "uppercase",
-                  color: "rgba(255,240,220,0.9)",
+                  background:
+                    "linear-gradient(to top, rgba(18,8,4,0.75) 0%, transparent 60%)",
                 }}
-              >
-                {photo.uploaded_by}
-              </p>
+              />
 
-            </div>
-          </button>
+              {/* Photographer / uploader */}
+              <div className="absolute inset-x-0 bottom-0 p-4 translate-y-3 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-400">
+                <p
+                  className="truncate"
+                  style={{
+                    fontSize: "0.55rem",
+                    letterSpacing: "0.28em",
+                    textTransform: "uppercase",
+                    color: "rgba(255,240,220,0.9)",
+                  }}
+                >
+                  {photo.uploaded_by}
+                </p>
+              </div>
+
+            </button>
+
+          </TiltCard>
         ))}
 
       </div>
