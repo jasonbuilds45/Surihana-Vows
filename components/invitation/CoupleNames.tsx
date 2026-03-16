@@ -14,7 +14,7 @@ export function CoupleNames({ brideName, groomName, className }: CoupleNamesProp
   useEffect(() => {
     if (!ref.current) return;
     const anim = animateCoupleNames(ref.current);
-    return () => anim?.kill();
+    return () => { anim?.kill(); };
   }, []);
 
   return (
