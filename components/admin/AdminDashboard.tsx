@@ -18,8 +18,9 @@ import { WeddingCommandCenter } from "@/components/admin/WeddingCommandCenter";
 import { SeatingManager, type SeatingTable } from "@/components/admin/SeatingManager";
 import { PhotoAlbumManager, type PhotoAlbum, type AdminPhoto } from "@/components/admin/PhotoAlbumManager";
 import { GuestInsights } from "@/components/admin/GuestInsights";
+import { PlanningDashboard } from "@/components/admin/PlanningDashboard";
 import { GoldStripe, SectionLabel, BtnLink } from "@/components/ui";
-import { Download, LayoutDashboard, Users, Image, Clock, Grid3X3, BarChart3, Zap } from "lucide-react";
+import { Download, LayoutDashboard, Users, Image, Clock, Grid3X3, BarChart3, Zap, ClipboardList } from "lucide-react";
 import { weddingConfig } from "@/lib/config";
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -70,7 +71,7 @@ interface AnalyticsResponse {
 // ─────────────────────────────────────────────────────────────────────────────
 // Tab definitions
 // ─────────────────────────────────────────────────────────────────────────────
-type Tab = "overview" | "guests" | "media" | "capsules" | "seating" | "insights" | "command";
+type Tab = "overview" | "guests" | "media" | "capsules" | "seating" | "insights" | "command" | "planning";
 
 const TABS: Array<{ id: Tab; label: string; icon: React.ElementType }> = [
   { id: "overview",  label: "Overview",        icon: LayoutDashboard },
@@ -80,6 +81,7 @@ const TABS: Array<{ id: Tab; label: string; icon: React.ElementType }> = [
   { id: "seating",   label: "Seating",          icon: Grid3X3 },
   { id: "insights",  label: "Insights",         icon: BarChart3 },
   { id: "command",   label: "Command center",   icon: Zap },
+  { id: "planning",  label: "Wedding planning", icon: ClipboardList },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -247,6 +249,11 @@ export function AdminDashboard({
             initialActivity={[]}
             weddingId={weddingId}
           />
+        )}
+
+        {/* WEDDING PLANNING */}
+        {activeTab === "planning" && (
+          <PlanningDashboard />
         )}
 
       </div>
