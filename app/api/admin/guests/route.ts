@@ -3,6 +3,8 @@ import { getAuthorizedSessionFromRequest } from "@/lib/auth";
 import { createGuestRecord, listGuestLinks } from "@/modules/elegant/guest-links";
 import { DEMO_WEDDING_ID } from "@/lib/demo-data";
 
+export const runtime = "nodejs";
+
 function normalizeOptionalString(value: unknown) {
   return typeof value === "string" ? value : undefined;
 }

@@ -4,6 +4,8 @@ import { DEMO_WEDDING_ID } from "@/lib/demo-data";
 import { listGuestLinks } from "@/modules/elegant/guest-links";
 import { getRsvpOverview } from "@/modules/elegant/rsvp-system";
 
+export const runtime = "nodejs";
+
 function escapeCsvValue(value: string | number | boolean | null | undefined) {
   const normalized = value === null || value === undefined ? "" : String(value);
   return `"${normalized.replace(/"/g, '""')}"`;

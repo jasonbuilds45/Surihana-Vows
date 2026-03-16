@@ -7,6 +7,8 @@ import {
   getDefaultPathForRole,
 } from "@/lib/auth";
 
+export const runtime = "nodejs";
+
 // POST /api/auth/login
 // Authenticates the user, sets the session cookie, and redirects — all in
 // ONE response so the cookie is guaranteed to arrive before the next request.
@@ -36,11 +38,9 @@ export async function POST(request: NextRequest) {
     const token       = await createAuthToken(result);
     const destination = getDefaultPathForRole(result.role); // /admin or /family
 
-    // Set cookie AND redirect in the same HTTP response.
-    // Using server actions (cookies().set() then redirect()) has a race condition
-    // where the cookie is not flushed before the browser follows the redirect,
-    // causing the middleware to see no session and bounce back to /login.
     const response = NextResponse.redirect(new URL(destination, request.url), 303);
+    // Delete any old format cookie first, then set the new one
+    response.cookies.delete(AUTH_COOKIE_NAME);
     response.cookies.set(AUTH_COOKIE_NAME, token, {
       httpOnly: true,
       maxAge:   SESSION_MAX_AGE,

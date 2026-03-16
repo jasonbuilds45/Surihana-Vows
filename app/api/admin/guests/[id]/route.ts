@@ -3,6 +3,8 @@ import { getAuthorizedSessionFromRequest } from "@/lib/auth";
 import { DEMO_WEDDING_ID } from "@/lib/demo-data";
 import { deleteGuestRecord, updateGuestRecord } from "@/modules/elegant/guest-links";
 
+export const runtime = "nodejs";
+
 interface GuestRouteProps {
   params: {
     id: string;

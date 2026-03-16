@@ -211,50 +211,104 @@ export async function verifyPasswordHash(password: string, storedHash?: string |
   return constantTimeEqual(actualHash, expectedHash);
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Token format: base64url(payload) + "." + hex(signature)
+// base64url uses only A-Z a-z 0-9 - _ which are all safe in cookies.
+// NO percent-encoding, NO pipe chars, NO URL-encoding issues across runtimes.
+// ─────────────────────────────────────────────────────────────────────────────
+function b64urlEncode(str: string): string {
+  // Works in both Edge and Node.js runtimes
+  return btoa(unescape(encodeURIComponent(str)))
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=/g, "");
+}
+
+function b64urlDecode(str: string): string {
+  const padded = str.replace(/-/g, "+").replace(/_/g, "/");
+  const pad = padded.length % 4;
+  const padded2 = pad ? padded + "=".repeat(4 - pad) : padded;
+  return decodeURIComponent(escape(atob(padded2)));
+}
+
 export async function createAuthToken(
   session: Omit<AuthSession, "expiresAt"> & { expiresAt?: number }
 ): Promise<string> {
   const expiresAt = session.expiresAt ?? Date.now() + SESSION_MAX_AGE * 1000;
-  const payload   = encodeURIComponent(JSON.stringify({ ...session, expiresAt }));
+  const payload   = b64urlEncode(JSON.stringify({ ...session, expiresAt }));
   const signature = await signPayload(payload);
-  // Use "|" as separator instead of "." to avoid confusion with dots in email
-  return `${payload}|${signature}`;
+  // Format: base64url_payload.hexsignature
+  // Both parts contain only URL-safe characters, dot is the separator
+  return `${payload}.${signature}`;
 }
 
 export async function verifyAuthToken(token?: string | null): Promise<AuthSession | null> {
   if (!token) return null;
 
-  // Support both "|" separator (new) and "." last-dot (old/migration)
-  let payload: string;
-  let signature: string;
+  // Normalise the token — some proxies/runtimes percent-encode special chars.
+  // Decode %7C back to | and %2E back to . so legacy tokens still work.
+  const normalised = token
+    .replace(/%7C/gi, "|")
+    .replace(/%7c/gi, "|")
+    .replace(/%2E/gi, ".")
+    .replace(/%2e/gi, ".");
 
-  const pipeIdx = token.indexOf("|");
+  // Try all known formats in order:
+  // 1. New format:    base64url(json).hexsig        — lastDot split
+  // 2. Pipe format:   encodeURI(json)|hexsig        — pipe split
+  // 3. Legacy format: encodeURI(json).hexsig        — lastDot split (same as 1)
+  const candidates: Array<{ payload: string; signature: string }> = [];
+
+  // Pipe separator (old format that got percent-encoded)
+  const pipeIdx = normalised.indexOf("|");
   if (pipeIdx !== -1) {
-    // New format: payload|signature
-    payload   = token.slice(0, pipeIdx);
-    signature = token.slice(pipeIdx + 1);
-  } else {
-    // Legacy format: split on last dot
-    const lastDot = token.lastIndexOf(".");
-    if (lastDot === -1) return null;
-    payload   = token.slice(0, lastDot);
-    signature = token.slice(lastDot + 1);
+    candidates.push({
+      payload:   normalised.slice(0, pipeIdx),
+      signature: normalised.slice(pipeIdx + 1),
+    });
   }
 
-  if (!payload || !signature) return null;
-
-  const expectedSignature = await signPayload(payload);
-  if (!constantTimeEqual(signature, expectedSignature)) return null;
-
-  try {
-    const session = JSON.parse(decodeURIComponent(payload)) as AuthSession;
-    if (session.expiresAt < Date.now()) return null;
-    if (!session.userId) return null;
-    if (session.role !== "family" && session.role !== "admin") return null;
-    return session;
-  } catch {
-    return null;
+  // Dot separator — always try this
+  const lastDot = normalised.lastIndexOf(".");
+  if (lastDot !== -1) {
+    candidates.push({
+      payload:   normalised.slice(0, lastDot),
+      signature: normalised.slice(lastDot + 1),
+    });
   }
+
+  for (const { payload, signature } of candidates) {
+    if (!payload || !signature) continue;
+
+    try {
+      const expectedSignature = await signPayload(payload);
+      if (!constantTimeEqual(signature, expectedSignature)) continue;
+
+      // Try base64url decode first (new format), fall back to decodeURIComponent (old format)
+      let parsed: AuthSession | null = null;
+      for (const decode of [
+        (p: string) => JSON.parse(b64urlDecode(p)) as AuthSession,
+        (p: string) => JSON.parse(decodeURIComponent(p)) as AuthSession,
+      ]) {
+        try {
+          parsed = decode(payload);
+          break;
+        } catch {
+          // try next decoder
+        }
+      }
+
+      if (!parsed) continue;
+      if (parsed.expiresAt < Date.now()) continue;
+      if (!parsed.userId) continue;
+      if (parsed.role !== "family" && parsed.role !== "admin") continue;
+      return parsed;
+    } catch {
+      continue;
+    }
+  }
+
+  return null;
 }
 
 export async function authenticateUser(
