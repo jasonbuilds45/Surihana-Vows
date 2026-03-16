@@ -68,7 +68,7 @@ export async function getHighlightVideo(
       wedding_id: weddingId,
       title: "Wedding Highlight Film",
       video_url: configUrl.trim(),
-      created_at: null
+      created_at: new Date().toISOString()
     };
   }
 
