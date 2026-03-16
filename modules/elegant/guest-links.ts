@@ -117,7 +117,10 @@ function buildPreviewGuest(inviteCode: string): GuestRow | null {
     invite_code: normalizedCode,
     invite_opened: false,
     device_type: null,
-    opened_at: null
+    opened_at: null,
+    guest_role: null,
+    city: null,
+    country: null
   };
 }
 
