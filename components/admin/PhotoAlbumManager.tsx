@@ -270,7 +270,7 @@ export function PhotoAlbumManager({ initialAlbums, initialPhotos, weddingId }: P
       {selectedAlbum && (
         <div style={{ background: BG, border: `1px solid ${BDR}`, borderRadius: 18, padding: "1.5rem" }}>
           <p style={{ fontFamily: DF, fontSize: "1.125rem", fontWeight: 700, color: INK, marginBottom: "1rem" }}>
-            Photos in "{albums.find(a => a.id === selectedAlbum)?.album_name}"
+            Photos in &ldquo;{albums.find(a => a.id === selectedAlbum)?.album_name}&rdquo;
           </p>
           {albumPhotos.length === 0 ? (
             <p style={{ fontSize: ".875rem", color: INK3, fontFamily: BF }}>No photos in this album yet. Assign photos from below.</p>
