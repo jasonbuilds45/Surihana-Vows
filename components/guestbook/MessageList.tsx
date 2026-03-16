@@ -1,3 +1,5 @@
+"use client";
+
 import type { GuestMessageRow } from "@/lib/types";
 import { formatRelativeDate } from "@/utils/formatDate";
 import { MessageSquare } from "lucide-react";
