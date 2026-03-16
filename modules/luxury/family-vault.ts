@@ -1,8 +1,53 @@
 import { DEMO_WEDDING_ID, demoFamilyPosts, demoWedding } from "@/lib/demo-data";
 import { getConfiguredSupabaseClient, shouldFallbackToDemoData } from "@/lib/supabaseClient";
-import type { FamilyPostRow, FamilyVaultBundle, WeddingRow } from "@/lib/types";
+import type { FamilyPostRow, FamilyVaultBundle, PhotoRow, WeddingRow } from "@/lib/types";
 import { getAnniversaryTimeline } from "@/modules/luxury/anniversary-timeline";
 import { getMediaArchive } from "@/modules/luxury/media-archive";
+
+export interface VaultAlbum {
+  id:          string;
+  album_name:  string;
+  description: string | null;
+  cover_photo: string | null;
+  is_public:   boolean;
+  photos:      PhotoRow[];
+}
+
+async function getVaultAlbums(weddingId: string, client: ReturnType<typeof getConfiguredSupabaseClient>): Promise<{ albums: VaultAlbum[]; unassigned: PhotoRow[] }> {
+  if (!client) return { albums: [], unassigned: [] };
+
+  const [{ data: albumRows }, { data: photoRows }] = await Promise.all([
+    (client as NonNullable<typeof client>).from("photo_albums" as never).select("*").eq("wedding_id", weddingId).eq("is_public" as never, true).order("sort_order" as never),
+    (client as NonNullable<typeof client>).from("photos").select("*").eq("wedding_id", weddingId).eq("is_approved", true).order("created_at", { ascending: false }),
+  ]);
+
+  const photos = (photoRows ?? []) as PhotoRow[];
+  const albums = (albumRows ?? []) as Array<Record<string, unknown>>;
+
+  // Group photos by album_id
+  const albumMap: Record<string, PhotoRow[]> = {};
+  const unassigned: PhotoRow[] = [];
+  for (const p of photos) {
+    const aid = (p as PhotoRow & { album_id?: string | null }).album_id;
+    if (aid) {
+      albumMap[aid] ??= [];
+      albumMap[aid].push(p);
+    } else {
+      unassigned.push(p);
+    }
+  }
+
+  const vaultAlbums: VaultAlbum[] = albums.map(a => ({
+    id:          a.id as string,
+    album_name:  a.album_name as string,
+    description: (a.description as string) ?? null,
+    cover_photo: (a.cover_photo as string) ?? null,
+    is_public:   a.is_public as boolean,
+    photos:      albumMap[a.id as string] ?? [],
+  }));
+
+  return { albums: vaultAlbums, unassigned };
+}
 
 export async function getFamilyVaultBundle(weddingId = DEMO_WEDDING_ID): Promise<FamilyVaultBundle> {
   const client = getConfiguredSupabaseClient();
