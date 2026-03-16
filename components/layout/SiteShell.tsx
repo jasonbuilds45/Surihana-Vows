@@ -21,20 +21,26 @@ Design Improvements
 */
 
 const SHELL_SUPPRESSED_PREFIXES = [
+  "/",          // landing page — full screen, no chrome
   "/invite/",   // guest cinematic experience
   "/family",    // family vault
   "/admin",     // admin dashboard
   "/vault/",    // magic-link redirect bridge
+  "/login",     // login page — no chrome
 ];
 
 export function SiteShell({ children }: PropsWithChildren) {
   const pathname = usePathname();
 
-  const suppress = SHELL_SUPPRESSED_PREFIXES.some((prefix) =>
-    pathname === prefix ||
-    pathname.startsWith(prefix + "/") ||
-    pathname === prefix.replace(/\/$/, "")
-  );
+  // Exact match for "/" and "/login", prefix match for others
+  const suppress =
+    pathname === "/" ||
+    pathname === "/login" ||
+    SHELL_SUPPRESSED_PREFIXES.filter(p => p !== "/" && p !== "/login").some((prefix) =>
+      pathname === prefix ||
+      pathname.startsWith(prefix + "/") ||
+      pathname === prefix.replace(/\/$/, "")
+    );
 
   // Pages with their own layout (invite / family / admin)
   if (suppress) {
