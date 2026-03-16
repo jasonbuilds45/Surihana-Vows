@@ -22,6 +22,11 @@ import { LiveHubClient } from "@/app/live/LiveHubClient";
 import { RSVPForm } from "@/components/rsvp/RSVPForm";
 import { GuestMessageForm } from "@/components/guestbook/GuestMessageForm";
 import { MessageList } from "@/components/guestbook/MessageList";
+import { InvitationCard } from "@/components/invitation/InvitationCard";
+import { CoupleMessageVideo } from "@/components/invitation/CoupleMessageVideo";
+import { GalleryPreview } from "@/components/invitation/GalleryPreview";
+import { ShareInviteButtons } from "@/components/invitation/ShareInviteButtons";
+import { AddToCalendarButton } from "@/components/invitation/AddToCalendarButton";
 import { getSessionFromCookieStore, roleCanAccess } from "@/lib/auth";
 import { weddingConfig, predictionsConfig } from "@/lib/config";
 import { generateInviteUrl } from "@/utils/generateInviteLink";
@@ -30,6 +35,7 @@ import { getGuestMessages } from "@/modules/premium/guestbook-system";
 import { getFamilyVaultBundle } from "@/modules/luxury/family-vault";
 import { resolveLifecycleStage } from "@/modules/luxury/lifecycle-orchestrator";
 import { getLivestreamBundle } from "@/modules/luxury/livestream";
+import { getGalleryPhotos } from "@/modules/premium/photo-gallery";
 import { formatDate, formatTime } from "@/utils/formatDate";
 
 interface InvitePageProps { params: { guest: string } }
@@ -107,9 +113,15 @@ export default async function InvitePage({ params }: InvitePageProps) {
   }
 
   // ── INVITATION stage ───────────────────────────────────────────────────────
-  const guestMessages = await getGuestMessages(invite.wedding.id);
+  const [guestMessages, galleryPhotos] = await Promise.all([
+    getGuestMessages(invite.wedding.id),
+    getGalleryPhotos(invite.wedding.id),
+  ]);
   const travelEssentials = invite.travelInfo.filter((i) => i.category === "essentials");
   const travelGeneral = invite.travelInfo.filter((i) => i.category !== "essentials");
+
+  // Optional couple video URL — set highlightVideoUrl in wedding.json to enable
+  const coupleVideoUrl = weddingConfig.highlightVideoUrl ?? null;
 
   return (
     <CinematicIntro
@@ -121,6 +133,18 @@ export default async function InvitePage({ params }: InvitePageProps) {
       title={weddingConfig.celebrationTitle}
     >
       <InviteTracker guestId={invite.guest.id} inviteCode={invite.guest.invite_code} />
+
+      {/* ── DIGITAL INVITATION CARD (Step 2) ─────────────────────────────────── */}
+      <InvitationCard
+        brideName={invite.wedding.bride_name}
+        groomName={invite.wedding.groom_name}
+        weddingDate={invite.wedding.wedding_date}
+        weddingTime={weddingConfig.weddingTime}
+        venueName={invite.wedding.venue_name}
+        venueAddress={weddingConfig.venueAddress}
+        venueCity={weddingConfig.venueCity}
+        celebrationTitle={weddingConfig.celebrationTitle}
+      />
 
       {/* ── HERO ──────────────────────────────────────────────────────────────── */}
       <section
@@ -217,6 +241,15 @@ export default async function InvitePage({ params }: InvitePageProps) {
         </Container>
       </section>
 
+      {/* ── COUPLE VIDEO MESSAGE (Step 6) ─────────────────────────────────────── */}
+      {coupleVideoUrl && (
+        <CoupleMessageVideo
+          videoUrl={coupleVideoUrl}
+          brideName={invite.wedding.bride_name}
+          groomName={invite.wedding.groom_name}
+        />
+      )}
+
       {/* ── STORY ─────────────────────────────────────────────────────────────── */}
       <section style={{ background: "var(--color-background)" }}>
         <Container className="py-14">
@@ -240,10 +273,22 @@ export default async function InvitePage({ params }: InvitePageProps) {
           {/* Timeline strip — always visible */}
           <WeddingTimeline events={invite.events} weddingDate={invite.wedding.wedding_date} />
 
-          {/* Full event cards */}
+          {/* Full event cards + Add to Calendar */}
           <div className="grid gap-5">
             {invite.events.map((event) => (
-              <EventCard key={event.id} event={event} />
+              <div key={event.id}>
+                <EventCard event={event} />
+                <div style={{ marginTop: ".875rem", display: "flex", justifyContent: "flex-end" }}>
+                  <AddToCalendarButton
+                    eventTitle={event.event_name}
+                    date={event.date}
+                    startTime={event.time}
+                    venue={event.venue}
+                    description={event.description ?? ""}
+                    size="sm"
+                  />
+                </div>
+              </div>
             ))}
           </div>
         </Container>
@@ -426,6 +471,23 @@ export default async function InvitePage({ params }: InvitePageProps) {
               )}
             </div>
           </div>
+        </Container>
+      </section>
+
+      {/* ── GALLERY PREVIEW (Step 5) ─────────────────────────────────────────── */}
+      {galleryPhotos.length > 0 && (
+        <GalleryPreview photos={galleryPhotos} />
+      )}
+
+      {/* ── SHARE INVITE (Step 10) ───────────────────────────────────────────── */}
+      <section style={{ background: "var(--color-background)", borderTop: "1px solid var(--color-border)" }}>
+        <Container className="py-10">
+          <ShareInviteButtons
+            inviteUrl={inviteUrl}
+            brideName={invite.wedding.bride_name}
+            groomName={invite.wedding.groom_name}
+            guestName={invite.guest.guest_name}
+          />
         </Container>
       </section>
 

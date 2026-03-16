@@ -47,10 +47,15 @@ export function CinematicIntro({
 
   useEffect(() => {
     setIsMounted(true);
-    if (typeof window !== "undefined" && sessionStorage.getItem(storageKey) === "entered") {
-      setHasEntered(true);
+    // Step 8: Cookie-based skip logic (30-day expiry) with sessionStorage fallback
+    if (typeof window !== "undefined") {
+      const cookieName = `invite_intro_seen_${inviteCode}`;
+      const hasCookie  = document.cookie.split(";").some(c => c.trim().startsWith(`${cookieName}=`));
+      if (hasCookie || sessionStorage.getItem(storageKey) === "entered") {
+        setHasEntered(true);
+      }
     }
-  }, [storageKey]);
+  }, [storageKey, inviteCode]);
 
   const setAudioRef = (el: HTMLAudioElement | null) => {
     audioRef.current = el;
@@ -79,7 +84,13 @@ export function CinematicIntro({
   }, [isOpen, isMuted, audioAvailable]);
 
   function enter() {
-    if (typeof window !== "undefined") sessionStorage.setItem(storageKey, "entered");
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem(storageKey, "entered");
+      // Step 8: Set 30-day cookie so intro is skipped on return visits
+      const cookieName = `invite_intro_seen_${inviteCode}`;
+      const expires    = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toUTCString();
+      document.cookie  = `${cookieName}=1; expires=${expires}; path=/; SameSite=Lax`;
+    }
     if (audioRef.current) audioRef.current.pause();
     setHasEntered(true);
   }

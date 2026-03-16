@@ -13,13 +13,53 @@ const THEMES = [
   { bg: "#FDF0EE", border: "#F0C0B0", av: "#C85040", avText: "#FFFFFF" },
 ];
 
-const BF = "var(--font-body), -apple-system, system-ui, sans-serif";
-const DF = "var(--font-display), Georgia, serif";
+const BF  = "var(--font-body), -apple-system, system-ui, sans-serif";
+const DF  = "var(--font-display), Georgia, serif";
 const INK  = "#1A1012";
 const INK2 = "#3D2530";
 const INK3 = "#7A5460";
 
-export function MessageList({ messages }: { messages: GuestMessageRow[] }) {
+// Extended row type that includes optional media fields
+interface MessageRowExtended extends GuestMessageRow {
+  media_url?:  string | null;
+  media_type?: "image" | "video" | "audio" | null;
+}
+
+function MediaAttachment({ url, type }: { url: string; type: string }) {
+  if (type === "image") {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        src={url}
+        alt="Guest photo"
+        loading="lazy"
+        style={{ width: "100%", maxHeight: 260, objectFit: "cover", borderRadius: 10, marginTop: ".75rem", border: "1px solid rgba(0,0,0,.06)" }}
+      />
+    );
+  }
+  if (type === "video") {
+    return (
+      <video
+        src={url}
+        controls
+        playsInline
+        style={{ width: "100%", maxHeight: 260, borderRadius: 10, marginTop: ".75rem", background: "#000" }}
+      />
+    );
+  }
+  if (type === "audio") {
+    return (
+      <audio
+        src={url}
+        controls
+        style={{ width: "100%", marginTop: ".75rem" }}
+      />
+    );
+  }
+  return null;
+}
+
+export function MessageList({ messages }: { messages: (GuestMessageRow | MessageRowExtended)[] }) {
   if (!messages.length) return (
     <div style={{ padding: "3rem 2rem", textAlign: "center", background: "#FAF8F6", borderRadius: 20, border: "1.5px dashed #D0C0BC" }}>
       <div style={{ width: 52, height: 52, borderRadius: "50%", background: "#FDEAEC", border: "1px solid #F5C5CB", display: "grid", placeItems: "center", margin: "0 auto 1rem" }}>
@@ -39,11 +79,13 @@ export function MessageList({ messages }: { messages: GuestMessageRow[] }) {
       {messages.map((msg, i) => {
         const t      = THEMES[i % THEMES.length]!;
         const letter = (msg.guest_name.trim()[0] ?? "?").toUpperCase();
+        const ext    = msg as MessageRowExtended;
         return (
-          <div key={msg.id}
+          <div
+            key={msg.id}
             style={{ display: "flex", alignItems: "flex-start", gap: "1rem", padding: "1.25rem", background: t.bg, borderRadius: 16, border: `1px solid ${t.border}`, transition: "transform 0.18s ease, box-shadow 0.18s ease" }}
-            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.transform = "translateY(-2px)"; (e.currentTarget as HTMLElement).style.boxShadow = "0 6px 20px rgba(80,20,30,0.10)"; }}
-            onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.transform = "none"; (e.currentTarget as HTMLElement).style.boxShadow = "none"; }}
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = "translateY(-2px)"; (e.currentTarget as HTMLElement).style.boxShadow = "0 6px 20px rgba(80,20,30,0.10)"; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = "none"; (e.currentTarget as HTMLElement).style.boxShadow = "none"; }}
           >
             {/* Avatar */}
             <div style={{ width: 40, height: 40, borderRadius: "50%", background: t.av, color: t.avText, display: "grid", placeItems: "center", flexShrink: 0, fontFamily: DF, fontSize: "1rem", fontWeight: 700 }}>
@@ -58,6 +100,11 @@ export function MessageList({ messages }: { messages: GuestMessageRow[] }) {
                 )}
               </div>
               <p style={{ fontSize: "0.9rem", color: INK2, lineHeight: 1.65, fontFamily: BF }}>{msg.message}</p>
+
+              {/* Media attachment */}
+              {ext.media_url && ext.media_type && (
+                <MediaAttachment url={ext.media_url} type={ext.media_type} />
+              )}
             </div>
           </div>
         );

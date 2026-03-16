@@ -18,6 +18,8 @@ function isValidGuestbookPayload(payload: Record<string, unknown>) {
   );
 }
 
+const VALID_MEDIA_TYPES = new Set(["image", "video", "audio"]);
+
 export async function GET(request: NextRequest) {
   try {
     const weddingId = request.nextUrl.searchParams.get("weddingId") ?? undefined;
@@ -79,7 +81,9 @@ export async function POST(request: NextRequest) {
     const result = await submitGuestMessage({
       guestName: payload.guestName as string,
       message: payload.message as string,
-      weddingId: payload.weddingId as string | undefined
+      weddingId: payload.weddingId as string | undefined,
+      mediaUrl: typeof payload.mediaUrl === "string" && payload.mediaUrl ? payload.mediaUrl : undefined,
+      mediaType: typeof payload.mediaType === "string" && VALID_MEDIA_TYPES.has(payload.mediaType) ? payload.mediaType as "image" | "video" | "audio" : undefined,
     });
 
     return NextResponse.json(result, { status: result.success ? 201 : 400 });
