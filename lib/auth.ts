@@ -270,12 +270,18 @@ export async function verifyAuthToken(token?: string | null): Promise<AuthSessio
     return null;
   }
 
-  const parts = token.split(".");
-  if (parts.length !== 2) {
+  // Split on the LAST dot only — the payload may contain dots (e.g. email addresses)
+  const lastDot = token.lastIndexOf(".");
+  if (lastDot === -1) {
     return null;
   }
 
-  const [payload, signature] = parts;
+  const payload   = token.slice(0, lastDot);
+  const signature = token.slice(lastDot + 1);
+
+  if (!payload || !signature) {
+    return null;
+  }
   const expectedSignature = await signPayload(payload);
 
   if (!constantTimeEqual(signature, expectedSignature)) {
