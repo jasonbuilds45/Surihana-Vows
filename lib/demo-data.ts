@@ -153,6 +153,7 @@ export const demoMessages: GuestMessageRow[] = [
 ];
 
 export const demoPhotos: PhotoRow[] = galleryConfig.slideshow.map((slide, index) => ({
+  album_id: null,
   id: `2a574f80-f6c5-4f8f-9d68-118fcb2f001${index}`,
   wedding_id: DEMO_WEDDING_ID,
   image_url: slide.imageUrl,
