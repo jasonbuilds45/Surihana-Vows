@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getAuthorizedSessionFromRequest } from "@/lib/auth";
+import { extractToken, verifyAuthToken } from "@/lib/auth";
 import { DEMO_WEDDING_ID } from "@/lib/demo-data";
 import { listGuestLinks } from "@/modules/elegant/guest-links";
 import { getRsvpOverview } from "@/modules/elegant/rsvp-system";
@@ -12,7 +12,8 @@ function escapeCsvValue(value: string | number | boolean | null | undefined) {
 }
 
 export async function GET(request: NextRequest) {
-  const session = await getAuthorizedSessionFromRequest(request);
+  const token = extractToken(request);
+  const session = token ? await verifyAuthToken(token) : null;
   if (!session) {
     return NextResponse.json({ success: false, message: "Authentication required." }, { status: 401 });
   }

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { AUTH_COOKIE_NAME, verifyAuthToken } from "@/lib/auth";
+import { extractToken, verifyAuthToken } from "@/lib/auth";
 import { DEMO_WEDDING_ID } from "@/lib/demo-data";
 import { deleteGuestRecord, updateGuestRecord } from "@/modules/elegant/guest-links";
 
@@ -14,7 +14,7 @@ function normalizeOptionalString(value: unknown) {
 }
 
 async function getAdminSession(request: NextRequest) {
-  const token = request.cookies.get(AUTH_COOKIE_NAME)?.value;
+  const token = extractToken(request); // reads cookie OR Authorization: Bearer header
   if (!token) return null;
   const session = await verifyAuthToken(token);
   if (!session || session.role !== "admin") return null;
