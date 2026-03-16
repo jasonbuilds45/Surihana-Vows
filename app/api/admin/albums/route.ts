@@ -65,5 +65,5 @@ export async function POST(request: NextRequest) {
 
   const { data, error } = await client.from("photo_albums" as never).insert(payload as never).select("*").maybeSingle();
   if (error) return NextResponse.json({ success: false, message: error.message }, { status: 500 });
-  return NextResponse.json({ success: true, data: { ...(data as Record<string, unknown> ?? {}), photo_count: 0 } }, { status: 201 });
+  return NextResponse.json({ success: true, data: { ...(data as unknown as Record<string, unknown> | null ?? {}), photo_count: 0 } }, { status: 201 });
 }
