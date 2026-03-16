@@ -1,12 +1,6 @@
 /**
  * /api/admin/planning
  * Unified planning API for all 10 planning modules.
- * GET  ?module=budget_items&weddingId=   → list rows
- * POST { module, weddingId, ...fields }  → create row
- * PATCH { module, id, ...fields }        → update row
- * DELETE { module, id }                  → delete row
- *
- * Admin-only. Uses service-role client (bypasses RLS).
  */
 import { NextRequest, NextResponse } from "next/server";
 import { extractToken, verifyAuthToken } from "@/lib/auth";
@@ -40,10 +34,11 @@ export async function GET(request: NextRequest) {
   if (!session) return NextResponse.json({ success: false, message: "Unauthorized." }, { status: 401 });
 
   const { searchParams } = request.nextUrl;
-  const module    = searchParams.get("module") ?? "";
+  // Renamed 'module' to 'moduleName'
+  const moduleName = searchParams.get("module") ?? "";
   const weddingId = searchParams.get("weddingId") ?? "";
 
-  if (!ALLOWED_MODULES.has(module)) {
+  if (!ALLOWED_MODULES.has(moduleName)) {
     return NextResponse.json({ success: false, message: "Invalid module." }, { status: 400 });
   }
 
@@ -51,7 +46,7 @@ export async function GET(request: NextRequest) {
   if (!client) return NextResponse.json({ success: true, data: [], demoMode: true });
 
   const { data, error } = await client
-    .from(module as never)
+    .from(moduleName as never)
     .select("*")
     .eq("wedding_id" as never, weddingId)
     .order("created_at" as never, { ascending: true });
@@ -69,9 +64,10 @@ export async function POST(request: NextRequest) {
   if (!session) return NextResponse.json({ success: false, message: "Unauthorized." }, { status: 401 });
 
   const body = await request.json() as Record<string, unknown>;
-  const { module, ...fields } = body;
+  // Destructure as moduleName
+  const { module: moduleName, ...fields } = body;
 
-  if (typeof module !== "string" || !ALLOWED_MODULES.has(module)) {
+  if (typeof moduleName !== "string" || !ALLOWED_MODULES.has(moduleName)) {
     return NextResponse.json({ success: false, message: "Invalid module." }, { status: 400 });
   }
 
@@ -81,7 +77,7 @@ export async function POST(request: NextRequest) {
   if (!client) return NextResponse.json({ success: true, data: payload, demoMode: true });
 
   const { data, error } = await client
-    .from(module as never)
+    .from(moduleName as never)
     .insert(payload as never)
     .select("*")
     .maybeSingle();
@@ -96,9 +92,9 @@ export async function PATCH(request: NextRequest) {
   if (!session) return NextResponse.json({ success: false, message: "Unauthorized." }, { status: 401 });
 
   const body = await request.json() as Record<string, unknown>;
-  const { module, id, ...fields } = body;
+  const { module: moduleName, id, ...fields } = body;
 
-  if (typeof module !== "string" || !ALLOWED_MODULES.has(module) || !id) {
+  if (typeof moduleName !== "string" || !ALLOWED_MODULES.has(moduleName) || !id) {
     return NextResponse.json({ success: false, message: "Invalid module or missing id." }, { status: 400 });
   }
 
@@ -106,7 +102,7 @@ export async function PATCH(request: NextRequest) {
   if (!client) return NextResponse.json({ success: true, demoMode: true });
 
   const { error } = await client
-    .from(module as never)
+    .from(moduleName as never)
     .update(fields as never)
     .eq("id" as never, id);
 
@@ -120,9 +116,9 @@ export async function DELETE(request: NextRequest) {
   if (!session) return NextResponse.json({ success: false, message: "Unauthorized." }, { status: 401 });
 
   const body = await request.json() as Record<string, unknown>;
-  const { module, id } = body;
+  const { module: moduleName, id } = body;
 
-  if (typeof module !== "string" || !ALLOWED_MODULES.has(module) || !id) {
+  if (typeof moduleName !== "string" || !ALLOWED_MODULES.has(moduleName) || !id) {
     return NextResponse.json({ success: false, message: "Invalid module or missing id." }, { status: 400 });
   }
 
@@ -130,7 +126,7 @@ export async function DELETE(request: NextRequest) {
   if (!client) return NextResponse.json({ success: true, demoMode: true });
 
   const { error } = await client
-    .from(module as never)
+    .from(moduleName as never)
     .delete()
     .eq("id" as never, id);
 
