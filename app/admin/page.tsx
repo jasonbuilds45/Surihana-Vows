@@ -130,8 +130,9 @@ export default async function AdminPage() {
   async function getAlbumsAndPhotos(): Promise<{ albums: PhotoAlbum[]; photos: AdminPhoto[] }> {
     if (!client) return { albums: [], photos: [] };
 
+    const c = client as ReturnType<typeof getConfiguredSupabaseClient>;
     const [{ data: albums }, { data: photos }] = await Promise.all([
-      (client as ReturnType<typeof getConfiguredSupabaseClient>)!.from("photo_albums" as never).select("*").eq("wedding_id", wId).order("sort_order"),
+      c!.from("photo_albums" as never).select("*").eq("wedding_id", wId).order("sort_order"),
       client.from("photos").select("id, image_url, uploaded_by, category, created_at, album_id, is_approved").eq("wedding_id", wId).eq("is_approved", true).order("created_at", { ascending: false }),
     ]);
 

@@ -177,6 +177,8 @@ export interface Database {
           created_at: string;
           // Added in 006_photo_moderation.sql
           is_approved: boolean;
+          // Added in 009_new_admin_modules.sql
+          album_id: string | null;
         };
         Insert: {
           id?: string;
@@ -186,6 +188,7 @@ export interface Database {
           category: string;
           created_at?: string;
           is_approved?: boolean;
+          album_id?: string | null;
         };
         Update: Partial<Database["public"]["Tables"]["photos"]["Insert"]>;
         Relationships: [
