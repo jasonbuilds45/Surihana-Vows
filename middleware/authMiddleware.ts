@@ -1,10 +1,8 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getDefaultPathForRole, getSessionFromRequest, getSafeRedirectPath, roleCanAccess } from "@/lib/auth";
 
-const PROTECTED_PREFIXES = ["/family", "/admin", "/api/admin", "/api/auth/login"] as const;
-
-// API routes that require auth but are called from client — allow admin role too
-const ADMIN_API_PREFIXES = ["/api/admin"] as const;
+// Only these paths require an active session
+const PROTECTED_PREFIXES = ["/family", "/admin", "/api/admin"] as const;
 
 function matchesPrefix(pathname: string, prefix: string) {
   return pathname === prefix || pathname.startsWith(`${prefix}/`);
@@ -21,6 +19,7 @@ function buildRequestedPath(request: NextRequest) {
 export async function authMiddleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
+  // Public paths — never touch /login, /api/auth/*, or anything else
   if (!isProtectedPath(pathname)) {
     return NextResponse.next();
   }
@@ -30,10 +29,7 @@ export async function authMiddleware(request: NextRequest) {
   if (!session) {
     if (pathname.startsWith("/api/")) {
       return NextResponse.json(
-        {
-          success: false,
-          message: "Authentication required."
-        },
+        { success: false, message: "Authentication required." },
         { status: 401 }
       );
     }
@@ -46,10 +42,7 @@ export async function authMiddleware(request: NextRequest) {
   if (!roleCanAccess(session.role, pathname)) {
     if (pathname.startsWith("/api/")) {
       return NextResponse.json(
-        {
-          success: false,
-          message: "You do not have permission to access this resource."
-        },
+        { success: false, message: "You do not have permission to access this resource." },
         { status: 403 }
       );
     }
@@ -59,7 +52,3 @@ export async function authMiddleware(request: NextRequest) {
 
   return NextResponse.next();
 }
-
-export const authMiddlewareConfig = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml).*)"]
-};
