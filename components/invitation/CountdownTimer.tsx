@@ -12,13 +12,19 @@ function calc(target: string) {
   const diff = new Date(target).getTime() - Date.now();
   if (diff <= 0) return { hours: 0, minutes: 0, seconds: 0, isPast: true };
   const total = Math.floor(diff / 1000);
-  return { hours: Math.floor(total / 3600), minutes: Math.floor((total % 3600) / 60), seconds: total % 60, isPast: false };
+  return {
+    hours:   Math.floor(total / 3600),
+    minutes: Math.floor((total % 3600) / 60),
+    seconds: total % 60,
+    isPast:  false,
+  };
 }
 
 function pad(n: number) { return String(n).padStart(2, "0"); }
 
 export function CountdownTimer({ target, label = "Until ceremony" }: CountdownTimerProps) {
   const [time, setTime] = useState(() => calc(target));
+
   useEffect(() => {
     const id = setInterval(() => setTime(calc(target)), 1000);
     return () => clearInterval(id);
@@ -27,43 +33,92 @@ export function CountdownTimer({ target, label = "Until ceremony" }: CountdownTi
   if (time.isPast) {
     return (
       <div
-        className="flex items-center gap-2 rounded-xl px-4 py-2.5"
-        style={{ background: "rgba(138,90,68,0.08)", border: "1px solid rgba(212,179,155,0.35)" }}
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 8,
+          borderRadius: 12,
+          padding: "10px 16px",
+          background: "rgba(138,90,68,0.08)",
+          border: "1px solid rgba(212,179,155,0.35)",
+        }}
       >
-        <Clock className="h-3.5 w-3.5 shrink-0" style={{ color: "var(--color-accent)" }} />
-        <p style={{ fontSize: "0.6rem", letterSpacing: "0.3em", textTransform: "uppercase", color: "var(--color-accent)" }}>
-          {label} · Celebration is live
+        <Clock style={{ width: 14, height: 14, flexShrink: 0, color: "var(--color-accent)" }} />
+        <p style={{ fontSize: "0.6rem", letterSpacing: "0.3em", textTransform: "uppercase", color: "var(--color-accent)", fontFamily: "var(--font-body), sans-serif" }}>
+          {label} · Live now
         </p>
       </div>
     );
   }
 
+  const units = [
+    { v: time.hours,   l: "hrs" },
+    { v: time.minutes, l: "min" },
+    { v: time.seconds, l: "sec" },
+  ];
+
   return (
     <div
-      className="rounded-xl px-4 py-3 space-y-2"
-      style={{ background: "var(--color-surface-muted)", border: "1px solid var(--color-border)" }}
+      style={{
+        borderRadius: 16,
+        padding: "14px 18px",
+        background: "var(--color-surface-muted)",
+        border: "1px solid var(--color-border)",
+      }}
     >
-      <div className="flex items-center gap-1.5">
-        <Clock className="h-3 w-3" style={{ color: "var(--color-accent)" }} />
-        <p style={{ fontSize: "0.55rem", letterSpacing: "0.38em", textTransform: "uppercase", color: "var(--color-accent)" }}>
+      {/* Label row */}
+      <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 10 }}>
+        <Clock style={{ width: 12, height: 12, color: "var(--color-accent)", flexShrink: 0 }} />
+        <p style={{ fontSize: "0.52rem", letterSpacing: "0.36em", textTransform: "uppercase", color: "var(--color-accent)", fontFamily: "var(--font-body), sans-serif", fontWeight: 600 }}>
           {label}
         </p>
       </div>
-      <div className="flex items-end gap-2">
-        {[
-          { v: time.hours,   l: "hrs" },
-          { v: time.minutes, l: "min" },
-          { v: time.seconds, l: "sec" },
-        ].map(({ v, l }, i) => (
-          <div key={l} className="flex items-end gap-2">
+
+      {/* Timer row — always single line */}
+      <div style={{ display: "flex", alignItems: "center", gap: 0 }}>
+        {units.map(({ v, l }, i) => (
+          <div key={l} style={{ display: "flex", alignItems: "center" }}>
             {i > 0 && (
-              <span className="pb-3 text-lg font-display" style={{ color: "var(--color-accent-soft)", opacity: 0.5 }}>:</span>
+              <span
+                style={{
+                  fontFamily: "var(--font-display), Georgia, serif",
+                  fontSize: "1.25rem",
+                  color: "var(--color-accent-soft)",
+                  opacity: 0.45,
+                  padding: "0 4px",
+                  lineHeight: 1,
+                  alignSelf: "center",
+                  marginBottom: 12,
+                }}
+              >
+                :
+              </span>
             )}
-            <div className="text-center">
-              <p className="font-display text-2xl tabular-nums" style={{ color: "var(--color-text-primary)", letterSpacing: "0.02em" }}>
+            <div style={{ textAlign: "center", minWidth: 38 }}>
+              <p
+                style={{
+                  fontFamily: "var(--font-display), Georgia, serif",
+                  fontSize: "1.625rem",
+                  fontWeight: 700,
+                  lineHeight: 1,
+                  color: "var(--color-text-primary)",
+                  letterSpacing: "0.02em",
+                  fontVariantNumeric: "tabular-nums",
+                }}
+              >
                 {pad(v)}
               </p>
-              <p style={{ fontSize: "0.5rem", letterSpacing: "0.3em", textTransform: "uppercase", color: "var(--color-text-muted)", marginTop: 2 }}>
+              <p
+                style={{
+                  fontSize: "0.46rem",
+                  letterSpacing: "0.28em",
+                  textTransform: "uppercase",
+                  color: "var(--color-text-muted)",
+                  marginTop: 3,
+                  fontFamily: "var(--font-body), sans-serif",
+                  fontWeight: 600,
+                }}
+              >
                 {l}
               </p>
             </div>

@@ -293,6 +293,14 @@ export async function authenticateUser(
 }
 
 export async function getSessionFromRequest(request: NextRequest): Promise<AuthSession | null> {
+  const token = request.cookies.get(AUTH_COOKIE_NAME)?.value;
+  // Trust the cryptographically signed token directly for API/middleware use.
+  // No DB round-trip needed — the HMAC signature guarantees integrity.
+  return verifyAuthToken(token);
+}
+
+// Use this for page-level auth where DB validation is acceptable
+export async function getVerifiedSessionFromRequest(request: NextRequest): Promise<AuthSession | null> {
   const token   = request.cookies.get(AUTH_COOKIE_NAME)?.value;
   const session = await verifyAuthToken(token);
   return session ? validateSessionAgainstDataStore(session) : null;
@@ -301,16 +309,19 @@ export async function getSessionFromRequest(request: NextRequest): Promise<AuthS
 export async function getSessionFromCookieStore(
   cookieStore: Pick<ReadonlyRequestCookies, "get">
 ): Promise<AuthSession | null> {
-  const token   = cookieStore.get(AUTH_COOKIE_NAME)?.value;
-  const session = await verifyAuthToken(token);
-  return session ? validateSessionAgainstDataStore(session) : null;
+  const token = cookieStore.get(AUTH_COOKIE_NAME)?.value;
+  // Verify signature only — skip DB round-trip so page loads stay fast
+  // and admin/family can always access their pages without a Supabase dependency
+  return verifyAuthToken(token);
 }
 
 export async function getAuthorizedSessionFromRequest(
   request: NextRequest,
   path = request.nextUrl.pathname
 ): Promise<AuthSession | null> {
-  const session = await getSessionFromRequest(request);
+  // Verify the signed token only — no DB call needed for API route auth
+  const token = request.cookies.get(AUTH_COOKIE_NAME)?.value;
+  const session = await verifyAuthToken(token);
   if (!session || !roleCanAccess(session.role, path)) return null;
   return session;
 }

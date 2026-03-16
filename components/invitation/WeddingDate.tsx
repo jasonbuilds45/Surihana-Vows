@@ -38,8 +38,10 @@ export function WeddingDate({ date, time, venueName }: WeddingDateProps) {
           </div>
         </div>
 
-        {/* Countdown */}
-        <CountdownDisplay targetDate={date} targetTime={time} />
+        {/* Countdown — always single row */}
+        <div style={{ width: "100%" }}>
+          <CountdownDisplay targetDate={date} targetTime={time} />
+        </div>
       </div>
       <div className="gold-stripe" />
     </div>

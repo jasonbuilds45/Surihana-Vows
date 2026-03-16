@@ -1,10 +1,5 @@
 "use client";
 
-/**
- * CountdownDisplay — animated flip-style countdown.
- * Shows days, hours, minutes, seconds with spring animations.
- */
-
 import { useEffect, useMemo, useState } from "react";
 
 interface CountdownDisplayProps {
@@ -28,95 +23,109 @@ function getTimeLeft(target: string) {
 
 function pad(n: number) { return String(n).padStart(2, "0"); }
 
-interface DigitProps { value: number; label: string; dark?: boolean; }
+interface UnitProps {
+  value: number;
+  label: string;
+  dark?: boolean;
+}
 
-function Digit({ value, label, dark = false }: DigitProps) {
-  const [prev, setPrev] = useState(value);
-  const [flipping, setFlipping] = useState(false);
+function Unit({ value, label, dark = false }: UnitProps) {
+  const [displayed, setDisplayed] = useState(value);
+  const [animating, setAnimating] = useState(false);
 
   useEffect(() => {
-    if (value !== prev) {
-      setFlipping(true);
-      const t = setTimeout(() => { setPrev(value); setFlipping(false); }, 300);
+    if (value !== displayed) {
+      setAnimating(true);
+      const t = setTimeout(() => {
+        setDisplayed(value);
+        setAnimating(false);
+      }, 260);
       return () => clearTimeout(t);
     }
-  }, [value, prev]);
+  }, [value, displayed]);
+
+  const textColor  = dark ? "#ffffff"                  : "var(--color-text-primary)";
+  const labelColor = dark ? "rgba(255,255,255,0.40)"   : "var(--color-text-muted)";
+  const cardBg     = dark ? "rgba(255,255,255,0.07)"   : "rgba(255,255,255,0.95)";
+  const cardBorder = dark ? "1px solid rgba(255,255,255,0.10)" : "1px solid var(--color-border)";
+  const foldLine   = dark ? "rgba(0,0,0,0.28)"         : "rgba(0,0,0,0.07)";
+  const shadow     = dark ? "0 4px 20px rgba(0,0,0,0.22)" : "0 2px 12px rgba(0,0,0,0.08)";
 
   return (
-    <div className="flex flex-col items-center gap-2">
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8, flex: "1 1 0" }}>
+      {/* Card */}
       <div
-        className="relative overflow-hidden rounded-xl"
         style={{
-          width: 64,
-          height: 72,
-          background: dark
-            ? "rgba(255,255,255,0.08)"
-            : "rgba(255,255,255,0.95)",
-          border: dark ? "1px solid rgba(255,255,255,0.12)" : "1px solid var(--color-border)",
-          boxShadow: dark ? "0 8px 32px rgba(0,0,0,0.25)" : "var(--shadow-md)",
+          position: "relative",
+          width: "100%",
+          maxWidth: 68,
+          height: 68,
+          borderRadius: 14,
+          background: cardBg,
+          border: cardBorder,
+          boxShadow: shadow,
+          overflow: "hidden",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
         }}
       >
-        {/* Top half */}
-        <div
+        {/* Number */}
+        <span
           style={{
-            position: "absolute",
-            inset: "0 0 50% 0",
-            display: "flex",
-            alignItems: "flex-end",
-            justifyContent: "center",
-            paddingBottom: 2,
-            borderBottom: dark ? "1px solid rgba(255,255,255,0.06)" : "1px solid rgba(0,0,0,0.06)",
+            fontFamily: "var(--font-display), Georgia, serif",
+            fontSize: "clamp(1.35rem, 4vw, 1.75rem)",
+            fontWeight: 700,
+            lineHeight: 1,
+            letterSpacing: "0.02em",
+            color: textColor,
+            transition: animating
+              ? "transform 0.13s ease-in, opacity 0.13s ease-in"
+              : "transform 0.13s ease-out, opacity 0.13s ease-out",
+            transform: animating ? "translateY(-6px)" : "translateY(0)",
+            opacity: animating ? 0 : 1,
+            userSelect: "none",
           }}
         >
-          <span
-            className="font-display tabular-nums"
-            style={{
-              fontSize: "1.75rem",
-              lineHeight: 1,
-              color: dark ? "#ffffff" : "var(--color-text-primary)",
-              transform: flipping ? "translateY(-4px)" : "none",
-              opacity: flipping ? 0 : 1,
-              transition: "transform 0.2s ease, opacity 0.15s ease",
-            }}
-          >
-            {pad(value)}
-          </span>
-        </div>
-        {/* Bottom half */}
-        <div
-          style={{
-            position: "absolute",
-            inset: "50% 0 0 0",
-            display: "flex",
-            alignItems: "flex-start",
-            justifyContent: "center",
-            paddingTop: 2,
-          }}
-        >
-          <span
-            className="font-display tabular-nums"
-            style={{
-              fontSize: "1.75rem",
-              lineHeight: 1,
-              color: dark ? "#ffffff" : "var(--color-text-primary)",
-              transform: flipping ? "translateY(4px)" : "none",
-              opacity: flipping ? 0 : 1,
-              transition: "transform 0.2s ease, opacity 0.15s ease",
-            }}
-          >
-            {pad(flipping ? prev : value)}
-          </span>
-        </div>
+          {pad(displayed)}
+        </span>
+
         {/* Fold line */}
-        <div style={{ position: "absolute", left: 0, right: 0, top: "50%", height: 1, background: dark ? "rgba(0,0,0,0.3)" : "rgba(0,0,0,0.08)" }} />
+        <div
+          style={{
+            position: "absolute",
+            left: 0, right: 0,
+            top: "50%",
+            height: 1,
+            background: foldLine,
+            pointerEvents: "none",
+          }}
+        />
+
+        {/* Subtle top shine */}
+        {!dark && (
+          <div
+            style={{
+              position: "absolute",
+              inset: "0 0 50% 0",
+              background: "linear-gradient(to bottom, rgba(255,255,255,0.60), transparent)",
+              pointerEvents: "none",
+              borderRadius: "14px 14px 0 0",
+            }}
+          />
+        )}
       </div>
+
+      {/* Label */}
       <p
         style={{
-          fontSize: "0.55rem",
-          letterSpacing: "0.32em",
+          fontSize: "0.50rem",
+          letterSpacing: "0.30em",
           textTransform: "uppercase",
           fontWeight: 600,
-          color: dark ? "rgba(255,255,255,0.45)" : "var(--color-text-muted)",
+          color: labelColor,
+          fontFamily: "var(--font-body), system-ui, sans-serif",
+          whiteSpace: "nowrap",
         }}
       >
         {label}
@@ -125,7 +134,29 @@ function Digit({ value, label, dark = false }: DigitProps) {
   );
 }
 
-export function CountdownDisplay({ targetDate, targetTime = "18:30", dark = false }: CountdownDisplayProps) {
+function Separator({ dark = false }: { dark?: boolean }) {
+  return (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: 6,
+        paddingBottom: 24, // align with card centre, offset for label height
+        flexShrink: 0,
+      }}
+    >
+      <div style={{ width: 4, height: 4, borderRadius: "50%", background: dark ? "rgba(255,255,255,0.22)" : "var(--color-border-medium)" }} />
+      <div style={{ width: 4, height: 4, borderRadius: "50%", background: dark ? "rgba(255,255,255,0.22)" : "var(--color-border-medium)" }} />
+    </div>
+  );
+}
+
+export function CountdownDisplay({
+  targetDate,
+  targetTime = "18:30",
+  dark = false,
+}: CountdownDisplayProps) {
   const target = useMemo(() => {
     const [h, m] = targetTime.split(":").map(Number);
     const d = new Date(`${targetDate}T00:00:00`);
@@ -140,32 +171,48 @@ export function CountdownDisplay({ targetDate, targetTime = "18:30", dark = fals
     return () => clearInterval(id);
   }, [target]);
 
-  if (time.past) return (
-    <div
-      className="rounded-2xl px-6 py-4 text-center"
-      style={{
-        background: dark ? "rgba(255,255,255,0.08)" : "var(--color-accent-light)",
-        border: `1px solid ${dark ? "rgba(255,255,255,0.12)" : "rgba(181,82,58,0.25)"}`,
-      }}
-    >
-      <p
-        className="font-display text-xl"
-        style={{ color: dark ? "var(--color-champagne)" : "var(--color-accent)" }}
+  if (time.past) {
+    return (
+      <div
+        style={{
+          borderRadius: 14,
+          padding: "12px 20px",
+          textAlign: "center",
+          background: dark ? "rgba(255,255,255,0.07)" : "var(--color-accent-light)",
+          border: `1px solid ${dark ? "rgba(255,255,255,0.10)" : "rgba(181,82,58,0.20)"}`,
+        }}
       >
-        The celebration is live ✦
-      </p>
-    </div>
-  );
+        <p
+          style={{
+            fontFamily: "var(--font-display), Georgia, serif",
+            fontSize: "1rem",
+            color: dark ? "var(--color-champagne)" : "var(--color-accent)",
+          }}
+        >
+          The celebration is live ✦
+        </p>
+      </div>
+    );
+  }
 
   return (
-    <div className="flex items-start gap-3 sm:gap-4 justify-center flex-wrap">
-      <Digit value={time.days}    label="Days"    dark={dark} />
-      <div className="font-display text-4xl mt-3" style={{ color: dark ? "rgba(255,255,255,0.25)" : "var(--color-border-medium)" }}>:</div>
-      <Digit value={time.hours}   label="Hours"   dark={dark} />
-      <div className="font-display text-4xl mt-3" style={{ color: dark ? "rgba(255,255,255,0.25)" : "var(--color-border-medium)" }}>:</div>
-      <Digit value={time.minutes} label="Minutes" dark={dark} />
-      <div className="font-display text-4xl mt-3" style={{ color: dark ? "rgba(255,255,255,0.25)" : "var(--color-border-medium)" }}>:</div>
-      <Digit value={time.seconds} label="Seconds" dark={dark} />
+    <div
+      style={{
+        display: "flex",
+        alignItems: "flex-start",
+        gap: "clamp(4px, 1.5vw, 10px)",
+        width: "100%",
+      }}
+    >
+      <Unit value={time.days}    label="Days"    dark={dark} />
+      <Separator dark={dark} />
+      <Unit value={time.hours}   label="Hours"   dark={dark} />
+      <Separator dark={dark} />
+      <Unit value={time.minutes} label="Mins"    dark={dark} />
+      <Separator dark={dark} />
+      <Unit value={time.seconds} label="Secs"    dark={dark} />
     </div>
   );
 }
+
+export default CountdownDisplay;
