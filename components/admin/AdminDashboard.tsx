@@ -1,6 +1,7 @@
 "use client";
 
-import { startTransition, useState } from "react";
+import { startTransition, useState, useEffect } from "react";
+import { authFetch, storeToken } from "@/lib/client/token";
 import type { AnalyticsSnapshot, InviteActivityItem } from "@/lib/types";
 import { GuestTable, type GuestTableRow } from "@/components/admin/GuestTable";
 import { GuestOriginMap, type GuestOriginRow } from "@/components/admin/GuestOriginMap";
@@ -38,8 +39,16 @@ export function AdminDashboard({
   const [stats, setStats] = useState(initialStats);
   const [recentActivity, setRecentActivity] = useState(initialActivity);
 
+  // Capture token from URL on mount
+  useEffect(() => {
+    try {
+      const t = new URLSearchParams(window.location.search).get("_t");
+      if (t) storeToken(t);
+    } catch { /* ignore */ }
+  }, []);
+
   async function refreshAnalytics() {
-    const res = await fetch(`/api/analytics?weddingId=${encodeURIComponent(weddingId)}`, { cache: "no-store", credentials: "include" });
+    const res = await authFetch(`/api/analytics?weddingId=${encodeURIComponent(weddingId)}`, { cache: "no-store" } as RequestInit);
     if (!res.ok) return;
     const payload = (await res.json()) as AnalyticsResponse;
     if (!payload.success || !payload.data) return;

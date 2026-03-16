@@ -1,7 +1,8 @@
 "use client";
 
 import type { FormEvent } from "react";
-import { startTransition, useRef, useMemo, useState } from "react";
+import { startTransition, useRef, useMemo, useState, useEffect } from "react";
+import { authFetch, storeToken } from "@/lib/client/token";
 import { Copy, Download, FileUp, Link2, Pencil, Plus, RefreshCcw, Save, Trash2, X } from "lucide-react";
 import { Card, SectionLabel, Btn } from "@/components/ui";
 
@@ -109,6 +110,22 @@ export function GuestTable({ initialRows, weddingId, onRefreshAnalytics }: Guest
   const [importing, setImporting]     = useState(false);
   const fileInputRef                  = useRef<HTMLInputElement>(null);
 
+  // On mount: capture token from URL param (set by login route) and store it
+  useEffect(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const t = params.get("_t");
+      if (t) {
+        storeToken(t);
+        // Clean the token from the URL without reloading
+        params.delete("_t");
+        const clean = params.toString();
+        const newUrl = window.location.pathname + (clean ? `?${clean}` : "");
+        window.history.replaceState({}, "", newUrl);
+      }
+    } catch { /* ignore */ }
+  }, []);
+
   function setField(k: keyof GuestFormState, v: string) { setForm((f) => ({ ...f, [k]: v })); }
   function resetForm() { setForm(emptyForm); setEditingId(null); }
 
@@ -119,9 +136,8 @@ export function GuestTable({ initialRows, weddingId, onRefreshAnalytics }: Guest
     setStatusMsg(null);
     try {
       const endpoint = editingId ? `/api/admin/guests/${editingId}` : "/api/admin/guests";
-      const res = await fetch(endpoint, {
+      const res = await authFetch(endpoint, {
         method: editingId ? "PATCH" : "POST",
-        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ weddingId, guestName: form.guestName, familyName: form.familyName, phone: form.phone, guestRole: form.guestRole || null }),
       });
@@ -146,7 +162,7 @@ export function GuestTable({ initialRows, weddingId, onRefreshAnalytics }: Guest
     if (!window.confirm(`Delete ${row.guestName}?`)) return;
     setIsSubmitting(true);
     try {
-      const res = await fetch(`/api/admin/guests/${row.id}`, { method: "DELETE", credentials: "include" });
+      const res = await authFetch(`/api/admin/guests/${row.id}`, { method: "DELETE" });
       const p = (await res.json()) as { success: boolean; message?: string };
       if (!res.ok || !p.success) throw new Error(p.message ?? "Error");
       startTransition(() => { setRows((cur) => cur.filter((r) => r.id !== row.id)); });
@@ -174,8 +190,8 @@ export function GuestTable({ initialRows, weddingId, onRefreshAnalytics }: Guest
   async function handleRegenerate(row: GuestTableRow) {
     setIsSubmitting(true);
     try {
-      const res = await fetch(`/api/admin/guests/${row.id}`, {
-        method: "PATCH", credentials: "include",
+      const res = await authFetch(`/api/admin/guests/${row.id}`, {
+        method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ weddingId, guestName: row.guestName, familyName: row.familyName, phone: row.phone, regenerateInviteCode: true }),
       });
@@ -194,9 +210,7 @@ export function GuestTable({ initialRows, weddingId, onRefreshAnalytics }: Guest
   async function handleExportRsvp() {
     try {
       setStatusMsg(null);
-      const res = await fetch(`/api/admin/rsvp-export?weddingId=${encodeURIComponent(weddingId)}`, {
-        credentials: "include",
-      });
+      const res = await authFetch(`/api/admin/rsvp-export?weddingId=${encodeURIComponent(weddingId)}`);
       if (!res.ok) throw new Error("Export failed — please try again.");
       const blob = await res.blob();
       const url  = URL.createObjectURL(blob);
@@ -281,9 +295,8 @@ export function GuestTable({ initialRows, weddingId, onRefreshAnalytics }: Guest
         const guestRole  = validRoles.has(rawRole) ? rawRole : null;
 
         try {
-          const res = await fetch("/api/admin/guests", {
+          const res = await authFetch("/api/admin/guests", {
             method: "POST",
-            credentials: "include",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ weddingId, guestName, familyName: familyName || null, phone: phone || null, guestRole }),
           });

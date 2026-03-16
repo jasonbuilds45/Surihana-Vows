@@ -18,67 +18,37 @@ const HASH_ITERATIONS = 120000;
 const HASH_KEY_BITS   = 256;
 
 export const AUTH_COOKIE_NAME = "surihana_session";
-export const SESSION_MAX_AGE  = 60 * 60 * 10; // 10 hours
+export const SESSION_MAX_AGE  = 60 * 60 * 10;
 export const LOGIN_PATH        = "/login";
 
 const encoder = new TextEncoder();
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Auth secret
-// ─────────────────────────────────────────────────────────────────────────────
 function getAuthSecret(): string {
   if (!env.AUTH_SECRET) {
-    if (isProduction()) {
-      throw new Error("[surihana] AUTH_SECRET is not set in production.");
-    }
+    if (isProduction()) throw new Error("[surihana] AUTH_SECRET is not set in production.");
     console.warn("[surihana] AUTH_SECRET not set — using empty key for local dev.");
     return "";
   }
   return env.AUTH_SECRET;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Fallback demo accounts (only used when Supabase is not configured OR
-// the family_users table has no matching user)
-// ─────────────────────────────────────────────────────────────────────────────
 function getDemoAccounts() {
   const accounts = [];
   if (env.FAMILY_LOGIN_EMAIL && env.FAMILY_LOGIN_PASSWORD) {
-    accounts.push({
-      id:       "demo-family-user",
-      email:    env.FAMILY_LOGIN_EMAIL.toLowerCase(),
-      password: env.FAMILY_LOGIN_PASSWORD,
-      role:     "family" as AuthRole,
-    });
+    accounts.push({ id: "demo-family-user", email: env.FAMILY_LOGIN_EMAIL.toLowerCase(), password: env.FAMILY_LOGIN_PASSWORD, role: "family" as AuthRole });
   }
   if (env.ADMIN_LOGIN_EMAIL && env.ADMIN_LOGIN_PASSWORD) {
-    accounts.push({
-      id:       "demo-admin-user",
-      email:    env.ADMIN_LOGIN_EMAIL.toLowerCase(),
-      password: env.ADMIN_LOGIN_PASSWORD,
-      role:     "admin" as AuthRole,
-    });
+    accounts.push({ id: "demo-admin-user", email: env.ADMIN_LOGIN_EMAIL.toLowerCase(), password: env.ADMIN_LOGIN_PASSWORD, role: "admin" as AuthRole });
   }
   return accounts;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Crypto helpers
-// ─────────────────────────────────────────────────────────────────────────────
 async function getSigningKey() {
-  return crypto.subtle.importKey(
-    "raw",
-    encoder.encode(getAuthSecret()),
-    { name: "HMAC", hash: "SHA-256" },
-    false,
-    ["sign"]
-  );
+  return crypto.subtle.importKey("raw", encoder.encode(getAuthSecret()), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
 }
 
 function toHex(buffer: ArrayBuffer) {
-  return Array.from(new Uint8Array(buffer))
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("");
+  return Array.from(new Uint8Array(buffer)).map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
 function fromHex(value: string) {
@@ -91,9 +61,7 @@ function constantTimeEqual(a: string, b: string) {
   const bBytes = encoder.encode(b);
   const max = Math.max(aBytes.length, bBytes.length);
   let result = aBytes.length === bBytes.length ? 0 : 1;
-  for (let i = 0; i < max; i++) {
-    result |= (aBytes[i] ?? 0) ^ (bBytes[i] ?? 0);
-  }
+  for (let i = 0; i < max; i++) result |= (aBytes[i] ?? 0) ^ (bBytes[i] ?? 0);
   return result === 0;
 }
 
@@ -104,14 +72,8 @@ async function signPayload(payload: string): Promise<string> {
 }
 
 async function derivePasswordHash(password: string, saltHex: string, iterations: number) {
-  const key = await crypto.subtle.importKey(
-    "raw", encoder.encode(password), "PBKDF2", false, ["deriveBits"]
-  );
-  const bits = await crypto.subtle.deriveBits(
-    { name: "PBKDF2", hash: "SHA-256", salt: fromHex(saltHex), iterations },
-    key,
-    HASH_KEY_BITS
-  );
+  const key = await crypto.subtle.importKey("raw", encoder.encode(password), "PBKDF2", false, ["deriveBits"]);
+  const bits = await crypto.subtle.deriveBits({ name: "PBKDF2", hash: "SHA-256", salt: fromHex(saltHex), iterations }, key, HASH_KEY_BITS);
   return toHex(bits);
 }
 
@@ -125,70 +87,32 @@ function normalizeRole(role: string | null | undefined): AuthRole | null {
   return role === "admin" || role === "family" ? role : null;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Database lookups
-// ─────────────────────────────────────────────────────────────────────────────
 async function findFamilyUserByEmail(email: string): Promise<FamilyUserRow | null> {
   const client = getConfiguredSupabaseClient(true);
   if (!client) return null;
-
-  const { data, error } = await client
-    .from("family_users")
-    .select("id, email, role, password_hash, created_at")
-    .eq("email", email.toLowerCase())
-    .maybeSingle();
-
-  if (error) {
-    if (shouldFallbackToDemoData(error)) return null;
-    throw new Error(error.message);
-  }
+  const { data, error } = await client.from("family_users").select("id, email, role, password_hash, created_at").eq("email", email.toLowerCase()).maybeSingle();
+  if (error) { if (shouldFallbackToDemoData(error)) return null; throw new Error(error.message); }
   return (data ?? null) as FamilyUserRow | null;
 }
 
 async function findFamilyUserById(id: string): Promise<FamilyUserRow | null> {
   const client = getConfiguredSupabaseClient(true);
   if (!client) return null;
-
-  const { data, error } = await client
-    .from("family_users")
-    .select("id, email, role, password_hash, created_at")
-    .eq("id", id)
-    .maybeSingle();
-
-  if (error) {
-    if (shouldFallbackToDemoData(error)) return null;
-    throw new Error(error.message);
-  }
+  const { data, error } = await client.from("family_users").select("id, email, role, password_hash, created_at").eq("id", id).maybeSingle();
+  if (error) { if (shouldFallbackToDemoData(error)) return null; throw new Error(error.message); }
   return (data ?? null) as FamilyUserRow | null;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Session validation
-// ─────────────────────────────────────────────────────────────────────────────
 async function validateSessionAgainstDataStore(session: AuthSession): Promise<AuthSession | null> {
-  // Try to verify against real DB user first
   const dbUser = await findFamilyUserById(session.userId);
-
   if (dbUser) {
     const role = normalizeRole(dbUser.role);
-    if (!role) return null;
-    if (dbUser.email.toLowerCase() !== session.email.toLowerCase()) return null;
-    if (role !== session.role) return null;
+    if (!role || dbUser.email.toLowerCase() !== session.email.toLowerCase() || role !== session.role) return null;
     return { ...session, email: dbUser.email.toLowerCase(), role };
   }
-
-  // Fall back to demo accounts
-  const demo = getDemoAccounts().find(
-    (a) => a.id === session.userId &&
-           a.email === session.email.toLowerCase() &&
-           a.role === session.role
-  );
+  const demo = getDemoAccounts().find((a) => a.id === session.userId && a.email === session.email.toLowerCase() && a.role === session.role);
   return demo ? session : null;
 }
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Public API
-// ─────────────────────────────────────────────────────────────────────────────
 
 export async function hashPassword(password: string): Promise<string> {
   const salt = createSaltHex();
@@ -198,184 +122,116 @@ export async function hashPassword(password: string): Promise<string> {
 
 export async function verifyPasswordHash(password: string, storedHash?: string | null): Promise<boolean> {
   if (!storedHash) return false;
-
-  const parts = storedHash.split("$");
-  const [prefix, iterStr, saltHex, expectedHash] = parts;
-
+  const [prefix, iterStr, saltHex, expectedHash] = storedHash.split("$");
   if (prefix !== HASH_PREFIX || !iterStr || !saltHex || !expectedHash) return false;
-
   const iterations = parseInt(iterStr, 10);
   if (!Number.isFinite(iterations)) return false;
-
-  const actualHash = await derivePasswordHash(password, saltHex, iterations);
-  return constantTimeEqual(actualHash, expectedHash);
+  return constantTimeEqual(await derivePasswordHash(password, saltHex, iterations), expectedHash);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Token format: base64url(payload) + "." + hex(signature)
-// base64url uses only A-Z a-z 0-9 - _ which are all safe in cookies.
-// NO percent-encoding, NO pipe chars, NO URL-encoding issues across runtimes.
+// Token: base64url(json) + "." + hex(hmac)
+// Only A-Z a-z 0-9 - _ and . — safe in cookies across all runtimes/proxies
 // ─────────────────────────────────────────────────────────────────────────────
 function b64urlEncode(str: string): string {
-  // Works in both Edge and Node.js runtimes
-  return btoa(unescape(encodeURIComponent(str)))
-    .replace(/\+/g, "-")
-    .replace(/\//g, "_")
-    .replace(/=/g, "");
+  return btoa(unescape(encodeURIComponent(str))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "");
 }
 
 function b64urlDecode(str: string): string {
-  const padded = str.replace(/-/g, "+").replace(/_/g, "/");
-  const pad = padded.length % 4;
-  const padded2 = pad ? padded + "=".repeat(4 - pad) : padded;
-  return decodeURIComponent(escape(atob(padded2)));
+  const p = str.replace(/-/g, "+").replace(/_/g, "/");
+  const pad = p.length % 4;
+  return decodeURIComponent(escape(atob(pad ? p + "=".repeat(4 - pad) : p)));
 }
 
-export async function createAuthToken(
-  session: Omit<AuthSession, "expiresAt"> & { expiresAt?: number }
-): Promise<string> {
+export async function createAuthToken(session: Omit<AuthSession, "expiresAt"> & { expiresAt?: number }): Promise<string> {
   const expiresAt = session.expiresAt ?? Date.now() + SESSION_MAX_AGE * 1000;
   const payload   = b64urlEncode(JSON.stringify({ ...session, expiresAt }));
   const signature = await signPayload(payload);
-  // Format: base64url_payload.hexsignature
-  // Both parts contain only URL-safe characters, dot is the separator
   return `${payload}.${signature}`;
 }
 
 export async function verifyAuthToken(token?: string | null): Promise<AuthSession | null> {
   if (!token) return null;
+  try {
+    // Normalise any percent-encoded separators from old tokens
+    const t = token.replace(/%7C/gi, "|").replace(/%2E/gi, ".");
 
-  // Normalise the token — some proxies/runtimes percent-encode special chars.
-  // Decode %7C back to | and %2E back to . so legacy tokens still work.
-  const normalised = token
-    .replace(/%7C/gi, "|")
-    .replace(/%7c/gi, "|")
-    .replace(/%2E/gi, ".")
-    .replace(/%2e/gi, ".");
+    // Try pipe separator first (old format), then last-dot (new format)
+    const splits: Array<[string, string]> = [];
+    const pi = t.indexOf("|");
+    if (pi !== -1) splits.push([t.slice(0, pi), t.slice(pi + 1)]);
+    const di = t.lastIndexOf(".");
+    if (di !== -1) splits.push([t.slice(0, di), t.slice(di + 1)]);
 
-  // Try all known formats in order:
-  // 1. New format:    base64url(json).hexsig        — lastDot split
-  // 2. Pipe format:   encodeURI(json)|hexsig        — pipe split
-  // 3. Legacy format: encodeURI(json).hexsig        — lastDot split (same as 1)
-  const candidates: Array<{ payload: string; signature: string }> = [];
+    for (const [payload, sig] of splits) {
+      if (!payload || !sig) continue;
+      const expected = await signPayload(payload);
+      if (!constantTimeEqual(sig, expected)) continue;
 
-  // Pipe separator (old format that got percent-encoded)
-  const pipeIdx = normalised.indexOf("|");
-  if (pipeIdx !== -1) {
-    candidates.push({
-      payload:   normalised.slice(0, pipeIdx),
-      signature: normalised.slice(pipeIdx + 1),
-    });
-  }
-
-  // Dot separator — always try this
-  const lastDot = normalised.lastIndexOf(".");
-  if (lastDot !== -1) {
-    candidates.push({
-      payload:   normalised.slice(0, lastDot),
-      signature: normalised.slice(lastDot + 1),
-    });
-  }
-
-  for (const { payload, signature } of candidates) {
-    if (!payload || !signature) continue;
-
-    try {
-      const expectedSignature = await signPayload(payload);
-      if (!constantTimeEqual(signature, expectedSignature)) continue;
-
-      // Try base64url decode first (new format), fall back to decodeURIComponent (old format)
-      let parsed: AuthSession | null = null;
-      for (const decode of [
-        (p: string) => JSON.parse(b64urlDecode(p)) as AuthSession,
-        (p: string) => JSON.parse(decodeURIComponent(p)) as AuthSession,
-      ]) {
+      // Try both decoders
+      for (const decode of [(p: string) => b64urlDecode(p), (p: string) => decodeURIComponent(p)]) {
         try {
-          parsed = decode(payload);
-          break;
-        } catch {
-          // try next decoder
-        }
+          const s = JSON.parse(decode(payload)) as AuthSession;
+          if (!s.userId || !s.role || !s.expiresAt) continue;
+          if (s.role !== "family" && s.role !== "admin") continue;
+          if (s.expiresAt < Date.now()) continue;
+          return s;
+        } catch { /* try next */ }
       }
-
-      if (!parsed) continue;
-      if (parsed.expiresAt < Date.now()) continue;
-      if (!parsed.userId) continue;
-      if (parsed.role !== "family" && parsed.role !== "admin") continue;
-      return parsed;
-    } catch {
-      continue;
     }
-  }
+  } catch { /* fall through */ }
+  return null;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Token extraction — reads from cookie OR Authorization header.
+// This is the key fix: when the cookie domain doesn't match the current
+// Vercel preview URL, the browser won't send the cookie. The client now
+// also sends the token as "Authorization: Bearer <token>" so we always
+// have it regardless of cookie domain issues.
+// ─────────────────────────────────────────────────────────────────────────────
+export function extractToken(request: NextRequest): string | null {
+  // 1. Cookie (preferred, works on stable domains)
+  const cookie = request.cookies.get(AUTH_COOKIE_NAME)?.value;
+  if (cookie) return cookie;
+
+  // 2. Authorization header fallback (works across all preview URLs)
+  const auth = request.headers.get("authorization");
+  if (auth?.startsWith("Bearer ")) return auth.slice(7);
 
   return null;
 }
 
-export async function authenticateUser(
-  email: string,
-  password: string
-): Promise<{ userId: string; email: string; role: AuthRole } | null> {
+export async function authenticateUser(email: string, password: string): Promise<{ userId: string; email: string; role: AuthRole } | null> {
   const normalizedEmail    = email.trim().toLowerCase();
   const normalizedPassword = password.trim();
-
-  // 1. Try database user with hashed password
   const dbUser = await findFamilyUserByEmail(normalizedEmail);
   if (dbUser) {
-    if (!dbUser.password_hash) {
-      // User exists but no password set — deny login
-      console.warn(`[auth] User ${normalizedEmail} has no password_hash set.`);
-      return null;
-    }
+    if (!dbUser.password_hash) { console.warn(`[auth] User ${normalizedEmail} has no password_hash set.`); return null; }
     const role = normalizeRole(dbUser.role);
     if (!role) return null;
-
-    const valid = await verifyPasswordHash(normalizedPassword, dbUser.password_hash);
-    if (!valid) return null;
-
+    if (!await verifyPasswordHash(normalizedPassword, dbUser.password_hash)) return null;
     return { userId: dbUser.id, email: dbUser.email.toLowerCase(), role };
   }
-
-  // 2. Fall back to demo/env accounts (plain text password comparison)
-  const demo = getDemoAccounts().find(
-    (a) => a.email === normalizedEmail && a.password === normalizedPassword
-  );
-  if (demo) {
-    return { userId: demo.id, email: demo.email, role: demo.role };
-  }
-
-  return null;
+  const demo = getDemoAccounts().find((a) => a.email === normalizedEmail && a.password === normalizedPassword);
+  return demo ? { userId: demo.id, email: demo.email, role: demo.role } : null;
 }
 
 export async function getSessionFromRequest(request: NextRequest): Promise<AuthSession | null> {
-  const token = request.cookies.get(AUTH_COOKIE_NAME)?.value;
-  // Trust the cryptographically signed token directly for API/middleware use.
-  // No DB round-trip needed — the HMAC signature guarantees integrity.
-  return verifyAuthToken(token);
+  return verifyAuthToken(extractToken(request));
 }
 
-// Use this for page-level auth where DB validation is acceptable
 export async function getVerifiedSessionFromRequest(request: NextRequest): Promise<AuthSession | null> {
-  const token   = request.cookies.get(AUTH_COOKIE_NAME)?.value;
-  const session = await verifyAuthToken(token);
+  const session = await verifyAuthToken(extractToken(request));
   return session ? validateSessionAgainstDataStore(session) : null;
 }
 
-export async function getSessionFromCookieStore(
-  cookieStore: Pick<ReadonlyRequestCookies, "get">
-): Promise<AuthSession | null> {
-  const token = cookieStore.get(AUTH_COOKIE_NAME)?.value;
-  // Verify signature only — skip DB round-trip so page loads stay fast
-  // and admin/family can always access their pages without a Supabase dependency
-  return verifyAuthToken(token);
+export async function getSessionFromCookieStore(cookieStore: Pick<ReadonlyRequestCookies, "get">): Promise<AuthSession | null> {
+  return verifyAuthToken(cookieStore.get(AUTH_COOKIE_NAME)?.value);
 }
 
-export async function getAuthorizedSessionFromRequest(
-  request: NextRequest,
-  path = request.nextUrl.pathname
-): Promise<AuthSession | null> {
-  // Verify the signed token only — no DB call needed for API route auth
-  const token = request.cookies.get(AUTH_COOKIE_NAME)?.value;
-  const session = await verifyAuthToken(token);
+export async function getAuthorizedSessionFromRequest(request: NextRequest, path = request.nextUrl.pathname): Promise<AuthSession | null> {
+  const session = await verifyAuthToken(extractToken(request));
   if (!session || !roleCanAccess(session.role, path)) return null;
   return session;
 }
@@ -388,27 +244,18 @@ export function getSafeRedirectPath(value?: string | null, fallback = "/family")
   if (!value) return fallback;
   const trimmed = value.trim();
   if (!trimmed.startsWith("/") || trimmed.startsWith("//")) return fallback;
-  if (trimmed === LOGIN_PATH || trimmed.startsWith(`${LOGIN_PATH}?`) || trimmed.startsWith(`${LOGIN_PATH}/`)) {
-    return fallback;
-  }
+  if (trimmed === LOGIN_PATH || trimmed.startsWith(`${LOGIN_PATH}?`) || trimmed.startsWith(`${LOGIN_PATH}/`)) return fallback;
   return trimmed;
 }
 
-export function getPostLoginRedirect(
-  session: Pick<AuthSession, "role">,
-  requestedPath?: string | null
-): string {
+export function getPostLoginRedirect(session: Pick<AuthSession, "role">, requestedPath?: string | null): string {
   const safePath = getSafeRedirectPath(requestedPath, getDefaultPathForRole(session.role));
   if (!roleCanAccess(session.role, safePath)) return getDefaultPathForRole(session.role);
   return safePath;
 }
 
 export function roleCanAccess(role: AuthRole, path: string): boolean {
-  if (path.startsWith("/api/admin") || path.startsWith("/admin")) {
-    return role === "admin";
-  }
-  if (path.startsWith("/family")) {
-    return role === "family" || role === "admin";
-  }
+  if (path.startsWith("/api/admin") || path.startsWith("/admin")) return role === "admin";
+  if (path.startsWith("/family")) return role === "family" || role === "admin";
   return true;
 }

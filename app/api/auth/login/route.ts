@@ -39,17 +39,28 @@ export async function POST(request: NextRequest) {
     const destination = getDefaultPathForRole(result.role); // /admin or /family
 
     const response = NextResponse.redirect(new URL(destination, request.url), 303);
-    // Delete any old format cookie first, then set the new one
     response.cookies.delete(AUTH_COOKIE_NAME);
     response.cookies.set(AUTH_COOKIE_NAME, token, {
-      httpOnly: true,
+      httpOnly: false,   // Must be false so JS can read it for the Authorization header fallback
       maxAge:   SESSION_MAX_AGE,
       path:     "/",
       sameSite: "lax",
       secure:   process.env.NODE_ENV === "production",
     });
-
-    return response;
+    // Also embed token in redirect URL fragment so client can store it
+    // regardless of cookie domain restrictions on Vercel preview URLs
+    const dest = new URL(destination, request.url);
+    dest.searchParams.set("_t", token);
+    const finalResponse = NextResponse.redirect(dest, 303);
+    finalResponse.cookies.delete(AUTH_COOKIE_NAME);
+    finalResponse.cookies.set(AUTH_COOKIE_NAME, token, {
+      httpOnly: false,
+      maxAge:   SESSION_MAX_AGE,
+      path:     "/",
+      sameSite: "lax",
+      secure:   process.env.NODE_ENV === "production",
+    });
+    return finalResponse;
   } catch (err) {
     console.error("[auth/login] Unexpected error:", err);
     return NextResponse.redirect(new URL("/login?error=invalid", request.url), 303);
