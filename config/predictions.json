@@ -1,60 +1,60 @@
 {
   "enabled": true,
-  "revealAfter": "2026-12-18T22:00:00+05:30",
+  "revealAfter": "2026-05-20T21:00:00+05:30",
   "questions": [
     {
       "id": "who_cries_first",
       "question": "Who will cry first during the vows?",
       "emoji": "😭",
       "options": [
-        { "value": "bride",    "label": "Hana" },
-        { "value": "groom",   "label": "Suriya" },
-        { "value": "both",    "label": "Both at the same moment" },
-        { "value": "neither", "label": "Neither — they're ice" }
+        { "value": "bride",    "label": "Marion Jemima — she's been planning this speech for months" },
+        { "value": "groom",   "label": "Livingston — quietly, but definitely" },
+        { "value": "both",    "label": "Both, at exactly the same moment" },
+        { "value": "priest",  "label": "The Father — moved by the occasion" }
       ]
     },
     {
-      "id": "who_is_late",
-      "question": "Who will be fashionably late?",
-      "emoji": "⏰",
-      "options": [
-        { "value": "bride",       "label": "The bride — worth the wait" },
-        { "value": "guests",      "label": "A group of guests" },
-        { "value": "nobody",      "label": "Nobody — everyone's early" },
-        { "value": "band",        "label": "The live musicians" }
-      ]
-    },
-    {
-      "id": "dance_floor",
-      "question": "Who owns the dance floor at the reception?",
+      "id": "first_dance_mood",
+      "question": "What will the first dance at the reception feel like?",
       "emoji": "💃",
       "options": [
-        { "value": "uncles",  "label": "The uncles, obviously" },
-        { "value": "bride",   "label": "Hana — no contest" },
-        { "value": "groom",   "label": "Suriya — surprise move" },
-        { "value": "kids",    "label": "The youngest guests" }
+        { "value": "romantic",    "label": "Slow and deeply romantic — just the two of them" },
+        { "value": "surprised",   "label": "A surprise choreographed number no one saw coming" },
+        { "value": "family_joins","label": "Beautiful until the whole family joins in" },
+        { "value": "short",       "label": "Mercifully brief — they're not dancers" }
+      ]
+    },
+    {
+      "id": "dance_floor_owner",
+      "question": "Who will truly own the beach reception dance floor?",
+      "emoji": "🕺",
+      "options": [
+        { "value": "uncles",  "label": "The uncles — unstoppable as always" },
+        { "value": "bride",   "label": "Marion Jemima — it was always her stage" },
+        { "value": "groom",   "label": "Livingston — a dark horse on the floor" },
+        { "value": "kids",    "label": "The youngest guests — no inhibitions whatsoever" }
       ]
     },
     {
       "id": "speech_tears",
-      "question": "Which speech will make the room cry the most?",
+      "question": "Which speech will make the entire room cry?",
       "emoji": "🎤",
       "options": [
-        { "value": "parents_bride", "label": "Hana's parents" },
-        { "value": "parents_groom", "label": "Suriya's parents" },
-        { "value": "best_man",      "label": "Best man / groomsmen" },
-        { "value": "surprise",      "label": "An unexpected guest" }
+        { "value": "brides_parents", "label": "Marion Jemima's parents" },
+        { "value": "grooms_parents", "label": "Livingston's parents" },
+        { "value": "best_man",       "label": "The best man's roast-turned-tribute" },
+        { "value": "surprise",       "label": "Someone completely unexpected takes the mic" }
       ]
     },
     {
-      "id": "first_argument",
-      "question": "What will their first married-life disagreement be about?",
-      "emoji": "🤔",
+      "id": "beach_moment",
+      "question": "What will be the most magical moment at the beach reception?",
+      "emoji": "🌊",
       "options": [
-        { "value": "ac_temp",    "label": "AC temperature" },
-        { "value": "directions", "label": "Which way to go" },
-        { "value": "cooking",    "label": "What to have for dinner" },
-        { "value": "never",      "label": "They'll never argue" }
+        { "value": "sunset",   "label": "The golden hour photos just after sunset" },
+        { "value": "vows",     "label": "A spontaneous second reading of vows at the shoreline" },
+        { "value": "music",    "label": "When the perfect song comes on and everyone stops talking" },
+        { "value": "waves",    "label": "Someone inevitably ends up in the sea" }
       ]
     }
   ]

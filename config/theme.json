@@ -1,57 +1,32 @@
 {
   "brand": {
-    "siteName": "Surihana Vows",
-    "tagline": "Invitation, live celebration, and family archive in one cinematic digital home."
+    "siteName": "The Union",
+    "tagline": "Marion Jemima & Livingston · 20 May 2026 · Chennai"
   },
   "navigation": [
-    {
-      "label": "Home",
-      "href": "/"
-    },
-    {
-      "label": "Story",
-      "href": "/story"
-    },
-    {
-      "label": "Events",
-      "href": "/events"
-    },
-    {
-      "label": "Travel",
-      "href": "/travel"
-    },
-    {
-      "label": "Gallery",
-      "href": "/gallery"
-    },
-    {
-      "label": "Guestbook",
-      "href": "/guestbook"
-    },
-    {
-      "label": "Live",
-      "href": "/live"
-    },
-    {
-      "label": "Predictions",
-      "href": "/predictions"
-    }
+    { "label": "Home",        "href": "/" },
+    { "label": "Story",       "href": "/story" },
+    { "label": "Events",      "href": "/events" },
+    { "label": "Travel",      "href": "/travel" },
+    { "label": "Gallery",     "href": "/gallery" },
+    { "label": "Guestbook",   "href": "/guestbook" },
+    { "label": "Predictions", "href": "/predictions" }
   ],
   "stages": [
     {
       "stage": "Stage 1",
-      "headline": "Personalized invitation journeys",
-      "description": "Every guest receives a tailored link with RSVP, schedule, and a polished cinematic entrance."
+      "headline": "A personal invitation for every guest",
+      "description": "Each guest receives a tailored invitation with the full story, wedding schedule, travel guide, and RSVP — delivered as a cinematic digital experience."
     },
     {
       "stage": "Stage 2",
-      "headline": "Real-time wedding day storytelling",
-      "description": "The experience transforms into a live event hub for streaming, updates, and guest participation."
+      "headline": "The wedding day, lived together",
+      "description": "On the day itself, the platform becomes a live hub — real-time updates, guest photo uploads, messages, and a shared celebration feed."
     },
     {
       "stage": "Stage 3",
-      "headline": "A private archive for the family",
-      "description": "After the wedding, the same platform becomes a protected memory vault with posts, albums, and milestones."
+      "headline": "A family archive for the years ahead",
+      "description": "After the celebration, everything is preserved in a private memory vault — albums, sealed letters, anniversary capsules, and the moments that last."
     }
   ]
 }

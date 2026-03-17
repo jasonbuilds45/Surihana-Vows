@@ -1,48 +1,54 @@
 {
   "featuredCategories": [
     {
-      "title": "Engagement Portraits",
-      "category": "portraits",
-      "coverImage": "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=1200&q=80",
-      "description": "Editorial frames from the engagement session across old city terraces and sandstone courtyards."
+      "title": "The Ceremony",
+      "category": "ceremony",
+      "coverImage": "https://images.unsplash.com/photo-1523438885200-e635ba2c371e?auto=format&fit=crop&w=1200&q=80",
+      "description": "Sacred moments from the Nuptial Mass at Divine Mercy Church — vows, rings, and the quiet emotion of a blessing witnessed."
     },
     {
-      "title": "Family Moments",
+      "title": "The Shoreline Reception",
+      "category": "reception",
+      "coverImage": "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1200&q=80",
+      "description": "The beach lawn at golden hour and beyond — toasts, music, and the Bay of Bengal as the backdrop to the first night of forever."
+    },
+    {
+      "title": "Family & Friends",
       "category": "family",
       "coverImage": "https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?auto=format&fit=crop&w=1200&q=80",
-      "description": "Quiet behind-the-scenes moments with parents, siblings, cousins, and inherited rituals."
+      "description": "The faces that filled the pews and the dance floor — the people who made the journey and made the day."
     },
     {
-      "title": "Wedding Weekend",
-      "category": "weekend",
-      "coverImage": "https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=1200&q=80",
-      "description": "The full weekend in motion, from first arrivals to the final dance under midnight lights."
+      "title": "Candid Moments",
+      "category": "candid",
+      "coverImage": "https://images.unsplash.com/photo-1529634806980-85c3dd6d34ac?auto=format&fit=crop&w=1200&q=80",
+      "description": "The in-between moments — a laugh before the procession, a quiet hand-hold, the sea wind in the veil."
     }
   ],
   "slideshow": [
     {
-      "title": "Lantern Terrace",
-      "caption": "The terrace where the proposal met lantern light and family music.",
+      "title": "Divine Mercy Church",
+      "caption": "Where Marion Jemima and Livingston made their promises before God and family.",
+      "imageUrl": "https://images.unsplash.com/photo-1523438885200-e635ba2c371e?auto=format&fit=crop&w=1600&q=80",
+      "category": "ceremony"
+    },
+    {
+      "title": "The Bay of Bengal",
+      "caption": "Blue Bay Beach Resort, Mahabalipuram — the setting for the shoreline reception.",
+      "imageUrl": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1600&q=80",
+      "category": "reception"
+    },
+    {
+      "title": "Golden Hour on the Coast",
+      "caption": "May light over the Tamil Nadu coastline — the hour when everything glows.",
       "imageUrl": "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=1600&q=80",
-      "category": "portraits"
+      "category": "reception"
     },
     {
-      "title": "Monsoon Coffee",
-      "caption": "A nod to the airport conversation that started everything.",
-      "imageUrl": "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&w=1600&q=80",
-      "category": "story"
-    },
-    {
-      "title": "Letters Before Dawn",
-      "caption": "The ritual of handwritten notes that shaped the engagement year.",
-      "imageUrl": "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1600&q=80",
-      "category": "family"
-    },
-    {
-      "title": "Golden Hour Courtyard",
-      "caption": "The ceremony space moments before guests arrive.",
+      "title": "Families Becoming One",
+      "caption": "The moment two families stopped being two things and became one.",
       "imageUrl": "https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=1600&q=80",
-      "category": "weekend"
+      "category": "family"
     }
   ],
   "downloadUrl": ""

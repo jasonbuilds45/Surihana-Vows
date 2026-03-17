@@ -2,84 +2,100 @@
   "id": "11111111-1111-1111-1111-111111111111",
   "brideName": "Marion Jemima",
   "groomName": "Livingston",
-  "celebrationTitle": "Surihana Vows",
-  "heroTitle": "A cinematic celebration of promises, family, and forever.",
-  "heroSubtitle": "Join us in Chennai for three days of music, blessings, and a love story told in light.",
-  "introQuote": "Some stories begin softly. Ours arrived with monsoon skies, midnight coffee, and a promise to keep choosing wonder.",
-  "weddingDate": "2026-12-18",
-  "weddingTime": "18:30",
-  "venueName": "Blue Bay Beach Resort",
-  "venueAddress": "Vadanemelli Village, Mahabalipuram",
-  "venueCity": "Chennai, Tamilnadu",
-  "mapLink": "https://maps.google.com/?q=Blue+Bay+Beach+Resort+Mahabalipuram+Chennai",
-  "dressCode": "Jewel tones, modern Indian formal, and evening elegance.",
-  "contactEmail": "family@surihana.vows",
-  "thankYouMessage": "Every face we saw across the courtyard reminded us why we chose to celebrate surrounded by the people we love most. Thank you for making the journey — near or far — and for filling our first chapter with so much warmth, laughter, and light. We carry every moment with us.",
+  "celebrationTitle": "The Union",
+  "heroTitle": "Two families. One promise. A lifetime beginning by the sea.",
+  "heroSubtitle": "Join us in Chennai as Marion Jemima and Livingston exchange their vows — first before God, then beneath the stars on the shore.",
+  "introQuote": "Not every love story begins with a glance across a room. Ours began with a quiet conversation, a family's blessing, and the slow, certain knowledge that this was exactly right.",
+  "weddingDate": "2026-05-20",
+  "weddingTime": "15:00",
+  "venueName": "Divine Mercy Church",
+  "venueAddress": "Malaiyappa Mudali St, Kelambakkam, Tamil Nadu 603103",
+  "venueCity": "Chennai, Tamil Nadu",
+  "mapLink": "https://share.google/SCdoX1GZAvGSlOIrQ",
+  "receptionVenueName": "Blue Bay Beach Resort",
+  "receptionVenueAddress": "Vadanemilli Village, Before Crocodile Park, SH 49, Mahabalipuram, Tamil Nadu 603104",
+  "receptionMapLink": "https://maps.app.goo.gl/vu56aH1Jvp29gSuu7",
+  "weddingTime2": "18:00",
+  "dressCode": "Formal and semi-formal attire. For the reception, think coastal elegance — whites, creams, soft golds, and touches of green.",
+  "contactEmail": "jason454a@gmail.com",
+  "thankYouMessage": "There is a particular kind of grace in being surrounded by the people who have known you longest and loved you best — and that is exactly what you gave us on the twentieth of May. You crossed cities, rearranged calendars, and showed up with open hearts. The church was full because of you. The shoreline glowed because of you. Every laugh, every tear, every dance was a gift we will carry into every year that follows. Thank you for witnessing the beginning of our forever. With all our love — Marion Jemima & Livingston.",
+  "highlightVideoUrl": null,
   "palette": {
-    "background": "#f8f1e7",
-    "surface": "#fffaf5",
-    "accent": "#8a5a44",
-    "accentSoft": "#d4b39b"
+    "background": "#F8F6F2",
+    "surface": "#FDFCF9",
+    "accent": "#B8973A",
+    "accentSoft": "#D4C48C"
   },
   "highlights": [
-    "Personalized guest invitations with RSVP tracking",
-    "Live wedding day hub with countdown, livestream, and guest messages",
-    "Private family vault for anniversaries, albums, and preserved memories"
+    "A sacred church ceremony at Divine Mercy Church, Kelambakkam",
+    "A coastal beach reception at Blue Bay Beach Resort, Mahabalipuram",
+    "Personalised guest invitations with RSVP and live-day hub"
   ],
   "story": [
     {
-      "year": "2021",
-      "title": "A delayed flight and a quiet hello",
-      "description": "They met at an airport lounge after two weather-delayed departures, sharing a charger, a conversation, and eventually the same taxi into the city.",
-      "imageUrl": "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1200&q=80"
+      "year": "2025",
+      "title": "A meeting arranged with care",
+      "description": "In August of 2025, two families who had each prayed for the right match sat down together for the first time. Marion Jemima and Livingston were introduced with quiet hopes on both sides — and found, in each other, something that felt immediately familiar.",
+      "imageUrl": "https://images.unsplash.com/photo-1529634806980-85c3dd6d34ac?auto=format&fit=crop&w=1200&q=80"
     },
     {
-      "year": "2022",
-      "title": "Letters, playlists, and long-distance courage",
-      "description": "Between cities and calendars, they built a ritual of voice notes at dawn and handwritten letters on Sundays.",
+      "year": "2025",
+      "title": "Getting to know each other",
+      "description": "Through the final months of 2025, they spoke — of faith, of family, of what they hoped a life together might look like. Each conversation left less unsaid than the one before. It was not fireworks. It was something quieter and more certain than that.",
       "imageUrl": "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&w=1200&q=80"
     },
     {
-      "year": "2024",
-      "title": "A yes beneath lantern light",
-      "description": "Suriya proposed during a family dinner on a terrace lit by floating lanterns, while Hana's grandmother hummed her favorite old ghazal nearby.",
+      "year": "2026",
+      "title": "A yes that changed everything",
+      "description": "By February of 2026, both families had given their blessing and both hearts had said yes. The engagement was a celebration of two families becoming one — and of two people choosing, with full knowledge and full joy, to begin.",
       "imageUrl": "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=1200&q=80"
+    },
+    {
+      "year": "2026",
+      "title": "The months before the altar",
+      "description": "The months between the engagement and the wedding were filled with the quiet business of building a life — flowers chosen, vows considered, families knitting themselves together. And through all of it, a growing sense of peace about what was coming.",
+      "imageUrl": "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1200&q=80"
     }
   ],
   "stages": [
     {
-      "title": "Invitation Website",
-      "description": "A personalized microsite for every guest with the couple story, schedule, travel guidance, and RSVP."
+      "title": "The Invitation",
+      "description": "A personalised digital invitation for every guest — with the full story, schedule, travel guide, and RSVP."
     },
     {
-      "title": "Wedding Day Live Hub",
-      "description": "A shared live experience with streaming, timeline updates, guestbook notes, and a real-time celebration feed."
+      "title": "The Wedding Day",
+      "description": "A live hub for the day itself — real-time updates, guest messages, photo uploads, and the livestream."
     },
     {
-      "title": "Private Family Memory Vault",
-      "description": "A secured archive that continues the story with albums, family letters, anniversaries, and cinematic keepsakes."
+      "title": "The Memory Vault",
+      "description": "A private, permanent archive for family — albums, anniversary capsules, and memories preserved forever."
     }
   ],
   "rituals": [
     {
-      "title": "The Tying of the Thali",
-      "description": "The central moment of a Tamil wedding. The groom ties a sacred thread — the thali — around the bride's neck, symbolising their union before God and family.",
-      "emoji": "🧵"
+      "title": "The Nuptial Mass",
+      "description": "The heart of a Catholic wedding. The couple exchanges their vows before God, the priest, and their families during the Holy Mass. The exchange of rings seals the covenant — a promise made not just between two people, but before the whole of heaven.",
+      "emoji": "✝️"
     },
     {
-      "title": "Kashi Yatra",
-      "description": "The groom playfully sets off on a pilgrimage to Kashi, renouncing worldly life. The bride's father intercepts him and invites him to accept family life instead.",
-      "emoji": "🛶"
+      "title": "The Exchange of Vows",
+      "description": "In their own words, Marion Jemima and Livingston will promise to love, honour, and cherish each other — in joy and in sorrow, in plenty and in want — for the rest of their lives. This is the moment the church holds its breath.",
+      "emoji": "💍"
     },
     {
-      "title": "Oonjal",
-      "description": "The couple sit together on a decorated swing, showered with rose petals by family. It symbolises the gentle rhythms of a shared life.",
-      "emoji": "🌸"
+      "title": "The Blessing of the Rings",
+      "description": "The wedding rings are blessed by the priest and exchanged as a visible sign of the vows spoken. A circle without beginning or end — a symbol of love that does not stop.",
+      "emoji": "💛"
     },
     {
-      "title": "Saptapadi — The Seven Steps",
-      "description": "The couple walk seven steps together around the sacred fire, each step representing a vow — nourishment, strength, prosperity, wisdom, children, health, and friendship.",
-      "emoji": "🔥"
+      "title": "The Unity Candle",
+      "description": "Two candles — one representing Marion Jemima's family, one Livingston's — are used to light a single central flame together. Two lives, two families, one new light.",
+      "emoji": "🕯️"
+    },
+    {
+      "title": "The Final Blessing & Recessional",
+      "description": "The priest pronounces the couple husband and wife and blesses their union. They walk back down the aisle together for the first time as one — greeted by the joy of everyone who came to witness it.",
+      "emoji": "🌿"
     }
   ]
 }

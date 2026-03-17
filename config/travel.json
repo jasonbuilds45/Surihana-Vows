@@ -1,70 +1,82 @@
 {
   "sections": [
     {
-      "title": "Hotel Blocks",
-      "description": "We reserved preferred rates at Radisson Blu Temple Bay, Intercontinental Chennai, and The Leela Palace for guests arriving from out of town.",
-      "link": "https://example.com/hotel-blocks",
-      "linkLabel": "View hotel options"
+      "title": "Getting to the Church",
+      "description": "Divine Mercy Church is in Kelambakkam, approximately 40 km south of central Chennai via the OMR (Old Mahabalipuram Road). From Chennai Airport, expect 50–70 minutes depending on traffic. Ola, Uber, and auto-rickshaws are all readily available.",
+      "link": "https://share.google/SCdoX1GZAvGSlOIrQ",
+      "linkLabel": "Directions to Divine Mercy Church"
+    },
+    {
+      "title": "Getting to the Beach Reception",
+      "description": "Blue Bay Beach Resort is on SH 49 (East Coast Road) just before Crocodile Park, Mahabalipuram — about 15 km from the church. The drive along ECR in the evening is beautiful. We recommend leaving no later than 5:30 PM to be settled in for the 6 PM reception.",
+      "link": "https://maps.app.goo.gl/vu56aH1Jvp29gSuu7",
+      "linkLabel": "Directions to Blue Bay Beach Resort"
+    },
+    {
+      "title": "Recommended Hotels Nearby",
+      "description": "Several excellent stay options exist along the ECR corridor close to both venues. Radisson Blu Temple Bay Mahabalipuram and Chariot Beach Resort are within 5 km of the reception venue. For those preferring central Chennai, ITC Grand Chola and Taj Coromandel offer premium accommodation with easy highway access.",
+      "link": "https://maps.google.com/?q=hotels+near+Mahabalipuram+ECR+Chennai",
+      "linkLabel": "Search hotels near ECR"
     },
     {
       "title": "Airport Transfers",
-      "description": "Private transfers from Chennai International Airport can be arranged through our concierge partner. Share your arrival time and we will coordinate the pickup.",
-      "link": "https://example.com/transfers",
-      "linkLabel": "Arrange transfers"
+      "description": "Chennai International Airport (MAA) is the closest airport, approximately 50–55 km from Blue Bay Beach Resort. Ola Outstation and Uber Intercity offer reliable pre-booked cabs. The drive takes 60–90 minutes depending on traffic. Book in advance for the 20th.",
+      "link": "https://maps.google.com/?q=Chennai+International+Airport",
+      "linkLabel": "Chennai Airport directions"
     },
     {
-      "title": "City Guide",
-      "description": "We put together our favourite cafes, temple visits, Marina Beach walks, and rooftop dinners around Chennai for a memorable long weekend.",
-      "link": "https://example.com/city-guide",
-      "linkLabel": "Open city guide"
+      "title": "Exploring the Coast",
+      "description": "If you are extending your stay, Mahabalipuram is a UNESCO World Heritage Site with stunning Shore Temples, rock-cut sculptures, and beautiful beaches. Five Rathas, Arjuna's Penance, and the Shore Temple are all within 10 minutes of the venue. The seafood along ECR is unmissable.",
+      "link": "https://maps.google.com/?q=Shore+Temple+Mahabalipuram",
+      "linkLabel": "Shore Temple, Mahabalipuram"
     }
   ],
   "essentials": [
     {
       "id": "ess-001",
-      "title": "Government Hospital Mahabalipuram",
-      "description": "4 km from venue. Open 24 hours. Emergency services available.",
+      "title": "Government Hospital, Mahabalipuram",
+      "description": "Approx 4 km from the venue. Open 24 hours. Emergency services available.",
       "link": "https://maps.google.com/?q=Government+Hospital+Mahabalipuram",
       "icon": "hospital",
       "category": "essentials"
     },
     {
       "id": "ess-002",
-      "title": "Apollo Pharmacy",
-      "description": "1.2 km from venue. Open until midnight. Prescription and OTC medicines.",
-      "link": "https://maps.google.com/?q=Apollo+Pharmacy+Mahabalipuram",
+      "title": "Apollo Pharmacy, Kelambakkam",
+      "description": "Near the church. Open until midnight. Prescription and OTC medicines.",
+      "link": "https://maps.google.com/?q=Apollo+Pharmacy+Kelambakkam+Chennai",
       "icon": "pharmacy",
       "category": "essentials"
     },
     {
       "id": "ess-003",
       "title": "Mahabalipuram Police Station",
-      "description": "2 km from venue. Emergency: 100",
+      "description": "Approx 3 km from the reception venue. Emergency: 100",
       "link": "https://maps.google.com/?q=Mahabalipuram+Police+Station",
       "icon": "police",
       "category": "essentials"
     },
     {
       "id": "ess-004",
-      "title": "Nearest Bus Stop",
-      "description": "500 m from the venue gate on East Coast Road.",
+      "title": "ECR Bus Services",
+      "description": "MTC buses run regularly along East Coast Road. Stop near the resort gate on SH 49.",
       "link": "https://maps.google.com/?q=Mahabalipuram+Bus+Stand",
       "icon": "bus",
       "category": "essentials"
     },
     {
       "id": "ess-005",
-      "title": "Chennai Airport",
-      "description": "Approx 50 km from venue. Terminal 1 & 2. Cab approx 60-90 minutes.",
+      "title": "Chennai International Airport (MAA)",
+      "description": "Approx 50 km from the beach resort. Cab: 60–90 minutes via OMR/ECR.",
       "link": "https://maps.google.com/?q=Chennai+International+Airport",
       "icon": "train",
       "category": "essentials"
     },
     {
       "id": "ess-006",
-      "title": "Wedding Coordinator",
-      "description": "Reach out if you need any help during your stay. Available from 8 AM to 10 PM.",
-      "link": "tel:+919876543210",
+      "title": "Wedding Coordination Contact",
+      "description": "Need help during your stay? Reach us at jason454a@gmail.com. Available from 8 AM to 10 PM.",
+      "link": "mailto:jason454a@gmail.com",
       "icon": "phone",
       "category": "essentials"
     }
@@ -72,25 +84,34 @@
   "faq": [
     {
       "question": "Which airport should we fly into?",
-      "answer": "Fly into Chennai International Airport (MAA). It is roughly 50–60 km from Blue Bay Beach Resort, Mahabalipuram, depending on traffic."
+      "answer": "Chennai International Airport (MAA) is your best option. It is approximately 50–55 km from the beach reception venue at Blue Bay Beach Resort, Mahabalipuram, and about 40 km from Divine Mercy Church in Kelambakkam."
     },
     {
-      "question": "Is transportation provided between venues?",
-      "answer": "Yes. Shuttle loops begin 45 minutes before every scheduled event and return after the final departure."
+      "question": "Is there transport between the church and the beach reception?",
+      "answer": "The two venues are approximately 15 km apart along the East Coast Road. We recommend making your own arrangements for the transfer between venues. Ola and Uber are available throughout, and the ECR drive at evening light is quite lovely."
+    },
+    {
+      "question": "What is the dress code for the beach reception?",
+      "answer": "Coastal elegance. Think whites, creams, champagne, soft golds, and greens. Flowing fabrics work beautifully in the sea breeze. Heels are not recommended on the beach lawn — wedges and flats are perfect."
     },
     {
       "question": "Can children attend?",
-      "answer": "Children are welcome at all events. Please indicate the number of children in your RSVP so we can make the right arrangements."
+      "answer": "Children are warmly welcome at both the church ceremony and the beach reception. Please mention the number of little ones in your RSVP so we can make the right arrangements."
     },
     {
-      "question": "What is the nearest railway station?",
-      "answer": "Chennai Egmore and Chennai Central are the main stations, both approximately 55 km from the venue. Local trains to Chengalpattu are another option."
+      "question": "What is the weather like in May?",
+      "answer": "May in Chennai is warm — expect 32–36°C during the day. Evenings on the beach are pleasant with a sea breeze. Light, breathable fabrics are highly recommended for both events."
+    },
+    {
+      "question": "Is parking available?",
+      "answer": "Yes. Parking is available at both Divine Mercy Church and Blue Bay Beach Resort. Overflow parking is available near the resort gate."
     }
   ],
   "arrivalTips": [
-    "December evenings in Chennai are pleasant but can be breezy near the coast — pack a light layer for outdoor events after sunset.",
-    "East Coast Road (ECR) is the main route to Mahabalipuram. Expect moderate traffic on weekends; plan to arrive 30 minutes early.",
-    "Please keep a screenshot of your personalized invite link for quick check-in at the venue entrance.",
-    "Parking is available at the resort premises. Overflow parking is at the adjacent lot 200 m from the gate."
+    "May evenings on the beach are warm but breezy — bring a light layer for the outdoor reception if you run cool.",
+    "East Coast Road (ECR) can get congested on Wednesday evenings. We recommend leaving the church by 5:30 PM at the latest for the reception.",
+    "Avoid stiletto heels for the beach lawn reception — wedges, block heels, or beautiful flats will serve you much better on sand.",
+    "Screenshot your personalised invitation link for quick check-in at both venues.",
+    "Explore Mahabalipuram if you arrive a day early — the Shore Temples at sunrise are extraordinary."
   ]
 }
