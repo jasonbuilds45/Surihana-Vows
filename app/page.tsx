@@ -113,18 +113,53 @@ export default function HomePage() {
           border-color: rgba(192,54,74,0.35);
         }
 
+        /* ── Desktop: show full cards, hide pills ── */
+        .btn-desktop { display: flex !important; }
+        .btn-mobile-pill { display: none !important; }
+
+        /* ── Mobile pill buttons ── */
+        .btn-mobile-pill {
+          display: none;
+          align-items: center;
+          gap: 8px;
+          padding: 10px 18px;
+          border-radius: 999px;
+          text-decoration: none;
+          font-family: var(--font-body), system-ui, sans-serif;
+          font-weight: 700;
+          transition: transform 0.2s ease, box-shadow 0.2s ease;
+          white-space: nowrap;
+        }
+        .btn-mobile-pill:hover { transform: translateY(-2px); }
+        .btn-mobile-couple {
+          background: #C0364A;
+          border: 1px solid rgba(192,54,74,0.3);
+          box-shadow: 0 4px 16px rgba(192,54,74,0.28);
+        }
+        .btn-mobile-couple:hover { background: #A82C3E; }
+        .btn-mobile-family {
+          background: rgba(255,255,255,0.80);
+          border: 1.5px solid rgba(192,54,74,0.22);
+          box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+          backdrop-filter: blur(10px);
+        }
+        .btn-mobile-family:hover { background: rgba(255,255,255,0.95); }
+
         /* ── Mobile ── */
         @media (max-width: 640px) {
           .hero-section { min-height: 100dvh !important; }
           .names-h1 { font-size: clamp(3.5rem, 16vw, 5.5rem) !important; }
           .ampersand { font-size: clamp(1.5rem, 6vw, 2.5rem) !important; }
-          .btn-row { flex-direction: column !important; }
-          .login-btn { width: 100% !important; }
+          /* Hide desktop cards, show pills */
+          .btn-desktop { display: none !important; }
+          .btn-mobile-pill { display: inline-flex !important; }
+          /* Pills sit side by side, centred */
+          .btn-row { flex-direction: row !important; flex-wrap: nowrap !important; justify-content: center !important; }
           .content-wrap {
             padding: 6rem 1.5rem 2.5rem !important;
             justify-content: flex-start !important;
           }
-          .detail-row { flex-direction: column !important; align-items: flex-start !important; gap: 0.4rem !important; }
+          .detail-row { flex-direction: column !important; align-items: center !important; gap: 0.4rem !important; }
           .dot-sep { display: none !important; }
           .photo-strip { display: none !important; }
           .quote-text { font-size: 0.95rem !important; }
@@ -363,87 +398,53 @@ export default function HomePage() {
               display: "flex", alignItems: "center", gap: 10,
               marginBottom: "1rem",
             }}>
-              <div style={{
-                width: 6, height: 6, borderRadius: "50%",
-                background: "#C0364A",
-                animation: "floatDot 2.5s ease-in-out infinite",
-              }} />
-              <span style={{
-                fontSize: "0.54rem", letterSpacing: "0.38em",
-                textTransform: "uppercase",
-                color: "#7A5460", fontWeight: 700,
-              }}>
+              <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#C0364A", animation: "floatDot 2.5s ease-in-out infinite" }} />
+              <span style={{ fontSize: "0.54rem", letterSpacing: "0.38em", textTransform: "uppercase", color: "#7A5460", fontWeight: 700 }}>
                 Private access
               </span>
-              <div style={{
-                width: 6, height: 6, borderRadius: "50%",
-                background: "#C0364A",
-                animation: "floatDot 2.5s 1.25s ease-in-out infinite",
-              }} />
+              <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#C0364A", animation: "floatDot 2.5s 1.25s ease-in-out infinite" }} />
             </div>
 
-            {/* ═══════ TWO BUTTONS ═══════ */}
-            <div className="btn-row r9" style={{
-              display: "flex",
-              gap: "0.875rem",
-              flexWrap: "wrap",
-              justifyContent: "center",
-              width: "100%",
-              maxWidth: 560,
-            }}>
+            {/* ═══════ TWO BUTTONS ═══════
+                Desktop: full cards with icon + two-line text (unchanged)
+                Mobile ≤640px: compact pills, side by side, emoji + single label
+            */}
+            <div className="btn-row r9" style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap", justifyContent: "center", width: "100%", maxWidth: 520 }}>
 
-              {/* Couple */}
-              <a href="/login?hint=couple&redirect=/admin" className="login-btn btn-couple" style={{ flex: "1 1 220px" }}>
-                <div style={{
-                  width: 44, height: 44, borderRadius: 12, flexShrink: 0,
-                  background: "rgba(255,255,255,0.22)",
-                  border: "1px solid rgba(255,255,255,0.30)",
-                  display: "grid", placeItems: "center",
-                  fontSize: "1.2rem",
-                }}>💍</div>
+              {/* ── Couple ── */}
+              {/* Desktop version (hidden on mobile via CSS) */}
+              <a href="/login?hint=couple&redirect=/admin" className="login-btn btn-couple btn-desktop" style={{ flex: "1 1 220px" }}>
+                <div style={{ width: 44, height: 44, borderRadius: 12, flexShrink: 0, background: "rgba(255,255,255,0.22)", border: "1px solid rgba(255,255,255,0.30)", display: "grid", placeItems: "center", fontSize: "1.2rem" }}>💍</div>
                 <div style={{ flex: 1, minWidth: 0, textAlign: "left" }}>
-                  <p style={{
-                    fontSize: "0.52rem", letterSpacing: "0.28em",
-                    textTransform: "uppercase",
-                    color: "rgba(255,255,255,0.72)", fontWeight: 700,
-                    marginBottom: "0.25rem",
-                  }}>The couple</p>
-                  <p style={{
-                    fontSize: "0.9rem", fontWeight: 700,
-                    color: "#FFFFFF", lineHeight: 1.2,
-                    whiteSpace: "nowrap",
-                  }}>{bf} &amp; {gf}</p>
+                  <p style={{ fontSize: "0.52rem", letterSpacing: "0.28em", textTransform: "uppercase", color: "rgba(255,255,255,0.72)", fontWeight: 700, marginBottom: "0.25rem" }}>The couple</p>
+                  <p style={{ fontSize: "0.9rem", fontWeight: 700, color: "#FFFFFF", lineHeight: 1.2, whiteSpace: "nowrap" }}>{bf} &amp; {gf}</p>
                 </div>
-                <svg style={{ flexShrink: 0, color: "rgba(255,255,255,0.65)" }} width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M5 12h14M12 5l7 7-7 7"/>
-                </svg>
+                <svg style={{ flexShrink: 0, color: "rgba(255,255,255,0.65)" }} width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
               </a>
 
-              {/* Family */}
-              <a href="/login?hint=vault&redirect=/family" className="login-btn btn-family" style={{ flex: "1 1 220px" }}>
-                <div style={{
-                  width: 44, height: 44, borderRadius: 12, flexShrink: 0,
-                  background: "rgba(192,54,74,0.10)",
-                  border: "1px solid rgba(192,54,74,0.20)",
-                  display: "grid", placeItems: "center",
-                  fontSize: "1.2rem",
-                }}>🫂</div>
+              {/* Mobile version — compact pill */}
+              <a href="/login?hint=couple&redirect=/admin" className="btn-mobile-pill btn-mobile-couple">
+                <span style={{ fontSize: "1rem" }}>💍</span>
+                <span style={{ fontSize: "0.8rem", fontWeight: 700, color: "#fff" }}>Couple login</span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.7)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </a>
+
+              {/* ── Family ── */}
+              {/* Desktop version */}
+              <a href="/login?hint=vault&redirect=/family" className="login-btn btn-family btn-desktop" style={{ flex: "1 1 220px" }}>
+                <div style={{ width: 44, height: 44, borderRadius: 12, flexShrink: 0, background: "rgba(192,54,74,0.10)", border: "1px solid rgba(192,54,74,0.20)", display: "grid", placeItems: "center", fontSize: "1.2rem" }}>🫂</div>
                 <div style={{ flex: 1, minWidth: 0, textAlign: "left" }}>
-                  <p style={{
-                    fontSize: "0.52rem", letterSpacing: "0.28em",
-                    textTransform: "uppercase",
-                    color: "#7A5460", fontWeight: 700,
-                    marginBottom: "0.25rem",
-                  }}>Family vault</p>
-                  <p style={{
-                    fontSize: "0.9rem", fontWeight: 700,
-                    color: "#1A1012", lineHeight: 1.2,
-                    whiteSpace: "nowrap",
-                  }}>Family of the couple</p>
+                  <p style={{ fontSize: "0.52rem", letterSpacing: "0.28em", textTransform: "uppercase", color: "#7A5460", fontWeight: 700, marginBottom: "0.25rem" }}>Family vault</p>
+                  <p style={{ fontSize: "0.9rem", fontWeight: 700, color: "#1A1012", lineHeight: 1.2, whiteSpace: "nowrap" }}>Family of the couple</p>
                 </div>
-                <svg style={{ flexShrink: 0, color: "#C0364A" }} width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M5 12h14M12 5l7 7-7 7"/>
-                </svg>
+                <svg style={{ flexShrink: 0, color: "#C0364A" }} width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </a>
+
+              {/* Mobile version — compact pill */}
+              <a href="/login?hint=vault&redirect=/family" className="btn-mobile-pill btn-mobile-family">
+                <span style={{ fontSize: "1rem" }}>🫂</span>
+                <span style={{ fontSize: "0.8rem", fontWeight: 700, color: "#1A1012" }}>Family login</span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#C0364A" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
               </a>
 
             </div>
