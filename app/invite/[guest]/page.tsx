@@ -123,6 +123,10 @@ export default async function InvitePage({ params }: InvitePageProps) {
   // Optional couple video URL — set highlightVideoUrl in wedding.json to enable
   const coupleVideoUrl = weddingConfig.highlightVideoUrl ?? null;
 
+  // Hero photo — use first slideshow photo if available
+  const heroPhoto = (await import("@/modules/premium/photo-gallery").then(m => m.getSlideshowPhotos()))[0]?.imageUrl
+    ?? "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1800&q=85";
+
   return (
     <CinematicIntro
       brideName={invite.wedding.bride_name}
@@ -131,6 +135,10 @@ export default async function InvitePage({ params }: InvitePageProps) {
       inviteCode={invite.guest.invite_code}
       subtitle={weddingConfig.heroSubtitle}
       title={weddingConfig.celebrationTitle}
+      weddingDate={formatDate(invite.wedding.wedding_date)}
+      venueName={invite.wedding.venue_name}
+      venueCity={weddingConfig.venueCity}
+      heroPhotoUrl={heroPhoto}
     >
       <InviteTracker guestId={invite.guest.id} inviteCode={invite.guest.invite_code} />
 
