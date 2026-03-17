@@ -461,7 +461,7 @@ export default function HomePage() {
               lineHeight: 1.6,
               padding: "0 1rem",
             }}>
-              Are you a guest? Open the personal invitation link that {bf} &amp; {gf} sent directly to you.
+              Are you a guest? Open the personal invitation link that {bf} &amp; {gf} sent directly to you. {/* line 156 fixed */}
             </p>
 
           </div>
