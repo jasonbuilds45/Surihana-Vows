@@ -888,9 +888,9 @@ export function CinematicIntro({
             <p style={{
               marginTop:"1.375rem", textAlign:"center",
               fontFamily:BF, fontSize:".48rem", letterSpacing:".38em",
-              textTransform:"uppercase", color:INK3, opacity:.55,
+              textTransform:"uppercase", color:INK3,
               opacity:0, animation:"ci-fadeIn .7s 1.8s ease forwards",
-            } as React.CSSProperties}>
+              } as React.CSSProperties}>
               {brideFirst} &amp; {groomFirst}  ·  {weddingDate ?? ""}
             </p>
           </div>
