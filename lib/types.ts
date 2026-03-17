@@ -41,7 +41,7 @@ export interface WeddingConfig {
   // guestbook panel regardless of what is in the videos table.
   // When absent the first row from the videos table is used instead.
   // Leave unset (or set to "") to omit the section entirely in demo/pre-wedding.
-  highlightVideoUrl?: string;
+  highlightVideoUrl?: string | null;
   palette: {
     background: string;
     surface: string;
