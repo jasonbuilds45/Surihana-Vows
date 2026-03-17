@@ -132,7 +132,7 @@ export default async function FamilyPage() {
                 {brideFirst} &amp; {groomFirst}
               </h1>
               <p className="text-sm" style={{ color: "var(--color-text-secondary)", marginTop: ".375rem" }}>
-                {formatDate(weddingConfig.weddingDate)} · {weddingConfig.venueName}
+                {formatDate(weddingConfig.weddingDate)} · {weddingConfig.venueCity}
               </p>
             </div>
 

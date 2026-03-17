@@ -50,14 +50,14 @@ export default function RSVPPage() {
               The celebration
             </p>
             <h2 style={{ fontFamily: DF, fontSize: "clamp(1.5rem, 3vw, 2.5rem)", fontWeight: 700, lineHeight: 1.0, letterSpacing: "-0.02em", color: INK, marginBottom: "2rem" }}>
-              {weddingConfig.venueName}
+              {bf} &amp; {gf}
             </h2>
             <div style={{ display: "flex", flexDirection: "column", gap: "0.625rem", marginBottom: "2rem" }}>
               {[
-                { label: "Date",    value: formatDate(weddingConfig.weddingDate) },
-                { label: "Time",    value: `${formatTime(weddingConfig.weddingTime)} IST` },
-                { label: "Address", value: weddingConfig.venueAddress },
-                { label: "City",    value: weddingConfig.venueCity },
+                { label: "Date",       value: formatDate(weddingConfig.weddingDate) },
+                { label: "Ceremony",   value: `3:00 PM · Divine Mercy Church, Kelambakkam` },
+                { label: "Reception",  value: `6:00 PM · Blue Bay Beach Resort, Mahabalipuram` },
+                { label: "City",       value: weddingConfig.venueCity },
               ].map(({ label, value }) => (
                 <div key={label} style={{ display: "flex", justifyContent: "space-between", gap: "1rem", padding: "11px 16px", background: "#FFFFFF", borderRadius: 12, border: "1px solid #E4D8D4" }}>
                   <span style={{ fontSize: "0.62rem", fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: INK3, fontFamily: BF }}>{label}</span>
@@ -65,10 +65,16 @@ export default function RSVPPage() {
                 </div>
               ))}
             </div>
-            <a href={weddingConfig.mapLink} target="_blank" rel="noreferrer"
-              style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "10px 20px", borderRadius: 999, background: "#FDEAEC", border: "1px solid #F5C5CB", color: ROSE, fontSize: "0.8rem", fontWeight: 700, textDecoration: "none", fontFamily: BF }}>
-              <MapPin size={13} /> Get directions
-            </a>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
+              <a href="https://share.google/SCdoX1GZAvGSlOIrQ" target="_blank" rel="noreferrer"
+                style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "9px 16px", borderRadius: 999, background: "#FDEAEC", border: "1px solid #F5C5CB", color: ROSE, fontSize: "0.75rem", fontWeight: 700, textDecoration: "none", fontFamily: BF }}>
+                <MapPin size={12} /> Church directions
+              </a>
+              <a href="https://maps.app.goo.gl/vu56aH1Jvp29gSuu7" target="_blank" rel="noreferrer"
+                style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "9px 16px", borderRadius: 999, background: "#FDEAEC", border: "1px solid #F5C5CB", color: ROSE, fontSize: "0.75rem", fontWeight: 700, textDecoration: "none", fontFamily: BF }}>
+                <MapPin size={12} /> Beach resort directions
+              </a>
+            </div>
           </div>
         </div>
 

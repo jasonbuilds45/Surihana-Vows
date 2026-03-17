@@ -42,7 +42,7 @@ interface InvitePageProps { params: { guest: string } }
 
 export async function generateMetadata({ params }: InvitePageProps): Promise<Metadata> {
   const invite = await getInviteBundle(params.guest);
-  if (!invite) return { title: "Invite not found | Surihana Vows" };
+  if (!invite) return { title: `Invite not found | ${weddingConfig.celebrationTitle}` };
   const guestLabel = `${invite.guest.guest_name}${invite.guest.family_name ? ` ${invite.guest.family_name}` : ""}`;
   return {
     title: `${guestLabel} | ${weddingConfig.celebrationTitle}`,
@@ -271,10 +271,10 @@ export default async function InvitePage({ params }: InvitePageProps) {
           <div className="space-y-2">
             <p className="section-label" style={{ color: "var(--color-accent)" }}>Your itinerary</p>
             <h2 className="font-display text-3xl sm:text-4xl" style={{ color: "var(--color-text-primary)" }}>
-              The wedding weekend
+              Your itinerary
             </h2>
             <p className="text-sm leading-7 max-w-lg" style={{ color: "var(--color-text-secondary)" }}>
-              Three days of ceremony, celebration, and togetherness in {weddingConfig.venueCity}.
+              The full schedule for {formatDate(invite.wedding.wedding_date)} in {weddingConfig.venueCity}.
             </p>
           </div>
 
@@ -349,26 +349,32 @@ export default async function InvitePage({ params }: InvitePageProps) {
                 className="rounded-2xl p-5 space-y-3"
                 style={{ background: "var(--color-surface)", border: "1px solid var(--color-border)", boxShadow: "var(--shadow-sm)" }}
               >
-                <p className="section-label" style={{ color: "var(--color-accent)" }}>Key ceremony</p>
+                <p className="section-label" style={{ color: "var(--color-accent)" }}>The celebration</p>
                 <p className="font-display text-xl" style={{ color: "var(--color-text-primary)" }}>
-                  {invite.wedding.venue_name}
+                  {brideFirst} &amp; {groomFirst}
                 </p>
                 <p className="text-sm" style={{ color: "var(--color-text-secondary)" }}>
-                  {formatDate(invite.wedding.wedding_date)} · {formatTime(weddingConfig.weddingTime)}
+                  {formatDate(invite.wedding.wedding_date)}
+                </p>
+                <p className="text-xs mt-1" style={{ color: "var(--color-text-muted)" }}>
+                  3:00 PM · Divine Mercy Church, Kelambakkam
                 </p>
                 <p className="text-xs" style={{ color: "var(--color-text-muted)" }}>
-                  {weddingConfig.venueAddress}, {weddingConfig.venueCity}
+                  6:00 PM · Blue Bay Beach Resort, Mahabalipuram
                 </p>
-                <a
-                  href={weddingConfig.mapLink}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-1.5 text-xs uppercase transition"
-                  style={{ letterSpacing: "0.22em", color: "var(--color-accent)" }}
-                >
-                  <MapPin className="h-3.5 w-3.5" />
-                  Get directions
-                </a>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  <a href="https://share.google/SCdoX1GZAvGSlOIrQ" target="_blank" rel="noreferrer"
+                    className="inline-flex items-center gap-1.5 text-xs uppercase transition"
+                    style={{ letterSpacing: "0.22em", color: "var(--color-accent)" }}>
+                    <MapPin className="h-3.5 w-3.5" /> Church
+                  </a>
+                  <span style={{ color: "var(--color-border-medium)" }}>·</span>
+                  <a href="https://maps.app.goo.gl/vu56aH1Jvp29gSuu7" target="_blank" rel="noreferrer"
+                    className="inline-flex items-center gap-1.5 text-xs uppercase transition"
+                    style={{ letterSpacing: "0.22em", color: "var(--color-accent)" }}>
+                    <MapPin className="h-3.5 w-3.5" /> Beach resort
+                  </a>
+                </div>
               </div>
             </div>
 

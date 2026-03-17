@@ -146,7 +146,7 @@ export const demoMessages: GuestMessageRow[] = [
   {
     id: "6fe9b092-9175-4fd0-bfd9-3cf719a80013",
     guest_name: "Elena",
-    message: "Counting down to celebrating under the Jaipur sky with you both.",
+    message: "Counting down to celebrating under the Chennai sky with you both.",
     wedding_id: DEMO_WEDDING_ID,
     created_at: "2026-03-11T18:40:00.000Z"
   }
@@ -224,14 +224,14 @@ export const demoAnalytics: InviteAnalyticsRow[] = [
 export const demoFamilyUsers: FamilyUserRow[] = [
   {
     id: "7b8be0a1-3b7b-425e-90c4-b3d6539b0011",
-    email: "family@surihana.vows",
+    email: weddingConfig.contactEmail,
     role: "family",
     password_hash: null,
     created_at: createdAt
   },
   {
     id: "7b8be0a1-3b7b-425e-90c4-b3d6539b0012",
-    email: "admin@surihana.vows",
+    email: weddingConfig.contactEmail,
     role: "admin",
     password_hash: null,
     created_at: createdAt
@@ -242,34 +242,34 @@ export const demoFamilyPosts: FamilyPostRow[] = [
   {
     id: "31f1806f-47cf-4296-848f-b77cf3310011",
     wedding_id: DEMO_WEDDING_ID,
-    title: "The First Blessing Dinner",
+    title: "The Families Come Together",
     content:
-      "Three generations gathered around a table of jasmine and cardamom tea, sharing stories from weddings past and promises for the one ahead.",
+      "Two families who had prayed for the right match sat together for the first time in August 2025 — and found in each other exactly what they had hoped for.",
     media_url: demoPhotos[0]?.image_url ?? null,
     created_at: "2026-02-01T09:00:00.000Z",
-    posted_by: "family@surihana.vows",
+    posted_by: weddingConfig.contactEmail,
     post_type: "blessing"
   },
   {
     id: "31f1806f-47cf-4296-848f-b77cf3310012",
     wedding_id: DEMO_WEDDING_ID,
-    title: "Letters Before Sunrise",
+    title: "The Engagement",
     content:
-      "Hana and Suriya exchanged letters the morning after their engagement dinner, a ritual that became the heartbeat of this celebration.",
+      "By February 2026, both families had given their blessing and both hearts had said yes. The engagement was a celebration of two families becoming one.",
     media_url: demoPhotos[1]?.image_url ?? null,
     created_at: "2026-02-14T09:00:00.000Z",
-    posted_by: "family@surihana.vows",
+    posted_by: weddingConfig.contactEmail,
     post_type: "memory"
   },
   {
     id: "31f1806f-47cf-4296-848f-b77cf3310013",
     wedding_id: DEMO_WEDDING_ID,
-    title: "Home Video Archive",
+    title: "The Shore Awaits",
     content:
-      "A restored reel from their first road trip now lives in the vault alongside the messages that shaped their next chapter.",
+      "On the twentieth of May 2026, Marion Jemima and Livingston will make their promises before God at Divine Mercy Church, then celebrate by the sea at Blue Bay Beach Resort.",
     media_url: demoPhotos[2]?.image_url ?? null,
     created_at: "2026-03-01T09:00:00.000Z",
-    posted_by: "family@surihana.vows",
+    posted_by: weddingConfig.contactEmail,
     post_type: "milestone"
   }
 ];

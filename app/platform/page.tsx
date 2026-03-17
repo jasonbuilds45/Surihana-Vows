@@ -22,10 +22,10 @@ import { getHighlightVideo } from "@/modules/luxury/media-archive";
 import { formatDate } from "@/utils/formatDate";
 
 export const metadata: Metadata = {
-  title: "Surihana Vows — Platform Overview",
+  title: `${weddingConfig.celebrationTitle} — Platform Overview`,
   description:
-    "A cinematic wedding invitation, live celebration hub, and private family archive built with Next.js and Supabase.",
-  robots: { index: false } // Do not index the platform demo page
+    `A cinematic wedding experience for ${weddingConfig.brideName} and ${weddingConfig.groomName}.`,
+  robots: { index: false }
 };
 
 export default async function PlatformPage() {
@@ -105,7 +105,7 @@ export default async function PlatformPage() {
 
         {/* ── Story Section ────────────────────────────────────────────── */}
         <StorySection
-          quote="An invitation should feel like entering a story, not filling out a form."
+          quote={weddingConfig.introQuote}
           story={overview.story}
         />
 
