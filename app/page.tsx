@@ -239,30 +239,30 @@ export default function HomePage() {
               position: "absolute", inset: "-5%",
               backgroundImage: `url(${heroPhoto})`,
               backgroundSize: "cover",
-              backgroundPosition: "center 35%",
-              /* Light theme: much lighter, desaturated — photo is backdrop, not subject */
-              filter: "saturate(0.5) brightness(1.10)",
+              /* Center the photo so both couple faces are in frame */
+              backgroundPosition: "center center",
+              filter: "saturate(0.55) brightness(0.88)",
             }} />
           </div>
 
-          {/* Light overlay — creamy wash from bottom, subtle top veil */}
+          {/* Overlay — heavier cream wash so text reads clearly without squinting */}
           <div aria-hidden style={{
             position: "absolute", inset: 0, zIndex: 1,
             background: `
               linear-gradient(to bottom,
-                rgba(251,247,242,0.72) 0%,
-                rgba(251,247,242,0.45) 25%,
-                rgba(251,247,242,0.30) 45%,
-                rgba(251,247,242,0.75) 70%,
-                rgba(251,247,242,0.97) 100%
+                rgba(251,247,242,0.82) 0%,
+                rgba(251,247,242,0.65) 22%,
+                rgba(251,247,242,0.55) 45%,
+                rgba(251,247,242,0.82) 68%,
+                rgba(251,247,242,0.98) 100%
               )
             `,
           }} />
 
-          {/* Warm side vignette */}
+          {/* Warm side vignette — slightly stronger */}
           <div aria-hidden style={{
             position: "absolute", inset: 0, zIndex: 2,
-            background: "radial-gradient(ellipse 110% 90% at 50% 50%, transparent 50%, rgba(251,247,242,0.45) 100%)",
+            background: "radial-gradient(ellipse 100% 80% at 50% 50%, transparent 40%, rgba(251,247,242,0.55) 100%)",
           }} />
 
           {/* ── Content ── */}
@@ -302,7 +302,7 @@ export default function HomePage() {
               fontWeight: 700,
               lineHeight: 0.88,
               letterSpacing: "-0.035em",
-              color: "#1A1012",
+              color: "#0F0608",
               marginBottom: "0.06em",
             }}>
               {bf}
@@ -314,7 +314,7 @@ export default function HomePage() {
               fontSize: "clamp(1.5rem, 4vw, 3rem)",
               fontWeight: 300,
               fontStyle: "italic",
-              color: "#C0364A",
+              color: "#A82C3E",
               letterSpacing: "0.06em",
               lineHeight: 1.2,
               marginBottom: "0.04em",
@@ -329,7 +329,7 @@ export default function HomePage() {
               fontWeight: 700,
               lineHeight: 0.88,
               letterSpacing: "-0.035em",
-              color: "#C0364A",
+              color: "#A82C3E",
               marginBottom: "1.5rem",
             }}>
               {gf}
@@ -350,10 +350,21 @@ export default function HomePage() {
               marginBottom: "1.25rem",
             }}>
               <span style={{
-                fontSize: "0.9rem", fontWeight: 600,
-                color: "#1A1012", letterSpacing: "0.04em",
+                fontSize: "0.9rem", fontWeight: 700,
+                color: "#0F0608", letterSpacing: "0.04em",
               }}>
                 {date}
+              </span>
+              <span className="dot-sep" style={{
+                width: 4, height: 4, borderRadius: "50%",
+                background: "#C0364A",
+                display: "inline-block", flexShrink: 0,
+              }} />
+              <span style={{
+                fontSize: "0.875rem", color: "#2A1218", fontWeight: 500,
+                letterSpacing: "0.03em",
+              }}>
+                {weddingConfig.venueName}
               </span>
               <span className="dot-sep" style={{
                 width: 4, height: 4, borderRadius: "50%",
@@ -361,18 +372,7 @@ export default function HomePage() {
                 display: "inline-block", flexShrink: 0,
               }} />
               <span style={{
-                fontSize: "0.875rem", color: "#3D2530",
-                letterSpacing: "0.03em",
-              }}>
-                {weddingConfig.venueName}
-              </span>
-              <span className="dot-sep" style={{
-                width: 4, height: 4, borderRadius: "50%",
-                background: "rgba(192,54,74,0.35)",
-                display: "inline-block", flexShrink: 0,
-              }} />
-              <span style={{
-                fontSize: "0.875rem", color: "#7A5460",
+                fontSize: "0.875rem", color: "#4A2830", fontWeight: 500,
                 letterSpacing: "0.03em",
               }}>
                 {weddingConfig.venueCity}
@@ -384,7 +384,7 @@ export default function HomePage() {
               fontFamily: "var(--font-display), Georgia, serif",
               fontStyle: "italic",
               fontSize: "clamp(0.9rem, 1.6vw, 1.05rem)",
-              color: "#7A5460",
+              color: "#3D2028",
               maxWidth: "34rem",
               lineHeight: 1.85,
               marginBottom: "2.75rem",
@@ -399,7 +399,7 @@ export default function HomePage() {
               marginBottom: "1rem",
             }}>
               <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#C0364A", animation: "floatDot 2.5s ease-in-out infinite" }} />
-              <span style={{ fontSize: "0.54rem", letterSpacing: "0.38em", textTransform: "uppercase", color: "#7A5460", fontWeight: 700 }}>
+              <span style={{ fontSize: "0.54rem", letterSpacing: "0.38em", textTransform: "uppercase", color: "#2A1218", fontWeight: 700 }}>
                 Private access
               </span>
               <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#C0364A", animation: "floatDot 2.5s 1.25s ease-in-out infinite" }} />
@@ -453,7 +453,7 @@ export default function HomePage() {
             <p className="r10" style={{
               marginTop: "1.5rem",
               fontSize: "0.72rem",
-              color: "#B09090",
+              color: "#5A3040",
               fontStyle: "italic",
               letterSpacing: "0.02em",
               maxWidth: "36rem",
