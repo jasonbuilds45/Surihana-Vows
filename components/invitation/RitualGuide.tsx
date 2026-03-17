@@ -21,7 +21,7 @@ export function RitualGuide({ rituals, brideName, groomName }: RitualGuideProps)
           The rituals that unite them.
         </h2>
         <p className="text-sm leading-7 max-w-lg" style={{ color: "var(--color-text-secondary)" }}>
-          {brideFirst} and {groomFirst}&apos;s wedding follows Tamil Hindu traditions.
+          {brideFirst} and {groomFirst}&apos;s wedding follows Christian Tradition.
           A brief guide to help you follow along and appreciate each sacred moment.
         </p>
       </div>
