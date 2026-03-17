@@ -4,6 +4,7 @@ import type { FormEvent } from "react";
 import { useCallback, useEffect, useState } from "react";
 import { CheckCircle, Loader2, UploadCloud, XCircle } from "lucide-react";
 import { Card, SectionLabel, Field, Btn, EmptyState } from "@/components/ui";
+import { authFetch } from "@/lib/client/token";
 
 interface UploadManagerProps { weddingId: string; }
 interface UploadResponse { success: boolean; message: string; url?: string; demoMode?: boolean; }
@@ -40,7 +41,7 @@ export function UploadManager({ weddingId }: UploadManagerProps) {
   const fetchPending = useCallback(async () => {
     setPendingLoading(true); setPendingError(null);
     try {
-      const res = await fetch(`/api/admin/photos?weddingId=${encodeURIComponent(weddingId)}&approved=false`);
+      const res = await authFetch(`/api/admin/photos?weddingId=${encodeURIComponent(weddingId)}&approved=false`);
       if (!res.ok) throw new Error("Failed to load.");
       const json = (await res.json()) as { data: PendingPhoto[] };
       setPending(json.data ?? []);
@@ -53,7 +54,7 @@ export function UploadManager({ weddingId }: UploadManagerProps) {
   async function moderate(photoId: string, approve: boolean) {
     setActionId(photoId);
     try {
-      const res = await fetch("/api/admin/photos", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ photoId, isApproved: approve }) });
+      const res = await authFetch("/api/admin/photos", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ photoId, isApproved: approve }) });
       if (!res.ok) throw new Error("Action failed.");
       setPending((cur) => cur.filter((p) => p.id !== photoId));
     } catch (err) { setPendingError(err instanceof Error ? err.message : "Error."); }
@@ -66,7 +67,12 @@ export function UploadManager({ weddingId }: UploadManagerProps) {
     setIsSubmitting(true); setUploadStatus(null);
     try {
       const fd = new FormData(); fd.append("file", file); fd.append("uploadedBy", uploadedBy); fd.append("category", category); fd.append("weddingId", weddingId);
-      const res = await fetch("/api/upload-photo", { method: "POST", body: fd });
+      // authFetch adds Authorization header so the server recognises admin session
+      // Do NOT set Content-Type — browser must set it with the multipart boundary
+      const res = await authFetch("/api/upload-photo", { method: "POST", body: fd });
+      if (!res.ok && res.headers.get("content-type")?.includes("text/")) {
+        throw new Error(await res.text());
+      }
       const data = (await res.json()) as UploadResponse;
       setUploadStatus(data);
       if (data.success) setFile(null);

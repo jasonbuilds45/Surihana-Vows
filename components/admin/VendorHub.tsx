@@ -13,6 +13,7 @@ import {
   UserCheck,
   X
 } from "lucide-react";
+import { authFetch } from "@/lib/client/token";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Types
@@ -176,7 +177,7 @@ export function VendorHub({ weddingId, initialVendors }: VendorHubProps) {
     setFormError(null);
 
     try {
-      const res = await fetch("/api/admin/vendors", {
+      const res = await authFetch("/api/admin/vendors", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -208,7 +209,7 @@ export function VendorHub({ weddingId, initialVendors }: VendorHubProps) {
   async function handleStatusChange(id: string, status: VendorStatus) {
     setUpdating(id);
     try {
-      const res = await fetch(`/api/admin/vendors/${id}`, {
+      const res = await authFetch(`/api/admin/vendors/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status })
@@ -230,7 +231,7 @@ export function VendorHub({ weddingId, initialVendors }: VendorHubProps) {
     if (!window.confirm(`Remove ${name} from the vendor list?`)) return;
     setUpdating(id);
     try {
-      const res = await fetch(`/api/admin/vendors/${id}`, { method: "DELETE" });
+      const res = await authFetch(`/api/admin/vendors/${id}`, { method: "DELETE" });
       const payload = (await res.json()) as { success: boolean; message?: string };
       if (!res.ok || !payload.success) throw new Error(payload.message ?? "Delete failed.");
       setVendors((prev) => prev.filter((v) => v.id !== id));

@@ -21,6 +21,7 @@ import { GuestInsights } from "@/components/admin/GuestInsights";
 import { PlanningDashboard } from "@/components/admin/PlanningDashboard";
 import { GoldStripe, SectionLabel, BtnLink } from "@/components/ui";
 import { Download, LayoutDashboard, Users, Image, Clock, Grid3X3, BarChart3, Zap, ClipboardList } from "lucide-react";
+import { getStoredToken } from "@/lib/client/token";
 import { weddingConfig } from "@/lib/config";
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -141,9 +142,28 @@ export function AdminDashboard({
                 {weddingConfig.venueName} · {weddingConfig.weddingDate}
               </p>
             </div>
-            <BtnLink href={`/api/admin/rsvp-export?weddingId=${encodeURIComponent(weddingId)}`} variant="secondary" size="sm">
+            <button
+              type="button"
+              onClick={async () => {
+                try {
+                  const token = getStoredToken();
+                  const headers: HeadersInit = token ? { Authorization: `Bearer ${token}` } : {};
+                  const res = await fetch(`/api/admin/rsvp-export?weddingId=${encodeURIComponent(weddingId)}`, { credentials: "include", headers });
+                  if (!res.ok) { alert("Export failed — please try again."); return; }
+                  const blob = await res.blob();
+                  const url  = URL.createObjectURL(blob);
+                  const a    = document.createElement("a");
+                  a.href     = url;
+                  a.download = "surihana-rsvp-export.csv";
+                  a.click();
+                  URL.revokeObjectURL(url);
+                } catch { alert("Export failed — please try again."); }
+              }}
+              className="inline-flex items-center gap-2 rounded-full border px-4 py-2 text-xs uppercase font-semibold transition hover:bg-stone-50"
+              style={{ letterSpacing: "0.15em", borderColor: "var(--color-border)", color: "var(--color-text-secondary)", background: "var(--color-surface)" }}
+            >
               <Download className="h-4 w-4" /> Export RSVP CSV
-            </BtnLink>
+            </button>
           </div>
         </div>
 
