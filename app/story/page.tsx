@@ -21,7 +21,7 @@ export default async function StoryPage() {
 
   return (
     <div style={{ background: "#FFFFFF" }}>
-      <PageHero eyebrow="Their story" title={<>{bf} <em>&amp;</em> {gf}</>} subtitle={`"${weddingConfig.introQuote}"`} variant="warm" />
+      <PageHero eyebrow="Their story" title={<>{bf} <em>&amp;</em> {gf}</>} subtitle={`"${weddingConfig.introQuote}"`} variant="dark" />
 
       <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "5rem clamp(1.25rem,5vw,4rem)", display: "flex", flexDirection: "column", gap: "4rem" }}>
         <StorySection quote={weddingConfig.introQuote} story={overview.story} />
