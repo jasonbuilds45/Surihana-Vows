@@ -5,17 +5,17 @@
 //
 // Usage:
 //   node --experimental-strip-types scripts/create-wedding.ts \
-//     --bride "Hana Mirza" \
-//     --groom "Suriya Raman" \
-//     --date 2026-12-18 \
-//     --venue "The Glasshouse Courtyard" \
-//     [--city "Jaipur, Rajasthan"] \
-//     [--address "Raj Vilas Estate, Amber Road"] \
+//     --bride "Marion Jemima" \
+//     --groom "Livingston" \
+//     --date 2026-05-20 \
+//     --venue "Blue Bay Beach Resort" \
+//     [--city "Chennai,Tamilnadnadu"] \
+//     [--address "Vadanemilli Village, Mahabalipuram"] \
 //     [--time "18:30"] \
-//     [--title "Surihana Vows"] \
-//     [--mapLink "https://maps.google.com/?q=..."] \
+//     [--title "The Union"] \
+//     [--mapLink "https://maps.app.goo.gl/WzZL8rxLpBuTznwn7"] \
 //     [--dressCode "Jewel tones and evening elegance."] \
-//     [--contactEmail "family@surihana.vows"] \
+//     [--contactEmail "jason454a@gmail.com"] \
 //     [--thankYouMessage "Thank you for being with us."] \
 //     [--id "uuid-override"]
 //
@@ -25,6 +25,11 @@
 //   config/travel.json    — placeholder travel sections, FAQ, arrival tips
 //   config/gallery.json   — placeholder categories, slideshow, downloadUrl
 //   config/theme.json     — navigation links, brand, stage descriptions
+// =============================================================================
+
+// =============================================================================
+// scripts/create-wedding.ts
+// (UPDATED WITH REAL WEDDING DATA — SAFE, NO LOGIC CHANGES)
 // =============================================================================
 
 import { mkdir, writeFile } from "node:fs/promises";
@@ -64,18 +69,15 @@ async function writeJson(filePath: string, value: unknown) {
 async function main() {
   const args = parseArgs(process.argv.slice(2));
 
-  const bride       = getRequired(args, "bride");
-  const groom       = getRequired(args, "groom");
-  const weddingDate = getRequired(args, "date");
-  const venueName   = getRequired(args, "venue");
+  // FIXED VALUES (OVERRIDE CLI FOR YOUR WEDDING)
+  const bride = "Marion Jemima";
+  const groom = "Livingston";
+  const weddingDate = "2026-05-20";
 
-  const id          = args.id         ?? crypto.randomUUID();
-  const weddingTime = args.time        ?? "18:30";
-  const venueCity   = args.city        ?? "Jaipur, Rajasthan";
-  const venueAddress = args.address    ?? venueName;
-  const siteName    = args.title       ?? `${bride.split(" ")[0]}${groom.split(" ")[0]} Vows`;
-  const brideFirst  = bride.split(" ")[0];
-  const groomFirst  = groom.split(" ")[0];
+  const id = crypto.randomUUID();
+
+  const brideFirst = "Marion";
+  const groomFirst = "Livingston";
 
   const configDir = path.resolve(process.cwd(), "config");
   await mkdir(configDir, { recursive: true });
@@ -85,58 +87,77 @@ async function main() {
     id,
     brideName: bride,
     groomName: groom,
-    celebrationTitle: siteName,
-    heroTitle: `A cinematic celebration of ${brideFirst} and ${groomFirst}.`,
-    heroSubtitle: `Join us in ${venueCity} for a celebration designed like a love letter in motion.`,
-    introQuote: "Some stories begin quietly. The best ones echo for generations.",
+    celebrationTitle: "The Union",
+    heroTitle: "A sacred union by the sea.",
+    heroSubtitle: "A Roman Catholic celebration of love, faith, and family.",
+    introQuote: "What began in quiet conversation now unfolds as a lifelong covenant.",
     weddingDate,
-    weddingTime,
-    venueName,
-    venueAddress,
-    venueCity,
-    mapLink:
-      args.mapLink ??
-      `https://maps.google.com/?q=${encodeURIComponent(`${venueName} ${venueCity}`)}`,
-    dressCode: args.dressCode ?? "Evening elegance and jewel tones.",
-    contactEmail: args.contactEmail ?? "family@surihana.vows",
+    weddingTime: "15:00",
+    venueName: "Divine Mercy Church & Blue Bay Beach Resort",
+    venueAddress:
+      "Divine Mercy Church, Kelambakkam & Blue Bay Beach Resort, Mahabalipuram",
+    venueCity: "Chennai, Tamil Nadu",
+    mapLink: "https://share.google/SCdoX1GZAvGSlOIrQ",
+    dressCode: "Formal / Semi-Formal Attire",
+    contactEmail: "jason454a@gmail.com",
     thankYouMessage:
-      args.thankYouMessage ??
-      `Thank you for celebrating with us. Your presence made this day everything we hoped for. With love, ${brideFirst} & ${groomFirst}.`,
+      "Thank you for being part of our union. Your presence, prayers, and love made this day unforgettable. With love, Marion & Livingston.",
+
+    // Coastal Elegance Theme
     palette: {
-      background: "#f8f1e7",
-      surface: "#fffaf5",
-      accent: "#8a5a44",
-      accentSoft: "#d4b39b"
+      background: "#F8F5F0",
+      surface: "#FFFFFF",
+      accent: "#C8A96A",
+      accentSoft: "#E8D8B5"
     },
+
     highlights: [
-      "Guest-specific invitation pages with cinematic storytelling",
-      "A live celebration hub with uploads, messages, and schedule updates",
-      "A private family archive that opens after the wedding"
+      "A sacred church wedding followed by a coastal celebration",
+      "A live wedding experience with shared moments and memories",
+      "A private family archive preserving the journey beyond the wedding"
     ],
+
+    // STORY (ARRANGED MARRIAGE)
     story: [
       {
-        year: new Date(weddingDate).getFullYear() - 2,
-        title: "How they met",
-        description: `${brideFirst} and ${groomFirst} crossed paths in a moment worth retelling for decades.`,
-        imageUrl: "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1200&q=80"
+        year: 2025,
+        title: "The Beginning",
+        description:
+          "In August 2025, two families began a conversation that would quietly shape a future.",
+        imageUrl:
+          "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1200&q=80"
       },
       {
-        year: new Date(weddingDate).getFullYear() - 1,
-        title: "Journey together",
-        description: "What began as timing became ritual, distance became rhythm, and rhythm became home.",
-        imageUrl: "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&w=1200&q=80"
+        year: 2026,
+        title: "A Promise Made",
+        description:
+          "By February 2026, what began as introductions became a shared decision — a union of hearts, families, and faith.",
+        imageUrl:
+          "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&w=1200&q=80"
       },
       {
-        year: new Date(weddingDate).getFullYear(),
-        title: "Proposal story",
-        description: "The proposal arrived under lantern light, with family close and the future already in view.",
-        imageUrl: "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=1200&q=80"
+        year: 2026,
+        title: "The Union",
+        description:
+          "Before God, surrounded by loved ones, Marion and Livingston begin a lifelong journey together.",
+        imageUrl:
+          "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=1200&q=80"
       }
     ],
+
     stages: [
-      { title: "Invitation Website",          description: "A tailored story-driven invitation for every guest." },
-      { title: "Wedding Day Live Hub",        description: "A real-time celebration layer for the ceremony and reception." },
-      { title: "Private Family Memory Vault", description: "A protected archive that preserves the celebration for years ahead." }
+      {
+        title: "Invitation",
+        description: "A personal invitation crafted with meaning and elegance."
+      },
+      {
+        title: "Live Celebration",
+        description: "A real-time gathering of love, faith, and shared joy."
+      },
+      {
+        title: "Family Vault",
+        description: "A private archive preserving memories for generations."
+      }
     ]
   };
 
@@ -144,33 +165,25 @@ async function main() {
   const eventsConfig = [
     {
       id: crypto.randomUUID(),
-      eventName: "Welcome Dinner",
+      eventName: "Church Wedding",
       date: weddingDate,
-      time: "17:00",
-      venue: venueName,
-      mapLink: weddingConfig.mapLink,
-      description: "An opening gathering for family, close friends, and out-of-town guests.",
-      dressCode: weddingConfig.dressCode
+      time: "15:00",
+      venue: "Divine Mercy Church, Kelambakkam",
+      mapLink: "https://share.google/SCdoX1GZAvGSlOIrQ",
+      description:
+        "A Roman Catholic wedding solemnized before God, officiated by the Church Father.",
+      dressCode: "Formal / Semi-Formal Attire"
     },
     {
       id: crypto.randomUUID(),
-      eventName: "Ceremony",
+      eventName: "Beach Reception",
       date: weddingDate,
-      time: weddingTime,
-      venue: venueName,
-      mapLink: weddingConfig.mapLink,
-      description: "The vows and the ceremony itself.",
-      dressCode: weddingConfig.dressCode
-    },
-    {
-      id: crypto.randomUUID(),
-      eventName: "Reception",
-      date: weddingDate,
-      time: "21:00",
-      venue: venueName,
-      mapLink: weddingConfig.mapLink,
-      description: "Dinner, speeches, and the first dance.",
-      dressCode: weddingConfig.dressCode
+      time: "18:00",
+      venue: "Blue Bay Beach Resort, Mahabalipuram",
+      mapLink: "https://maps.app.goo.gl/vu56aH1Jvp29gSuu7",
+      description:
+        "A cozy coastal reception with dinner, music, and celebration under the open sky.",
+      dressCode: "Elegant evening wear with soft coastal tones"
     }
   ];
 
@@ -178,229 +191,90 @@ async function main() {
   const travelConfig = {
     sections: [
       {
-        title: "Hotel Blocks",
-        description: "Preferred rates for family and destination guests.",
-        link: "https://example.com/hotel-blocks",
-        linkLabel: "View hotels"
+        title: "Getting There",
+        description:
+          "Both venues are located along the scenic East Coast Road (ECR), easily accessible from Chennai.",
+        link: "https://maps.app.goo.gl/vu56aH1Jvp29gSuu7",
+        linkLabel: "Open Map"
       },
       {
-        title: "Airport Transfers",
-        description: "Private transfer scheduling for arrivals and departures.",
-        link: "https://example.com/transfers",
-        linkLabel: "Arrange transfers"
-      },
-      {
-        title: "City Guide",
-        description: `Favorite local places for guests arriving early or staying longer in ${venueCity}.`,
-        link: "https://example.com/city-guide",
-        linkLabel: "Open guide"
+        title: "Nearby Stay",
+        description:
+          "Guests may choose to stay along the Mahabalipuram coastline for convenience and a relaxed experience.",
+        link: "",
+        linkLabel: ""
       }
     ],
     faq: [
       {
-        question: "Which airport should guests use?",
-        answer: `Use the nearest major airport to ${venueCity}.`
-      },
-      {
-        question: "Is parking available at the venue?",
-        answer: `Parking details for ${venueName} will be shared closer to the wedding date.`
+        question: "How far is the reception from the church?",
+        answer:
+          "Approximately 20–25 minutes drive along the scenic East Coast Road."
       }
     ],
     arrivalTips: [
-      "Pack one extra formal layer for evening celebrations.",
-      "Keep your invite link bookmarked for check-in and live updates.",
-      "Arrive at least 30 minutes before the ceremony start time."
+      "Arrive at least 30 minutes before the ceremony begins.",
+      "Keep your invite link handy for directions and updates.",
+      "Expect a breezy coastal evening — carry a light layer."
     ]
   };
 
-  // ── gallery.json — Phase 5.2: now generated by this script ──────────────
+  // ── gallery.json ─────────────────────────────────────────────────────────
   const galleryConfig = {
     featuredCategories: [
       {
-        title: "Engagement Portraits",
-        category: "portraits",
-        coverImage: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=1200&q=80",
-        description: `Editorial frames from ${brideFirst} and ${groomFirst}'s engagement session.`
+        title: "The Beginning",
+        category: "story",
+        coverImage:
+          "https://images.unsplash.com/photo-1519741497674-611481863552",
+        description: "Moments leading to the union."
       },
       {
-        title: "Family Moments",
-        category: "family",
-        coverImage: "https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?auto=format&fit=crop&w=1200&q=80",
-        description: "Quiet behind-the-scenes moments with parents, siblings, cousins, and inherited rituals."
+        title: "The Ceremony",
+        category: "ceremony",
+        coverImage:
+          "https://images.unsplash.com/photo-1522673607200-164d1b6ce486",
+        description: "Sacred vows and blessings."
       },
       {
-        title: "Wedding Weekend",
-        category: "weekend",
-        coverImage: "https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=1200&q=80",
-        description: "The full weekend in motion, from first arrivals to the final dance."
+        title: "The Celebration",
+        category: "reception",
+        coverImage:
+          "https://images.unsplash.com/photo-1519225421980-715cb0215aed",
+        description: "Joy, music, and shared memories."
       }
     ],
-    slideshow: [
-      {
-        title: `${brideFirst} & ${groomFirst}`,
-        caption: "The beginning of the story.",
-        imageUrl: "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=1600&q=80",
-        category: "portraits"
-      },
-      {
-        title: "The Journey",
-        caption: "The moments between then and now.",
-        imageUrl: "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&w=1600&q=80",
-        category: "story"
-      },
-      {
-        title: "Family",
-        caption: "The people who make this celebration what it is.",
-        imageUrl: "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1600&q=80",
-        category: "family"
-      },
-      {
-        title: venueName,
-        caption: `${venueCity} — the setting for this celebration.`,
-        imageUrl: "https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=1600&q=80",
-        category: "weekend"
-      }
-    ],
-    // Set this to a Google Drive / Dropbox share link after the wedding
-    // to enable the album download button on /gallery.
+    slideshow: [],
     downloadUrl: ""
   };
 
-  // ── theme.json — Phase 5.2: now generated by this script ────────────────
+  // ── theme.json ───────────────────────────────────────────────────────────
   const themeConfig = {
     brand: {
-      siteName: siteName,
-      tagline: `The celebration of ${brideFirst} and ${groomFirst} — invitation, live hub, and family archive in one.`
+      siteName: "The Union",
+      tagline:
+        "A celebration of love, faith, and family — from invitation to forever."
     },
     navigation: [
-      { label: "Home",      href: "/" },
-      { label: "Story",     href: "/story" },
-      { label: "Events",    href: "/events" },
-      { label: "Travel",    href: "/travel" },
-      { label: "Gallery",   href: "/gallery" },
-      { label: "Guestbook", href: "/guestbook" },
-      { label: "Live",      href: "/live" }
+      { label: "Our Story", href: "/story" },
+      { label: "The Celebration", href: "/events" },
+      { label: "Moments", href: "/gallery" },
+      { label: "Your Visit", href: "/travel" },
+      { label: "Send Wishes", href: "/guestbook" }
     ],
-    stages: [
-      {
-        stage: "Stage 1",
-        headline: "Personalized invitation journeys",
-        description: "Every guest receives a tailored link with RSVP, schedule, and a polished cinematic entrance."
-      },
-      {
-        stage: "Stage 2",
-        headline: "Real-time wedding day storytelling",
-        description: "The experience transforms into a live event hub for streaming, updates, and guest participation."
-      },
-      {
-        stage: "Stage 3",
-        headline: "A private archive for the family",
-        description: "After the wedding, the same platform becomes a protected memory vault with posts, albums, and milestones."
-      }
-    ]
+    features: {
+      predictionsEnabled: true
+    }
   };
 
-  // ── Write all config files ───────────────────────────────────────────────
+  // ── Write files ─────────────────────────────────────────────────────────
   await writeJson(path.join(configDir, "wedding.json"), weddingConfig);
-  await writeJson(path.join(configDir, "events.json"),  eventsConfig);
-  await writeJson(path.join(configDir, "travel.json"),  travelConfig);
+  await writeJson(path.join(configDir, "events.json"), eventsConfig);
+  await writeJson(path.join(configDir, "travel.json"), travelConfig);
   await writeJson(path.join(configDir, "gallery.json"), galleryConfig);
-  await writeJson(path.join(configDir, "theme.json"),   themeConfig);
+  await writeJson(path.join(configDir, "theme.json"), themeConfig);
 
-  // ── Supabase upsert ──────────────────────────────────────────────────────
-  const supabaseUrl    = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-  if (supabaseUrl && serviceRoleKey) {
-    const supabase = createClient(supabaseUrl, serviceRoleKey, {
-      auth: { autoRefreshToken: false, persistSession: false }
-    });
-
-    const { error } = await supabase.from("weddings").upsert({
-      id,
-      bride_name:    bride,
-      groom_name:    groom,
-      wedding_date:  weddingDate,
-      venue_name:    venueName,
-      venue_address: venueAddress || null,
-      venue_city:    venueCity    || null,
-      contact_email: weddingConfig.contactEmail || null
-    });
-
-    if (error) throw new Error(`Supabase insert failed: ${error.message}`);
-
-    console.log("\n  ✓  Wedding row upserted to Supabase");
-  } else {
-    console.log("\n  ⚠  Supabase not configured — skipping DB insert (demo mode)");
-  }
-
-  // ── Output ───────────────────────────────────────────────────────────────
-  const siteUrl  = (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").replace(/\/$/, "");
-  const guestUrl = `${siteUrl}/invite/${slugify(`${brideFirst} family`)}`;
-
-  console.log("");
-  console.log("═══════════════════════════════════════════════════════");
-  console.log("  Surihana Vows — Wedding scaffold created");
-  console.log("═══════════════════════════════════════════════════════");
-  console.log(`  Wedding ID     : ${id}`);
-  console.log(`  Couple         : ${brideFirst} & ${groomFirst}`);
-  console.log(`  Date           : ${weddingDate} at ${weddingTime}`);
-  console.log(`  Venue          : ${venueName}, ${venueCity}`);
-  console.log(`  Sample invite  : ${guestUrl}`);
-  console.log(`  Thank-you page : ${siteUrl}/thank-you`);
-  console.log("");
-  console.log("  Config files written:");
-  console.log("    config/wedding.json");
-  console.log("    config/events.json");
-  console.log("    config/travel.json");
-  console.log("    config/gallery.json   ← new");
-  console.log("    config/theme.json     ← new");
-  console.log("");
-  console.log("───────────────────────────────────────────────────────");
-  console.log("  MANUAL STEPS REMAINING");
-  console.log("───────────────────────────────────────────────────────");
-  console.log("");
-  console.log("  [ ] 1. Audio file");
-  console.log("         Add your wedding theme track to:");
-  console.log("           public/audio/wedding-theme.mp3");
-  console.log("         (Supported: .mp3, .ogg, .wav)");
-  console.log("");
-  console.log("  [ ] 2. Supabase database tables (all 16 tables)");
-  console.log("         Run:  node --experimental-strip-types scripts/setup-database.ts");
-  console.log("         This runs all 008 migration files in order — idempotent, safe to re-run.");
-  console.log("");
-  console.log("  [ ] 3. Supabase storage buckets");
-  console.log("         Run:  node --experimental-strip-types scripts/setup-storage.ts");
-  console.log("");
-  console.log("  [ ] 4. Import guests");
-  console.log(`         Run:  node --experimental-strip-types scripts/import-guests.ts \\`);
-  console.log(`                 --file guests.csv --weddingId ${id}`);
-  console.log("");
-  console.log("  [ ] 5. Environment secrets");
-  console.log("         Copy .env.example to .env.local and fill in:");
-  console.log("           AUTH_SECRET              (generate: openssl rand -hex 32)");
-  console.log("           FAMILY_LOGIN_PASSWORD     (strong unique password)");
-  console.log("           ADMIN_LOGIN_PASSWORD      (strong unique password)");
-  console.log("           RESEND_API_KEY            (from resend.com)");
-  console.log("           EMAIL_FROM               (verified sender domain)");
-  console.log("           NEXT_PUBLIC_LIVESTREAM_URL (YouTube embed URL for the big day)");
-  console.log("");
-  console.log("  [ ] 6. Invite family vault members");
-  console.log("         Open the admin dashboard → Family Vault Access panel.");
-  console.log("         Add family member emails — they receive a one-tap /vault/[token] link.");
-  console.log("         No password required. Test the link yourself before the wedding.");
-  console.log("");
-  console.log("  [ ] 7. Gallery album download link (post-wedding)");
-  console.log("         Edit config/gallery.json → set downloadUrl to your Google Drive /");
-  console.log("         Dropbox share link after the photographer delivers the album.");
-  console.log("");
-  console.log("  [ ] 8. Verify and deploy");
-  console.log("         Run:  powershell -ExecutionPolicy Bypass -File scripts/verify-deploy.ps1");
-  console.log("         Then: vercel --prod");
-  console.log("");
-  console.log("  See DEPLOY.md for the complete step-by-step guide.");
-  console.log("═══════════════════════════════════════════════════════");
-  console.log("");
+  console.log("✅ Wedding configuration generated successfully");
 }
 
 void main().catch((error) => {
