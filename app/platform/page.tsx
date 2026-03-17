@@ -34,7 +34,7 @@ export default async function PlatformPage() {
     getInvitationOverview(),
     getGuestMessages(),
     Promise.resolve(getSlideshowPhotos()),
-    getHighlightVideo(weddingConfig.id, weddingConfig.highlightVideoUrl)
+    getHighlightVideo(weddingConfig.id, weddingConfig.highlightVideoUrl ?? undefined)
   ]);
 
   return (
