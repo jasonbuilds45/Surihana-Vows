@@ -730,7 +730,7 @@ export function SquadProposalClient({ proposal, brideName, groomName }: Props) {
               fontFamily: DF, fontStyle: "italic",
               fontSize: "clamp(1rem,2.4vw,1.2rem)",
               color: INK_2, lineHeight: 1.85,
-              marginBottom: vaultSent || needsManual ? "1.25rem" : "2rem",
+              marginBottom: vaultUrl || needsManual ? "1.25rem" : "2rem",
             }}>
               {firstName}, you&apos;ve said yes — and that means everything.{" "}
               {senderFirst} will be in touch soon with everything you need to know.
