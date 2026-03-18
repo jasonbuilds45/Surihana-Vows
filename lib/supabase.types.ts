@@ -284,14 +284,14 @@ export interface Database {
         Row: {
           id: string;
           email: string;
-          role: "family" | "admin";
+          role: "family" | "squad" | "admin";
           password_hash: string | null;
           created_at: string;
         };
         Insert: {
           id?: string;
           email: string;
-          role: "family" | "admin";
+          role: "family" | "squad" | "admin";
           password_hash?: string | null;
           created_at?: string;
         };
@@ -372,7 +372,7 @@ export interface Database {
           code_hash: string;
           family_user_id: string | null;
           email: string | null;
-          role: "family" | "admin" | null;
+          role: "family" | "squad" | "admin" | null;
           expires_at: string | null;
           created_at: string;
         };
@@ -381,7 +381,7 @@ export interface Database {
           code_hash: string;
           family_user_id?: string | null;
           email?: string | null;
-          role?: "family" | "admin" | null;
+          role?: "family" | "squad" | "admin" | null;
           expires_at?: string | null;
           created_at?: string;
         };

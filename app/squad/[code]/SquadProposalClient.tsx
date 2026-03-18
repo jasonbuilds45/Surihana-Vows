@@ -70,9 +70,10 @@ interface Props {
 }
 
 type State = "sealed" | "opened" | "accepted" | "declined" | "submitting";
+type AcceptResponse = { success: boolean; message?: string; vaultSent?: boolean; needsManualGrant?: boolean };
 
 export function SquadProposalClient({ proposal, brideName, groomName }: Props) {
-  const [state, setState] = useState<State>(
+  const [state,      setState]      = useState<State>(
     proposal.accepted === true  ? "accepted" :
     proposal.accepted === false ? "declined" :
     "sealed"
@@ -80,6 +81,8 @@ export function SquadProposalClient({ proposal, brideName, groomName }: Props) {
   const [sealBurst,    setSealBurst]    = useState(false);
   const [responseNote, setResponseNote] = useState("");
   const [error,        setError]        = useState<string | null>(null);
+  const [vaultSent,    setVaultSent]    = useState(false);
+  const [needsManual,  setNeedsManual]  = useState(false);
 
   const cfg = ROLE_CONFIG[proposal.squad_role];
   const firstName = proposal.name.split(" ")[0]!;
@@ -115,8 +118,10 @@ export function SquadProposalClient({ proposal, brideName, groomName }: Props) {
           note: responseNote || undefined,
         }),
       });
-      const json = (await res.json()) as { success: boolean; message?: string };
+      const json = (await res.json()) as AcceptResponse;
       if (!json.success) throw new Error(json.message ?? "Something went wrong.");
+      setVaultSent(json.vaultSent ?? false);
+      setNeedsManual(json.needsManualGrant ?? false);
       setState("accepted");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong.");
@@ -725,12 +730,58 @@ export function SquadProposalClient({ proposal, brideName, groomName }: Props) {
               fontFamily: DF, fontStyle: "italic",
               fontSize: "clamp(1rem,2.4vw,1.2rem)",
               color: INK_2, lineHeight: 1.85,
-              marginBottom: "2rem",
+              marginBottom: vaultSent || needsManual ? "1.25rem" : "2rem",
             }}>
               {firstName}, you&apos;ve said yes — and that means everything.{" "}
               {senderFirst} will be in touch soon with everything you need to know.
               Until then, know that your place beside them on 20 May is sealed.
             </p>
+
+            {/* Vault access notice */}
+            {vaultSent && (
+              <div className="sp-in-4" style={{
+                marginBottom: "2rem",
+                padding: "14px 20px",
+                borderRadius: 14,
+                background: "rgba(107,142,110,.08)",
+                border: "1px solid rgba(107,142,110,.22)",
+                textAlign: "left",
+              }}>
+                <p style={{
+                  fontFamily: BF, fontSize: ".50rem", letterSpacing: ".28em",
+                  textTransform: "uppercase", color: "#16a34a",
+                  fontWeight: 700, marginBottom: ".375rem",
+                }}>
+                  ✓ Vault access on its way
+                </p>
+                <p style={{
+                  fontFamily: DF, fontStyle: "italic",
+                  fontSize: ".95rem", color: INK_2, lineHeight: 1.65,
+                }}>
+                  Check your email — {senderFirst} has sent you a private link to the family
+                  vault where all the wedding memories and details will live.
+                </p>
+              </div>
+            )}
+
+            {needsManual && (
+              <div className="sp-in-4" style={{
+                marginBottom: "2rem",
+                padding: "14px 20px",
+                borderRadius: 14,
+                background: "rgba(168,120,8,.06)",
+                border: "1px solid rgba(168,120,8,.18)",
+                textAlign: "left",
+              }}>
+                <p style={{
+                  fontFamily: DF, fontStyle: "italic",
+                  fontSize: ".95rem", color: INK_2, lineHeight: 1.65,
+                }}>
+                  {senderFirst} will send you a private vault link shortly with
+                  all the wedding details and memories.
+                </p>
+              </div>
+            )}
 
             <div className="sp-in-4" style={{
               display: "inline-flex", alignItems: "center", gap: 8,

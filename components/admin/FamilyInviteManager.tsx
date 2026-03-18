@@ -28,7 +28,7 @@ const inputStyle: React.CSSProperties = {
 export function FamilyInviteManager({ initialMembers, weddingId }: FamilyInviteManagerProps) {
   const [members, setMembers] = useState<FamilyMemberRow[]>(initialMembers);
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState<"family" | "admin">("family");
+  const [role, setRole] = useState<"family" | "squad" | "admin">("family");
   const [status, setStatus] = useState<{ success: boolean; message: string } | null>(null);
   const [loading, setLoading] = useState(false);
   const [resending, setResending] = useState<string | null>(null);
@@ -96,9 +96,10 @@ export function FamilyInviteManager({ initialMembers, weddingId }: FamilyInviteM
         </div>
         <div className="space-y-1.5">
           <label className="block text-xs font-semibold uppercase" style={{ letterSpacing: "0.15em", color: "var(--color-text-secondary)" }}>Role</label>
-          <select value={role} onChange={(e) => setRole(e.target.value as "family" | "admin")} disabled={loading} style={inputStyle}>
-            <option value="family">Family</option>
-            <option value="admin">Admin</option>
+          <select value={role} onChange={(e) => setRole(e.target.value as "family" | "squad" | "admin")} disabled={loading} style={inputStyle}>
+            <option value="family">Family — spectator (view, capsules, polls)</option>
+            <option value="squad">Squad — bridesmaid / groomsman (full vault + squad hub)</option>
+            <option value="admin">Admin — full access</option>
           </select>
         </div>
         <div className="flex items-end">

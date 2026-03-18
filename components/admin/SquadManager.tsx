@@ -381,6 +381,18 @@ export function SquadManager({ initialProposals }: SquadManagerProps) {
                           ) : (
                             <span style={{ color: "var(--color-text-muted)", fontSize: "0.8rem" }}>—</span>
                           )}
+                          {/* Vault flag — accepted with no email needs manual grant */}
+                          {p.accepted === true && !p.email && (
+                            <p style={{
+                              marginTop: 3,
+                              fontSize: ".56rem", letterSpacing: ".18em",
+                              textTransform: "uppercase", fontWeight: 700,
+                              color: "#A87808",
+                              fontFamily: "var(--font-body),sans-serif",
+                            }}>
+                              ⚠️ Grant vault access
+                            </p>
+                          )}
                         </td>
 
                         {/* Link */}

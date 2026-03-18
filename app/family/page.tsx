@@ -13,7 +13,7 @@ import { CapsuleUnlockBanner } from "@/components/vault/CapsuleUnlockBanner";
 import { VaultPhotoAlbums } from "@/components/vault/VaultPhotoAlbums";
 import { VaultCapsuleSection } from "@/components/vault/VaultCapsuleSection";
 import { VaultNav } from "@/components/vault/VaultNav";
-import { getSessionFromCookieStore, roleCanAccess } from "@/lib/auth";
+import { getSessionFromCookieStore, roleCanAccess, isSquadOrAbove } from "@/lib/auth";
 import { weddingConfig } from "@/lib/config";
 import { getFamilyVaultBundle } from "@/modules/luxury/family-vault";
 import { getTimeCapsules } from "@/modules/luxury/time-capsule";
@@ -71,9 +71,11 @@ async function getVaultAlbums(weddingId: string): Promise<{ albums: VaultAlbum[]
 // ─────────────────────────────────────────────────────────────────────────────
 export default async function FamilyPage() {
   const session = await getSessionFromCookieStore(cookies());
-  if (!session || (session.role !== "admin" && session.role !== "family")) {
+  if (!session || !roleCanAccess(session.role, "/family")) {
     redirect("/login?hint=vault&redirect=%2Ffamily");
   }
+
+  const isSquad = isSquadOrAbove(session.role);
 
   const [familyVault, capsules, { albums, albumPhotos }] = await Promise.all([
     getFamilyVaultBundle(),
@@ -197,17 +199,25 @@ export default async function FamilyPage() {
             </div>
           )}
 
-          {/* Add a memory form */}
-          <div className="mt-10 grid gap-8 lg:grid-cols-[1fr,1.1fr] lg:items-start">
-            <div>
-              <p style={{ fontSize: ".58rem", letterSpacing: ".42em", textTransform: "uppercase", color: "var(--color-accent)", fontFamily: "var(--font-body),sans-serif", marginBottom: ".5rem" }}>Contribute to the archive</p>
-              <h3 className="font-display text-2xl" style={{ color: "var(--color-text-primary)", marginBottom: ".625rem" }}>Add your memory.</h3>
-              <p className="text-sm leading-7" style={{ color: "var(--color-text-secondary)" }}>
-                As a family member you can contribute memories, blessings, and milestones to the permanent vault archive. Your name will be attached to every entry.
+          {/* Add a memory form — squad only */}
+          {isSquad ? (
+            <div className="mt-10 grid gap-8 lg:grid-cols-[1fr,1.1fr] lg:items-start">
+              <div>
+                <p style={{ fontSize: ".58rem", letterSpacing: ".42em", textTransform: "uppercase", color: "var(--color-accent)", fontFamily: "var(--font-body),sans-serif", marginBottom: ".5rem" }}>Contribute to the archive</p>
+                <h3 className="font-display text-2xl" style={{ color: "var(--color-text-primary)", marginBottom: ".625rem" }}>Add your memory.</h3>
+                <p className="text-sm leading-7" style={{ color: "var(--color-text-secondary)" }}>
+                  As part of the squad you can contribute memories, blessings, and milestones to the permanent vault archive.
+                </p>
+              </div>
+              <FamilyPostForm weddingId={weddingConfig.id} authorEmail={session.email} />
+            </div>
+          ) : (
+            <div className="mt-8 rounded-2xl p-5" style={{ background: "var(--color-surface-muted)", border: "1px solid var(--color-border)" }}>
+              <p className="text-sm" style={{ color: "var(--color-text-muted)", fontFamily: "var(--font-body),sans-serif" }}>
+                Memory posts are written by the bridal and groom squads. You can leave a blessing in the guestbook from the main invitation.
               </p>
             </div>
-            <FamilyPostForm weddingId={weddingConfig.id} authorEmail={session.email} />
-          </div>
+          )}
         </Container>
       </section>
 
@@ -289,6 +299,116 @@ export default async function FamilyPage() {
           )}
         </Container>
       </section>
+
+      {/* ═══════════════════════════════════════════════════════════════════════
+          SECTION: SQUAD HUB (squad role only)
+      ═══════════════════════════════════════════════════════════════════════ */}
+      {isSquad && (
+        <section id="squad" style={{ background: "var(--color-background)", borderBottom: "1px solid var(--color-border)", scrollMarginTop: "3.5rem" }}>
+          <Container className="py-12 space-y-8">
+            <SectionHeader
+              eyebrow="Squad hub"
+              title="Your role in the celebration."
+              subtitle={`Everything you need to know as part of ${brideFirst} \u0026 ${groomFirst}'s squad.`}
+            />
+
+            {/* Role responsibilities */}
+            <div className="grid gap-5 sm:grid-cols-2">
+              {[
+                {
+                  title: "The Ceremony — 3:00 PM",
+                  icon: "✝️",
+                  color: "#BE2D45",
+                  bg: "rgba(190,45,69,.05)",
+                  bd: "rgba(190,45,69,.14)",
+                  items: [
+                    "Arrive at Divine Mercy Church by 2:30 PM",
+                    "Coordinate with the couple on processional order",
+                    "Stand beside the couple at the altar during vows",
+                    "Formal attire — details shared by the couple directly",
+                  ],
+                },
+                {
+                  title: "The Reception — 6:00 PM",
+                  icon: "🌊",
+                  color: "#A87808",
+                  bg: "rgba(168,120,8,.05)",
+                  bd: "rgba(168,120,8,.14)",
+                  items: [
+                    "Move to Blue Bay Beach Resort after the ceremony",
+                    "Assist in welcoming guests to the reception",
+                    "Be present for first dances and toasts",
+                    "Coastal elegance dress code — whites, creams, soft golds",
+                  ],
+                },
+              ].map(({ title, icon, color, bg, bd, items }) => (
+                <div key={title} style={{ padding: "1.25rem 1.5rem", borderRadius: 18, background: bg, border: `1px solid ${bd}` }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: ".75rem", marginBottom: "1rem" }}>
+                    <span style={{ fontSize: "1.4rem" }}>{icon}</span>
+                    <p className="font-display" style={{ fontSize: "1.1rem", color, fontWeight: 600 }}>{title}</p>
+                  </div>
+                  <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: ".5rem" }}>
+                    {items.map(item => (
+                      <li key={item} style={{ display: "flex", gap: ".625rem", alignItems: "flex-start" }}>
+                        <span style={{ color, fontWeight: 700, flexShrink: 0, marginTop: ".1em" }}>‣</span>
+                        <p className="text-sm leading-6" style={{ color: "var(--color-text-secondary)" }}>{item}</p>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+
+            {/* Day timeline */}
+            <div style={{ padding: "1.5rem", borderRadius: 18, background: "var(--color-surface)", border: "1px solid var(--color-border)" }}>
+              <p style={{ fontSize: ".58rem", letterSpacing: ".38em", textTransform: "uppercase", color: "var(--color-accent)", fontFamily: "var(--font-body),sans-serif", marginBottom: "1.25rem", fontWeight: 700 }}>Day timeline — 20 May 2026</p>
+              <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
+                {[
+                  { time: "2:30 PM", event: "Squad arrives at Divine Mercy Church", note: "Kelambakkam", rose: true },
+                  { time: "3:00 PM", event: "Holy Matrimony ceremony begins", note: "Be seated by 2:55 PM", rose: true },
+                  { time: "~5:00 PM", event: "Ceremony ends — photos with the couple", note: "Churchyard", rose: false },
+                  { time: "~5:30 PM", event: "Travel to Blue Bay Beach Resort", note: "Mahabalipuram (~45 min)", rose: false },
+                  { time: "6:00 PM", event: "Shoreline Reception begins", note: "Blue Bay Beach Resort", rose: false },
+                  { time: "Late evening", event: "Dinner, toasts, and dancing", note: "Stay as long as you like", rose: false },
+                ].map(({ time, event, note, rose }, i, arr) => (
+                  <div key={time} style={{ display: "flex", gap: "1rem" }}>
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", flexShrink: 0, paddingTop: 2 }}>
+                      <div style={{ width: 10, height: 10, borderRadius: "50%", background: rose ? "#BE2D45" : "#A87808", flexShrink: 0 }} />
+                      {i < arr.length - 1 && <div style={{ width: 1, flex: 1, minHeight: 20, background: "var(--color-border)", margin: "3px 0" }} />}
+                    </div>
+                    <div style={{ paddingBottom: i < arr.length - 1 ? "1rem" : 0 }}>
+                      <p style={{ fontFamily: "var(--font-body),sans-serif", fontSize: ".62rem", fontWeight: 700, color: rose ? "#BE2D45" : "#A87808", letterSpacing: ".1em", marginBottom: ".2rem" }}>{time}</p>
+                      <p className="font-display" style={{ fontSize: "1rem", color: "var(--color-text-primary)", marginBottom: ".15rem" }}>{event}</p>
+                      <p style={{ fontSize: ".78rem", color: "var(--color-text-muted)", fontFamily: "var(--font-body),sans-serif" }}>{note}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Contact the couple */}
+            <div style={{ padding: "1.25rem 1.5rem", borderRadius: 18, background: "var(--color-surface-muted)", border: "1px solid var(--color-border)", display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: "1rem" }}>
+              <div>
+                <p className="font-display" style={{ fontSize: "1.1rem", color: "var(--color-text-primary)", marginBottom: ".25rem" }}>Questions or adjustments?</p>
+                <p className="text-sm" style={{ color: "var(--color-text-secondary)" }}>Reach out to {brideFirst} or {groomFirst} directly.</p>
+              </div>
+              <a
+                href={`mailto:${weddingConfig.contactEmail}`}
+                style={{
+                  display: "inline-flex", alignItems: "center", gap: 6,
+                  padding: "10px 22px", borderRadius: 999,
+                  background: "var(--color-accent)", color: "#fff",
+                  fontFamily: "var(--font-body),sans-serif", fontSize: ".72rem",
+                  fontWeight: 600, letterSpacing: ".18em", textTransform: "uppercase",
+                  textDecoration: "none",
+                }}
+              >
+                Get in touch
+              </a>
+            </div>
+          </Container>
+        </section>
+      )}
 
       {/* ═══════════════════════════════════════════════════════════════════════
           SECTION: TIME CAPSULES

@@ -4,7 +4,7 @@ import { env, isProduction } from "@/lib/env";
 import { getConfiguredSupabaseClient, shouldFallbackToDemoData } from "@/lib/supabaseClient";
 import type { FamilyUserRow } from "@/lib/types";
 
-export type AuthRole = "family" | "admin";
+export type AuthRole = "family" | "squad" | "admin";
 
 export interface AuthSession {
   userId: string;
@@ -84,7 +84,7 @@ function createSaltHex(length = 16) {
 }
 
 function normalizeRole(role: string | null | undefined): AuthRole | null {
-  return role === "admin" || role === "family" ? role : null;
+  return role === "admin" || role === "squad" || role === "family" ? role : null;
 }
 
 async function findFamilyUserByEmail(email: string): Promise<FamilyUserRow | null> {
@@ -173,7 +173,7 @@ export async function verifyAuthToken(token?: string | null): Promise<AuthSessio
         try {
           const s = JSON.parse(decode(payload)) as AuthSession;
           if (!s.userId || !s.role || !s.expiresAt) continue;
-          if (s.role !== "family" && s.role !== "admin") continue;
+          if (s.role !== "family" && s.role !== "squad" && s.role !== "admin") continue;
           if (s.expiresAt < Date.now()) continue;
           return s;
         } catch { /* try next */ }
@@ -240,6 +240,15 @@ export function getDefaultPathForRole(role: AuthRole): string {
   return role === "admin" ? "/admin" : "/family";
 }
 
+// Convenience helpers
+export function isSquadOrAbove(role: AuthRole): boolean {
+  return role === "squad" || role === "admin";
+}
+
+export function isFamilyOrAbove(role: AuthRole): boolean {
+  return role === "family" || role === "squad" || role === "admin";
+}
+
 export function getSafeRedirectPath(value?: string | null, fallback = "/family"): string {
   if (!value) return fallback;
   const trimmed = value.trim();
@@ -256,6 +265,6 @@ export function getPostLoginRedirect(session: Pick<AuthSession, "role">, request
 
 export function roleCanAccess(role: AuthRole, path: string): boolean {
   if (path.startsWith("/api/admin") || path.startsWith("/admin")) return role === "admin";
-  if (path.startsWith("/family")) return role === "family" || role === "admin";
+  if (path.startsWith("/family")) return role === "family" || role === "squad" || role === "admin";
   return true;
 }
