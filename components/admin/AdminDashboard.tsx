@@ -19,8 +19,10 @@ import { SeatingManager, type SeatingTable } from "@/components/admin/SeatingMan
 import { PhotoAlbumManager, type PhotoAlbum, type AdminPhoto } from "@/components/admin/PhotoAlbumManager";
 import { GuestInsights } from "@/components/admin/GuestInsights";
 import { PlanningDashboard } from "@/components/admin/PlanningDashboard";
+import { SquadManager } from "@/components/admin/SquadManager";
+import type { SquadProposal } from "@/modules/squad/squad-system";
 import { GoldStripe, SectionLabel, BtnLink } from "@/components/ui";
-import { Download, LayoutDashboard, Users, Image, Clock, Grid3X3, BarChart3, Zap, ClipboardList } from "lucide-react";
+import { Download, LayoutDashboard, Users, Image, Clock, Grid3X3, BarChart3, Zap, ClipboardList, Heart } from "lucide-react";
 import { getStoredToken } from "@/lib/client/token";
 import { weddingConfig } from "@/lib/config";
 
@@ -44,6 +46,7 @@ interface AdminDashboardProps {
   initialPhotos:         AdminPhoto[];
   initialInsights:       InsightsData;
   initialCommandMetrics: CommandMetrics;
+  initialSquadProposals: SquadProposal[];
 }
 
 interface InsightsData {
@@ -72,11 +75,12 @@ interface AnalyticsResponse {
 // ─────────────────────────────────────────────────────────────────────────────
 // Tab definitions
 // ─────────────────────────────────────────────────────────────────────────────
-type Tab = "overview" | "guests" | "media" | "capsules" | "seating" | "insights" | "command" | "planning";
+type Tab = "overview" | "guests" | "squad" | "media" | "capsules" | "seating" | "insights" | "command" | "planning";
 
 const TABS: Array<{ id: Tab; label: string; icon: React.ElementType }> = [
   { id: "overview",  label: "Overview",        icon: LayoutDashboard },
   { id: "guests",    label: "Guest tools",      icon: Users },
+  { id: "squad",     label: "Squad proposals",  icon: Heart },
   { id: "media",     label: "Media & albums",   icon: Image },
   { id: "capsules",  label: "Capsules & games", icon: Clock },
   { id: "seating",   label: "Seating",          icon: Grid3X3 },
@@ -93,6 +97,7 @@ export function AdminDashboard({
   initialFamilyMembers, guestMessages, initialVendors, lifecycleOverride = null,
   initialPredictions, initialTimeCapsules, initialSeatingTables,
   initialAlbums, initialPhotos, initialInsights, initialCommandMetrics,
+  initialSquadProposals,
 }: AdminDashboardProps) {
   const [stats,          setStats]         = useState(initialStats);
   const [recentActivity, setRecentActivity] = useState(initialActivity);
@@ -217,6 +222,11 @@ export function AdminDashboard({
               </a>
             </div>
           </>
+        )}
+
+        {/* SQUAD PROPOSALS */}
+        {activeTab === "squad" && (
+          <SquadManager initialProposals={initialSquadProposals} weddingId={weddingId} />
         )}
 
         {/* GUEST TOOLS */}

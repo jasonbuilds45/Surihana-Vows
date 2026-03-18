@@ -13,6 +13,8 @@ import type { VendorRow } from "@/components/admin/VendorHub";
 import type { TimeCapsuleRow } from "@/components/admin/TimeCapsuleManager";
 import type { SeatingTable } from "@/components/admin/SeatingManager";
 import type { PhotoAlbum, AdminPhoto } from "@/components/admin/PhotoAlbumManager";
+import { getAllSquadProposals } from "@/modules/squad/squad-system";
+import type { SquadProposal } from "@/modules/squad/squad-system";
 
 export default async function AdminPage() {
   const session = await getSessionFromCookieStore(cookies());
@@ -230,11 +232,16 @@ export default async function AdminPage() {
   }
 
   // ── Fetch everything in parallel ────────────────────────────────────────────
+  async function getSquadProposals(): Promise<SquadProposal[]> {
+    try { return await getAllSquadProposals(); }
+    catch { return []; }
+  }
+
   const [
     stats, guests, recentActivity,
     familyMembers, lifecycleOverride, guestMessages, vendors,
     predictionQuestions, timeCapsules, seatingTables,
-    { albums, photos }, insights, commandMetrics,
+    { albums, photos }, insights, commandMetrics, squadProposals,
   ] = await Promise.all([
     getAnalyticsSnapshot(wId),
     listGuestLinks(wId),
@@ -249,6 +256,7 @@ export default async function AdminPage() {
     getAlbumsAndPhotos(),
     getInsights(),
     getCommandMetrics(),
+    getSquadProposals(),
   ]);
 
   const rows = guests.map(g => ({
@@ -284,6 +292,7 @@ export default async function AdminPage() {
       initialPhotos={photos}
       initialInsights={insights}
       initialCommandMetrics={commandMetrics}
+      initialSquadProposals={squadProposals}
     />
   );
 }
