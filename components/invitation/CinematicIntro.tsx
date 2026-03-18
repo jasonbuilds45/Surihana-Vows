@@ -826,22 +826,61 @@ export function CinematicIntro({
                 transformOrigin: "center",
               }} />
 
-              {/* Date · Venue */}
+              {/* Date · both venues */}
               <div className="h5" style={{
-                display: "flex", flexWrap: "wrap", alignItems: "center",
-                justifyContent: "center", gap: ".55rem", marginBottom: "1.375rem",
+                display: "flex", flexDirection: "column",
+                alignItems: "center", gap: ".75rem", marginBottom: "1.375rem",
               }}>
+                {/* Date row */}
                 {weddingDate && (
-                  <span style={{ fontFamily: BF, fontSize: ".82rem", fontWeight: 600, color: INK, letterSpacing: ".05em" }}>
+                  <span style={{
+                    fontFamily: BF, fontSize: ".82rem", fontWeight: 600,
+                    color: INK, letterSpacing: ".05em",
+                  }}>
                     {weddingDate}
                   </span>
                 )}
-                {venueName && (
-                  <>
-                    <span aria-hidden style={{ width: 3, height: 3, borderRadius: "50%", background: ROSE, display: "inline-block", opacity: .55 }} />
-                    <span style={{ fontFamily: BF, fontSize: ".78rem", color: INK_2, letterSpacing: ".04em", fontWeight: 500 }}>{venueName}</span>
-                  </>
-                )}
+
+                {/* Two venue chips — rose for church, gold for beach */}
+                <div style={{
+                  display: "flex", flexWrap: "wrap",
+                  justifyContent: "center", gap: ".5rem",
+                }}>
+                  {/* Church */}
+                  <span style={{
+                    display: "inline-flex", alignItems: "center", gap: 6,
+                    padding: "5px 14px", borderRadius: 999,
+                    background: "rgba(190,45,69,.07)",
+                    border: "1px solid rgba(190,45,69,.18)",
+                    fontFamily: BF, fontSize: ".62rem", fontWeight: 600,
+                    color: INK_2, letterSpacing: ".03em",
+                  }}>
+                    {/* Cross micro-icon */}
+                    <svg width="9" height="9" viewBox="0 0 10 10" fill="none" aria-hidden>
+                      <line x1="5" y1="0" x2="5" y2="10" stroke={ROSE} strokeWidth="1.8" strokeLinecap="round" />
+                      <line x1="1" y1="3.5" x2="9" y2="3.5" stroke={ROSE} strokeWidth="1.8" strokeLinecap="round" />
+                    </svg>
+                    <span>Divine Mercy Church</span>
+                    <span style={{ color: ROSE, fontWeight: 700, opacity: .8 }}>· 3 PM</span>
+                  </span>
+
+                  {/* Beach */}
+                  <span style={{
+                    display: "inline-flex", alignItems: "center", gap: 6,
+                    padding: "5px 14px", borderRadius: 999,
+                    background: "rgba(168,120,8,.07)",
+                    border: "1px solid rgba(168,120,8,.18)",
+                    fontFamily: BF, fontSize: ".62rem", fontWeight: 600,
+                    color: INK_2, letterSpacing: ".03em",
+                  }}>
+                    {/* Wave micro-icon */}
+                    <svg width="14" height="7" viewBox="0 0 14 7" fill="none" aria-hidden>
+                      <path d="M0.5 4 Q2 1 3.5 4 Q5 7 6.5 4 Q8 1 9.5 4 Q11 7 12.5 4" stroke={GOLD_L} strokeWidth="1.5" strokeLinecap="round" fill="none" />
+                    </svg>
+                    <span>Blue Bay Beach Resort</span>
+                    <span style={{ color: GOLD_L, fontWeight: 700, opacity: .85 }}>· 6 PM</span>
+                  </span>
+                </div>
               </div>
 
               {/* Guest tag */}
