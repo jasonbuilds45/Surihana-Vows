@@ -888,45 +888,68 @@ export function CinematicIntro({
                           "none",
                       }}
                     >
-                      {/* Outer square frame */}
-                      <div style={{
-                        position: "absolute", inset: 0,
-                        border: "1px solid rgba(190,45,69,.35)",
-                      }} />
-                      {/* Inner square */}
-                      <div style={{
-                        position: "absolute", inset: 10,
-                        border: "1px solid rgba(168,120,8,.22)",
-                      }} />
-                      {/* Corner accents */}
-                      {([
-                        { top: -3, left: -3 }, { top: -3, right: -3 },
-                        { bottom: -3, left: -3 }, { bottom: -3, right: -3 },
-                      ] as React.CSSProperties[]).map((pos, i) => (
-                        <div key={i} style={{
-                          position: "absolute", ...pos,
-                          width: 6, height: 6,
-                          background: ROSE_L,
-                        }} />
-                      ))}
-                      {/* Glass frost fill */}
-                      <div style={{
-                        position: "absolute", inset: 0,
-                        background: "rgba(253,250,247,.06)",
-                        backdropFilter: "blur(4px)",
-                        WebkitBackdropFilter: "blur(4px)",
-                      }} />
-                      {/* Initials */}
+                      {/*
+                        WAX SEAL — pure SVG circular wax disc
+                        Warm gold radial gradient, 16 radial ridges from edge,
+                        two debossed inner rings, dome highlight overlay.
+                        Initials sit on top via absolute div so they inherit
+                        font variables correctly.
+                      */}
+                      <svg
+                        viewBox="0 0 160 160"
+                        style={{ width: "100%", height: "100%", display: "block", overflow: "visible" }}
+                        aria-hidden
+                      >
+                        <defs>
+                          <radialGradient id="sealGold" cx="38%" cy="34%" r="68%">
+                            <stop offset="0%"   stopColor="#F5D47A" />
+                            <stop offset="35%"  stopColor="#C9960A" />
+                            <stop offset="68%"  stopColor="#9E7205" />
+                            <stop offset="100%" stopColor="#5C3D01" />
+                          </radialGradient>
+                          <radialGradient id="sealSheen" cx="34%" cy="28%" r="52%">
+                            <stop offset="0%"   stopColor="rgba(255,248,210,.32)" />
+                            <stop offset="100%" stopColor="rgba(255,248,210,0)" />
+                          </radialGradient>
+                        </defs>
+                        {/* Shadow group */}
+                        <g style={{ filter: "drop-shadow(0 10px 30px rgba(0,0,0,.60)) drop-shadow(0 3px 8px rgba(0,0,0,.40))" }}>
+                          {/* Wax body */}
+                          <circle cx="80" cy="80" r="74" fill="url(#sealGold)" />
+                          {/* 16 radial ridges */}
+                          {Array.from({ length: 16 }, (_, i) => {
+                            const a = (i / 16) * Math.PI * 2;
+                            return (
+                              <line
+                                key={i}
+                                x1={80 + 64 * Math.cos(a)} y1={80 + 64 * Math.sin(a)}
+                                x2={80 + 74 * Math.cos(a)} y2={80 + 74 * Math.sin(a)}
+                                stroke="rgba(60,35,0,.30)" strokeWidth="1.4"
+                              />
+                            );
+                          })}
+                          {/* Outer edge ring */}
+                          <circle cx="80" cy="80" r="73" fill="none" stroke="rgba(255,240,170,.20)" strokeWidth="1" />
+                          {/* Inner debossed border */}
+                          <circle cx="80" cy="80" r="62" fill="none" stroke="rgba(60,35,0,.28)" strokeWidth="1.4" />
+                          {/* Second inner ring */}
+                          <circle cx="80" cy="80" r="53" fill="none" stroke="rgba(60,35,0,.18)" strokeWidth=".8" />
+                          {/* Dome sheen */}
+                          <circle cx="80" cy="80" r="74" fill="url(#sealSheen)" />
+                        </g>
+                      </svg>
+                      {/* Initials — on top of SVG */}
                       <div style={{
                         position: "absolute", inset: 0,
                         display: "flex", alignItems: "center", justifyContent: "center",
                       }}>
                         <span className="ci-seal-initials" style={{
-                          fontFamily: DF, fontWeight: 300,
-                          fontSize: "clamp(3rem,7.5vw,5.5rem)",
-                          letterSpacing: ".18em", color: "rgba(255,255,255,.88)",
-                          lineHeight: 1, marginLeft: ".18em",
-                          textShadow: "0 2px 20px rgba(0,0,0,.5)",
+                          fontFamily: DF, fontWeight: 600,
+                          fontSize: "clamp(2.6rem,6.5vw,4.4rem)",
+                          letterSpacing: ".14em",
+                          color: "rgba(28,14,0,.80)",
+                          lineHeight: 1, marginLeft: ".14em",
+                          textShadow: "0 1px 0 rgba(255,240,160,.45), 0 -1px 4px rgba(0,0,0,.30)",
                         }}>
                           {initials}
                         </span>
@@ -967,8 +990,82 @@ export function CinematicIntro({
             )}
           </section>
 
-          {/* ── INVITE CONTENT ── */}
-          <div id="invite-content">{children}</div>
+          {/* ── PERSONAL MESSAGE ── first thing visible after seal pops ── */}
+          <div id="invite-content">
+            <section style={{
+              background: BG_LINEN,
+              borderBottom: `1px solid rgba(190,45,69,.10)`,
+              padding: "clamp(3.5rem,8vh,6rem) clamp(1.5rem,6vw,5rem)",
+              position: "relative",
+              overflow: "hidden",
+            }}>
+              {/* Warm ambient bloom */}
+              <div aria-hidden style={{
+                position: "absolute", inset: 0, pointerEvents: "none",
+                background: "radial-gradient(ellipse 70% 55% at 15% 50%, rgba(190,45,69,.04) 0%, transparent 60%)",
+              }} />
+
+              <div style={{ maxWidth: 640, margin: "0 auto", position: "relative" }}>
+
+                {/* Eyebrow */}
+                <p style={{
+                  fontFamily: BF, fontSize: ".5rem",
+                  letterSpacing: ".46em", textTransform: "uppercase",
+                  color: ROSE, fontWeight: 700,
+                  marginBottom: "clamp(1.75rem,4vh,3rem)",
+                }}>
+                  A personal welcome
+                </p>
+
+                {/* Letter body — left-border rule, italic serif */}
+                <div style={{
+                  borderLeft: `3px solid rgba(190,45,69,.25)`,
+                  paddingLeft: "clamp(1.25rem,3.5vw,2.25rem)",
+                }}>
+                  <p style={{
+                    fontFamily: DF, fontStyle: "italic",
+                    fontSize: "clamp(1rem,2.4vw,1.18rem)",
+                    color: INK, lineHeight: 1.95,
+                    marginBottom: ".5em",
+                  }}>
+                    Dear {guestLabel},
+                  </p>
+                  <p style={{
+                    fontFamily: DF, fontStyle: "italic",
+                    fontSize: "clamp(1rem,2.4vw,1.18rem)",
+                    color: INK_2, lineHeight: 1.95,
+                  }}>
+                    {brideFirst} and {groomFirst} warmly invite you to witness
+                    and celebrate their union. You are not just a guest —
+                    you are part of the story that brought them here.
+                    Your presence on this day means more than words can hold.
+                  </p>
+                </div>
+
+                {/* Signature */}
+                <div style={{
+                  marginTop: "clamp(1.75rem,4vh,3rem)",
+                  display: "flex", alignItems: "center", gap: "clamp(.875rem,2.5vw,1.5rem)",
+                }}>
+                  <div style={{
+                    width: "min(40px,10%)", height: 1,
+                    background: `linear-gradient(to right, rgba(190,45,69,.38), transparent)`,
+                    flexShrink: 0,
+                  }} />
+                  <p style={{
+                    fontFamily: DF, fontStyle: "italic", fontWeight: 400,
+                    fontSize: "clamp(.95rem,2.2vw,1.1rem)",
+                    color: INK_3, letterSpacing: ".02em",
+                  }}>
+                    With love, {brideFirst} &amp; {groomFirst}
+                  </p>
+                </div>
+
+              </div>
+            </section>
+
+            {children}
+          </div>
         </div>
       )}
     </>
