@@ -6,7 +6,6 @@ import type { Metadata } from "next";
 import { ArrowRight, Calendar, Heart, MapPin } from "lucide-react";
 import { Container } from "@/components/layout/Container";
 import { PhotoGrid } from "@/components/gallery/PhotoGrid";
-import { CoupleNames } from "@/components/invitation/CoupleNames";
 import { EventCard } from "@/components/invitation/EventCard";
 import { InviteTracker } from "@/components/invitation/InviteTracker";
 import { StorySection } from "@/components/invitation/StorySection";
@@ -22,7 +21,6 @@ import { LiveHubClient } from "@/app/live/LiveHubClient";
 import { RSVPForm } from "@/components/rsvp/RSVPForm";
 import { GuestMessageForm } from "@/components/guestbook/GuestMessageForm";
 import { MessageList } from "@/components/guestbook/MessageList";
-import { InvitationCard } from "@/components/invitation/InvitationCard";
 import { CoupleMessageVideo } from "@/components/invitation/CoupleMessageVideo";
 import { GalleryPreview } from "@/components/invitation/GalleryPreview";
 import { ShareInviteButtons } from "@/components/invitation/ShareInviteButtons";
@@ -47,7 +45,11 @@ export async function generateMetadata({ params }: InvitePageProps): Promise<Met
   return {
     title: `${guestLabel} | ${weddingConfig.celebrationTitle}`,
     description: weddingConfig.heroSubtitle,
-    openGraph: { title: `${guestLabel} | ${weddingConfig.celebrationTitle}`, description: weddingConfig.heroSubtitle, url: generateInviteUrl(invite.guest.invite_code) },
+    openGraph: {
+      title: `${guestLabel} | ${weddingConfig.celebrationTitle}`,
+      description: weddingConfig.heroSubtitle,
+      url: generateInviteUrl(invite.guest.invite_code),
+    },
   };
 }
 
@@ -55,13 +57,16 @@ export default async function InvitePage({ params }: InvitePageProps) {
   const invite = await getInviteBundle(params.guest);
   if (!invite) notFound();
 
-  const stage = await resolveLifecycleStage({ weddingId: invite.wedding.id, weddingDate: invite.wedding.wedding_date });
-  const inviteUrl = generateInviteUrl(invite.guest.invite_code);
+  const stage = await resolveLifecycleStage({
+    weddingId: invite.wedding.id,
+    weddingDate: invite.wedding.wedding_date,
+  });
+  const inviteUrl  = generateInviteUrl(invite.guest.invite_code);
   const guestLabel = `${invite.guest.guest_name}${invite.guest.family_name ? ` ${invite.guest.family_name}` : ""}`;
   const brideFirst = invite.wedding.bride_name.split(" ")[0];
   const groomFirst = invite.wedding.groom_name.split(" ")[0];
 
-  // ── LIVE stage ─────────────────────────────────────────────────────────────
+  // ── LIVE stage ──────────────────────────────────────────────────────────────
   if (stage.stage === "live") {
     const liveBundle = await getLivestreamBundle(invite.wedding.id);
     return (
@@ -74,7 +79,7 @@ export default async function InvitePage({ params }: InvitePageProps) {
     );
   }
 
-  // ── VAULT stage ────────────────────────────────────────────────────────────
+  // ── VAULT stage ─────────────────────────────────────────────────────────────
   if (stage.stage === "vault") {
     const session = await getSessionFromCookieStore(cookies());
     if (!session || !roleCanAccess(session.role, "/family")) {
@@ -85,7 +90,10 @@ export default async function InvitePage({ params }: InvitePageProps) {
       <div style={{ background: "var(--color-background)" }}>
         <InviteTracker guestId={invite.guest.id} inviteCode={invite.guest.invite_code} />
         <Container className="space-y-8 py-10 lg:py-14">
-          <div className="rounded-2xl p-6 sm:p-8" style={{ background: "var(--color-surface)", border: "1px solid var(--color-border)", boxShadow: "var(--shadow-md)" }}>
+          <div
+            className="rounded-2xl p-6 sm:p-8"
+            style={{ background: "var(--color-surface)", border: "1px solid var(--color-border)", boxShadow: "var(--shadow-md)" }}
+          >
             <p className="section-label" style={{ color: "var(--color-accent)" }}>Private archive</p>
             <h1 className="mt-3 font-display text-3xl sm:text-4xl" style={{ color: "var(--color-text-primary)" }}>
               Welcome back.
@@ -96,8 +104,16 @@ export default async function InvitePage({ params }: InvitePageProps) {
           </div>
           <div className="grid gap-5 sm:grid-cols-2">
             {familyVault.posts.map((post) => (
-              <article key={post.id} className="overflow-hidden rounded-2xl" style={{ background: "var(--color-surface)", border: "1px solid var(--color-border)", boxShadow: "var(--shadow-sm)" }}>
-                {post.media_url && <div className="relative h-52"><Image alt={post.title} fill className="object-cover" src={post.media_url} sizes="50vw" /></div>}
+              <article
+                key={post.id}
+                className="overflow-hidden rounded-2xl"
+                style={{ background: "var(--color-surface)", border: "1px solid var(--color-border)", boxShadow: "var(--shadow-sm)" }}
+              >
+                {post.media_url && (
+                  <div className="relative h-52">
+                    <Image alt={post.title} fill className="object-cover" src={post.media_url} sizes="50vw" />
+                  </div>
+                )}
                 <div className="p-5 space-y-2">
                   <p className="section-label" style={{ color: "var(--color-accent)" }}>Memory</p>
                   <h2 className="font-display text-xl" style={{ color: "var(--color-text-primary)" }}>{post.title}</h2>
@@ -112,20 +128,19 @@ export default async function InvitePage({ params }: InvitePageProps) {
     );
   }
 
-  // ── INVITATION stage ───────────────────────────────────────────────────────
+  // ── INVITATION stage ────────────────────────────────────────────────────────
   const [guestMessages, galleryPhotos] = await Promise.all([
     getGuestMessages(invite.wedding.id),
     getGalleryPhotos(invite.wedding.id),
   ]);
+
   const travelEssentials = invite.travelInfo.filter((i) => i.category === "essentials");
-  const travelGeneral = invite.travelInfo.filter((i) => i.category !== "essentials");
+  const travelGeneral    = invite.travelInfo.filter((i) => i.category !== "essentials");
+  const coupleVideoUrl   = weddingConfig.highlightVideoUrl ?? null;
 
-  // Optional couple video URL — set highlightVideoUrl in wedding.json to enable
-  const coupleVideoUrl = weddingConfig.highlightVideoUrl ?? null;
-
-  // Hero photo — use first slideshow photo if available
-  const heroPhoto = (await import("@/modules/premium/photo-gallery").then(m => m.getSlideshowPhotos()))[0]?.imageUrl
-    ?? "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1800&q=85";
+  const heroPhoto =
+    (await import("@/modules/premium/photo-gallery").then((m) => m.getSlideshowPhotos()))[0]?.imageUrl ??
+    "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1800&q=85";
 
   return (
     <CinematicIntro
@@ -142,36 +157,43 @@ export default async function InvitePage({ params }: InvitePageProps) {
     >
       <InviteTracker guestId={invite.guest.id} inviteCode={invite.guest.invite_code} />
 
-      {/* ── DIGITAL INVITATION CARD (Step 2) ─────────────────────────────────── */}
-      <InvitationCard
-        brideName={invite.wedding.bride_name}
-        groomName={invite.wedding.groom_name}
-        weddingDate={invite.wedding.wedding_date}
-        weddingTime={weddingConfig.weddingTime}
-        venueName={invite.wedding.venue_name}
-        venueAddress={weddingConfig.venueAddress}
-        venueCity={weddingConfig.venueCity}
-        celebrationTitle={weddingConfig.celebrationTitle}
-      />
-
-      {/* ── HERO ──────────────────────────────────────────────────────────────── */}
+      {/* ─────────────────────────────────────────────────────────────────────────
+          WELCOME STRIP
+          First thing a guest sees after the cinematic experience lands.
+          No couple names — those just ran four times through the intro.
+          Purpose: orient the guest (venue, date, who they are), then
+          give them two clear next steps: RSVP or jump to the schedule.
+      ───────────────────────────────────────────────────────────────────────── */}
       <section
-        className="relative overflow-hidden"
-        style={{ background: "linear-gradient(160deg, var(--color-surface) 0%, var(--color-surface-muted) 100%)", borderBottom: "1px solid var(--color-border)" }}
+        id="invite-welcome"
+        style={{
+          background: "linear-gradient(160deg, var(--color-surface) 0%, var(--color-surface-muted) 100%)",
+          borderBottom: "1px solid var(--color-border)",
+          position: "relative",
+          overflow: "hidden",
+        }}
       >
-        {/* Soft top ornament */}
+        {/* Rose-gold top accent line */}
         <div
-          className="absolute inset-x-0 top-0 h-1"
-          style={{ background: "linear-gradient(90deg, transparent, var(--color-accent-soft), var(--color-accent-gold), var(--color-accent-soft), transparent)" }}
+          aria-hidden
+          style={{
+            position: "absolute", inset: "0 0 auto 0", height: 3,
+            background: "linear-gradient(90deg, transparent, var(--color-accent-soft), var(--color-accent-gold), var(--color-accent-soft), transparent)",
+          }}
         />
 
-        <Container className="py-12 sm:py-16 lg:py-20">
-          <div className="grid gap-10 lg:grid-cols-[1fr,380px] lg:items-start">
-            {/* Left — couple info */}
-            <div className="space-y-6">
-              {/* For label + role badge */}
-              <div className="flex flex-wrap items-center gap-3">
-                <p className="section-label" style={{ color: "var(--color-text-muted)" }}>
+        <Container className="py-10 sm:py-12">
+          <div className="flex flex-wrap items-start justify-between gap-8 lg:flex-nowrap">
+
+            {/* Left — venue + guest context */}
+            <div className="space-y-4 min-w-0">
+
+              {/* Guest label + role badge */}
+              <div className="flex flex-wrap items-center gap-2.5">
+                <p
+                  className="section-label"
+                  style={{ color: "var(--color-text-muted)" }}
+                >
                   For {guestLabel}
                 </p>
                 <GuestRoleBadge
@@ -181,75 +203,101 @@ export default async function InvitePage({ params }: InvitePageProps) {
                 />
               </div>
 
-              {/* Names */}
-              <CoupleNames
-                brideName={invite.wedding.bride_name}
-                groomName={invite.wedding.groom_name}
-              />
+              {/* Venue + city — the one piece of info still missing after the intro */}
+              <div className="space-y-1.5">
+                <div className="flex items-start gap-2.5">
+                  <MapPin
+                    className="mt-0.5 h-4 w-4 shrink-0"
+                    style={{ color: "var(--color-accent)" }}
+                  />
+                  <div>
+                    <p
+                      className="text-base font-medium leading-snug"
+                      style={{ color: "var(--color-text-primary)" }}
+                    >
+                      {invite.wedding.venue_name}
+                    </p>
+                    <p
+                      className="text-sm"
+                      style={{ color: "var(--color-text-muted)" }}
+                    >
+                      {weddingConfig.venueAddress}
+                    </p>
+                    <p
+                      className="text-sm"
+                      style={{ color: "var(--color-text-muted)" }}
+                    >
+                      {weddingConfig.venueCity}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2.5 pl-px">
+                  <Calendar
+                    className="h-4 w-4 shrink-0"
+                    style={{ color: "var(--color-accent)" }}
+                  />
+                  <p
+                    className="text-sm font-medium"
+                    style={{ color: "var(--color-text-secondary)" }}
+                  >
+                    {formatDate(invite.wedding.wedding_date)} · {weddingConfig.weddingTime} IST
+                  </p>
+                </div>
+              </div>
 
               {/* Subtitle */}
               <p
-                className="text-base leading-8 max-w-lg"
+                className="text-sm leading-7 max-w-md"
                 style={{ color: "var(--color-text-secondary)" }}
               >
                 {weddingConfig.heroSubtitle}
               </p>
 
-              {/* Key details row — great for mobile */}
-              <div className="grid grid-cols-2 gap-3 sm:flex sm:flex-wrap">
-                <div
-                  className="flex items-center gap-2.5 rounded-xl px-4 py-3"
-                  style={{ background: "var(--color-surface)", border: "1px solid var(--color-border)", boxShadow: "var(--shadow-xs)" }}
-                >
-                  <Calendar className="h-4 w-4 shrink-0" style={{ color: "var(--color-accent)" }} />
-                  <div>
-                    <p className="section-label" style={{ color: "var(--color-text-muted)", fontSize: "0.55rem" }}>Date</p>
-                    <p className="text-sm font-medium" style={{ color: "var(--color-text-primary)" }}>{formatDate(invite.wedding.wedding_date)}</p>
-                  </div>
-                </div>
-                <div
-                  className="flex items-center gap-2.5 rounded-xl px-4 py-3"
-                  style={{ background: "var(--color-surface)", border: "1px solid var(--color-border)", boxShadow: "var(--shadow-xs)" }}
-                >
-                  <MapPin className="h-4 w-4 shrink-0" style={{ color: "var(--color-accent)" }} />
-                  <div>
-                    <p className="section-label" style={{ color: "var(--color-text-muted)", fontSize: "0.55rem" }}>Venue</p>
-                    <p className="text-sm font-medium" style={{ color: "var(--color-text-primary)" }}>{invite.wedding.venue_name}</p>
-                    <p className="text-xs" style={{ color: "var(--color-text-muted)" }}>{weddingConfig.venueCity}</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* CTA */}
-              <div className="flex flex-wrap gap-3">
+              {/* CTAs */}
+              <div className="flex flex-wrap gap-3 pt-1">
                 <a
                   href="#rsvp"
-                  className="inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm uppercase font-medium transition"
-                  style={{ letterSpacing: "0.22em", background: "var(--color-accent)", color: "#fff", boxShadow: "0 8px 24px rgba(138,90,68,0.3)" }}
+                  className="inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-medium uppercase transition"
+                  style={{
+                    letterSpacing: "0.18em",
+                    background: "var(--color-accent)",
+                    color: "#fff",
+                    boxShadow: "0 8px 24px rgba(138,90,68,0.28)",
+                  }}
                 >
                   RSVP now
                 </a>
                 <a
                   href="#events"
                   className="inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm uppercase transition"
-                  style={{ letterSpacing: "0.22em", background: "var(--color-surface)", border: "1px solid var(--color-border)", color: "var(--color-text-secondary)", boxShadow: "var(--shadow-xs)" }}
+                  style={{
+                    letterSpacing: "0.18em",
+                    background: "var(--color-surface)",
+                    border: "1px solid var(--color-border)",
+                    color: "var(--color-text-secondary)",
+                    boxShadow: "var(--shadow-xs)",
+                  }}
                 >
-                  View events
+                  Explore wedding
                 </a>
               </div>
             </div>
 
-            {/* Right — countdown card */}
-            <WeddingDate
-              date={invite.wedding.wedding_date}
-              time={weddingConfig.weddingTime}
-              venueName={invite.wedding.venue_name}
-            />
+            {/* Right — countdown card (still useful context, no name repetition) */}
+            <div className="w-full lg:w-auto lg:min-w-[340px] shrink-0">
+              <WeddingDate
+                date={invite.wedding.wedding_date}
+                time={weddingConfig.weddingTime}
+                venueName={invite.wedding.venue_name}
+              />
+            </div>
+
           </div>
         </Container>
       </section>
 
-      {/* ── COUPLE VIDEO MESSAGE (Step 6) ─────────────────────────────────────── */}
+      {/* ── COUPLE VIDEO MESSAGE ────────────────────────────────────────────────── */}
       {coupleVideoUrl && (
         <CoupleMessageVideo
           videoUrl={coupleVideoUrl}
@@ -258,30 +306,35 @@ export default async function InvitePage({ params }: InvitePageProps) {
         />
       )}
 
-      {/* ── STORY ─────────────────────────────────────────────────────────────── */}
+      {/* ── OUR STORY ───────────────────────────────────────────────────────────── */}
       <section style={{ background: "var(--color-background)" }}>
         <Container className="py-14">
           <StorySection quote={weddingConfig.introQuote} story={invite.story} />
         </Container>
       </section>
 
-      {/* ── EVENTS ────────────────────────────────────────────────────────────── */}
-      <section id="events" style={{ background: "var(--color-surface-muted)", borderTop: "1px solid var(--color-border)", borderBottom: "1px solid var(--color-border)" }}>
+      {/* ── EVENTS ──────────────────────────────────────────────────────────────── */}
+      <section
+        id="events"
+        style={{
+          background: "var(--color-surface-muted)",
+          borderTop: "1px solid var(--color-border)",
+          borderBottom: "1px solid var(--color-border)",
+        }}
+      >
         <Container className="py-14 space-y-8">
           <div className="space-y-2">
             <p className="section-label" style={{ color: "var(--color-accent)" }}>Your itinerary</p>
             <h2 className="font-display text-3xl sm:text-4xl" style={{ color: "var(--color-text-primary)" }}>
-              Your itinerary
+              The schedule
             </h2>
             <p className="text-sm leading-7 max-w-lg" style={{ color: "var(--color-text-secondary)" }}>
-              The full schedule for {formatDate(invite.wedding.wedding_date)} in {weddingConfig.venueCity}.
+              Everything happening on {formatDate(invite.wedding.wedding_date)} in {weddingConfig.venueCity}.
             </p>
           </div>
 
-          {/* Timeline strip — always visible */}
           <WeddingTimeline events={invite.events} weddingDate={invite.wedding.wedding_date} />
 
-          {/* Full event cards + Add to Calendar */}
           <div className="grid gap-5">
             {invite.events.map((event) => (
               <div key={event.id}>
@@ -302,7 +355,7 @@ export default async function InvitePage({ params }: InvitePageProps) {
         </Container>
       </section>
 
-      {/* ── DRESS CODE ────────────────────────────────────────────────────────── */}
+      {/* ── DRESS CODE ──────────────────────────────────────────────────────────── */}
       {(invite.wedding.dress_code ?? weddingConfig.dressCode) ? (
         <section style={{ background: "var(--color-background)" }}>
           <Container className="py-10">
@@ -315,7 +368,7 @@ export default async function InvitePage({ params }: InvitePageProps) {
         </section>
       ) : null}
 
-      {/* ── RITUAL GUIDE ──────────────────────────────────────────────────────── */}
+      {/* ── RITUAL GUIDE ────────────────────────────────────────────────────────── */}
       {weddingConfig.rituals?.length ? (
         <section style={{ background: "var(--color-surface-muted)", borderTop: "1px solid var(--color-border)" }}>
           <Container className="py-14">
@@ -328,11 +381,15 @@ export default async function InvitePage({ params }: InvitePageProps) {
         </section>
       ) : null}
 
-      {/* ── RSVP ──────────────────────────────────────────────────────────────── */}
-      <section id="rsvp" style={{ background: "var(--color-background)", borderTop: "1px solid var(--color-border)" }}>
+      {/* ── RSVP ────────────────────────────────────────────────────────────────── */}
+      <section
+        id="rsvp"
+        style={{ background: "var(--color-background)", borderTop: "1px solid var(--color-border)" }}
+      >
         <Container className="py-14">
           <div className="grid gap-10 lg:grid-cols-2 lg:items-start">
-            {/* Left copy */}
+
+            {/* Left */}
             <div className="space-y-5">
               <div>
                 <p className="section-label" style={{ color: "var(--color-accent)" }}>Your response</p>
@@ -350,35 +407,40 @@ export default async function InvitePage({ params }: InvitePageProps) {
                 style={{ background: "var(--color-surface)", border: "1px solid var(--color-border)", boxShadow: "var(--shadow-sm)" }}
               >
                 <p className="section-label" style={{ color: "var(--color-accent)" }}>The celebration</p>
-                <p className="font-display text-xl" style={{ color: "var(--color-text-primary)" }}>
-                  {brideFirst} &amp; {groomFirst}
-                </p>
-                <p className="text-sm" style={{ color: "var(--color-text-secondary)" }}>
+                <p className="text-sm font-medium" style={{ color: "var(--color-text-primary)" }}>
                   {formatDate(invite.wedding.wedding_date)}
                 </p>
-                <p className="text-xs mt-1" style={{ color: "var(--color-text-muted)" }}>
+                <p className="text-xs" style={{ color: "var(--color-text-muted)" }}>
                   3:00 PM · Divine Mercy Church, Kelambakkam
                 </p>
                 <p className="text-xs" style={{ color: "var(--color-text-muted)" }}>
                   6:00 PM · Blue Bay Beach Resort, Mahabalipuram
                 </p>
                 <div className="flex flex-wrap gap-2 mt-2">
-                  <a href="https://share.google/SCdoX1GZAvGSlOIrQ" target="_blank" rel="noreferrer"
+                  <a
+                    href="https://share.google/SCdoX1GZAvGSlOIrQ"
+                    target="_blank"
+                    rel="noreferrer"
                     className="inline-flex items-center gap-1.5 text-xs uppercase transition"
-                    style={{ letterSpacing: "0.22em", color: "var(--color-accent)" }}>
+                    style={{ letterSpacing: "0.22em", color: "var(--color-accent)" }}
+                  >
                     <MapPin className="h-3.5 w-3.5" /> Church
                   </a>
                   <span style={{ color: "var(--color-border-medium)" }}>·</span>
-                  <a href="https://maps.app.goo.gl/vu56aH1Jvp29gSuu7" target="_blank" rel="noreferrer"
+                  <a
+                    href="https://maps.app.goo.gl/vu56aH1Jvp29gSuu7"
+                    target="_blank"
+                    rel="noreferrer"
                     className="inline-flex items-center gap-1.5 text-xs uppercase transition"
-                    style={{ letterSpacing: "0.22em", color: "var(--color-accent)" }}>
+                    style={{ letterSpacing: "0.22em", color: "var(--color-accent)" }}
+                  >
                     <MapPin className="h-3.5 w-3.5" /> Beach resort
                   </a>
                 </div>
               </div>
             </div>
 
-            {/* Right — RSVP form */}
+            {/* Right */}
             <RSVPForm
               guest={{
                 id: invite.guest.id,
@@ -392,13 +454,15 @@ export default async function InvitePage({ params }: InvitePageProps) {
         </Container>
       </section>
 
-      {/* ── PREDICTIONS ───────────────────────────────────────────────────────── */}
+      {/* ── PREDICTIONS ─────────────────────────────────────────────────────────── */}
       {predictionsConfig.enabled ? (
         <section style={{ background: "var(--color-surface-muted)", borderTop: "1px solid var(--color-border)" }}>
           <Container className="py-14 space-y-6">
             <div>
               <p className="section-label" style={{ color: "var(--color-accent)" }}>Before the big day</p>
-              <h2 className="mt-2 font-display text-3xl" style={{ color: "var(--color-text-primary)" }}>Make your predictions.</h2>
+              <h2 className="mt-2 font-display text-3xl" style={{ color: "var(--color-text-primary)" }}>
+                Make your predictions.
+              </h2>
               <p className="mt-2 text-sm leading-7 max-w-md" style={{ color: "var(--color-text-secondary)" }}>
                 Guess what happens at the wedding. Results revealed after the reception.
               </p>
@@ -414,13 +478,15 @@ export default async function InvitePage({ params }: InvitePageProps) {
         </section>
       ) : null}
 
-      {/* ── TRAVEL ────────────────────────────────────────────────────────────── */}
+      {/* ── TRAVEL ──────────────────────────────────────────────────────────────── */}
       {travelGeneral.length > 0 && (
         <section style={{ background: "var(--color-background)", borderTop: "1px solid var(--color-border)" }}>
           <Container className="py-14 space-y-8">
             <div>
               <p className="section-label" style={{ color: "var(--color-accent)" }}>Getting here</p>
-              <h2 className="mt-2 font-display text-3xl" style={{ color: "var(--color-text-primary)" }}>Everything you need before you arrive.</h2>
+              <h2 className="mt-2 font-display text-3xl" style={{ color: "var(--color-text-primary)" }}>
+                Everything you need before you arrive.
+              </h2>
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
               {travelGeneral.map((item) => (
@@ -442,18 +508,25 @@ export default async function InvitePage({ params }: InvitePageProps) {
         </section>
       )}
 
-      {/* ── NEARBY ESSENTIALS ─────────────────────────────────────────────────── */}
+      {/* ── NEARBY ESSENTIALS ───────────────────────────────────────────────────── */}
       {travelEssentials.length > 0 && (
         <section style={{ background: "var(--color-surface-muted)", borderTop: "1px solid var(--color-border)" }}>
           <Container className="py-14">
             <NearbyEssentials
-              items={travelEssentials.map((i) => ({ id: i.id, title: i.title, description: i.description, link: i.link, icon: i.icon ?? null, category: i.category ?? null }))}
+              items={travelEssentials.map((i) => ({
+                id: i.id,
+                title: i.title,
+                description: i.description,
+                link: i.link,
+                icon: i.icon ?? null,
+                category: i.category ?? null,
+              }))}
             />
           </Container>
         </section>
       )}
 
-      {/* ── GUESTBOOK ─────────────────────────────────────────────────────────── */}
+      {/* ── GUESTBOOK ───────────────────────────────────────────────────────────── */}
       <section style={{ background: "var(--color-background)", borderTop: "1px solid var(--color-border)" }}>
         <Container className="py-14 space-y-10">
           <div className="grid gap-10 lg:grid-cols-2 lg:items-start">
@@ -488,12 +561,12 @@ export default async function InvitePage({ params }: InvitePageProps) {
         </Container>
       </section>
 
-      {/* ── GALLERY PREVIEW (Step 5) ─────────────────────────────────────────── */}
+      {/* ── GALLERY PREVIEW ─────────────────────────────────────────────────────── */}
       {galleryPhotos.length > 0 && (
         <GalleryPreview photos={galleryPhotos} />
       )}
 
-      {/* ── SHARE INVITE (Step 10) ───────────────────────────────────────────── */}
+      {/* ── SHARE INVITE ────────────────────────────────────────────────────────── */}
       <section style={{ background: "var(--color-background)", borderTop: "1px solid var(--color-border)" }}>
         <Container className="py-10">
           <ShareInviteButtons
@@ -505,13 +578,8 @@ export default async function InvitePage({ params }: InvitePageProps) {
         </Container>
       </section>
 
-      {/* ── FOOTER FAREWELL ───────────────────────────────────────────────────── */}
-      <section
-        style={{
-          background: "var(--color-surface-muted)",
-          borderTop: "1px solid var(--color-border)",
-        }}
-      >
+      {/* ── FOOTER FAREWELL ─────────────────────────────────────────────────────── */}
+      <section style={{ background: "var(--color-surface-muted)", borderTop: "1px solid var(--color-border)" }}>
         <Container className="py-12 text-center space-y-4">
           <div
             className="mx-auto grid h-14 w-14 place-items-center rounded-full"
@@ -528,10 +596,7 @@ export default async function InvitePage({ params }: InvitePageProps) {
           <p className="text-sm" style={{ color: "var(--color-text-muted)" }}>
             {formatDate(invite.wedding.wedding_date)} · {invite.wedding.venue_name}
           </p>
-          <p
-            className="section-label mt-4"
-            style={{ color: "var(--color-text-muted)" }}
-          >
+          <p className="section-label mt-4" style={{ color: "var(--color-text-muted)" }}>
             {weddingConfig.celebrationTitle}
           </p>
         </Container>
