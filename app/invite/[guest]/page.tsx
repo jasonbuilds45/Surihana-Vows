@@ -16,7 +16,6 @@ import { GuestRoleBadge } from "@/components/invitation/GuestRoleBadge";
 import { NearbyEssentials } from "@/components/invitation/NearbyEssentials";
 import { PredictionGame } from "@/components/invitation/PredictionGame";
 import { RitualGuide } from "@/components/invitation/RitualGuide";
-import { WeddingTimeline } from "@/components/invitation/WeddingTimeline";
 import { LiveHubClient } from "@/app/live/LiveHubClient";
 import { RSVPForm } from "@/components/rsvp/RSVPForm";
 import { GuestMessageForm } from "@/components/guestbook/GuestMessageForm";
@@ -24,7 +23,6 @@ import { MessageList } from "@/components/guestbook/MessageList";
 import { CoupleMessageVideo } from "@/components/invitation/CoupleMessageVideo";
 import { GalleryPreview } from "@/components/invitation/GalleryPreview";
 import { ShareInviteButtons } from "@/components/invitation/ShareInviteButtons";
-import { AddToCalendarButton } from "@/components/invitation/AddToCalendarButton";
 import { getSessionFromCookieStore, roleCanAccess } from "@/lib/auth";
 import { weddingConfig, predictionsConfig } from "@/lib/config";
 import { generateInviteUrl } from "@/utils/generateInviteLink";
@@ -322,36 +320,100 @@ export default async function InvitePage({ params }: InvitePageProps) {
           borderBottom: "1px solid var(--color-border)",
         }}
       >
-        <Container className="py-14 space-y-8">
-          <div className="space-y-2">
+        <Container className="py-14">
+
+          {/* Section header */}
+          <div className="space-y-2 mb-10">
             <p className="section-label" style={{ color: "var(--color-accent)" }}>Your itinerary</p>
             <h2 className="font-display text-3xl sm:text-4xl" style={{ color: "var(--color-text-primary)" }}>
-              The schedule
+              Two venues. One unforgettable day.
             </h2>
             <p className="text-sm leading-7 max-w-lg" style={{ color: "var(--color-text-secondary)" }}>
-              Everything happening on {formatDate(invite.wedding.wedding_date)} in {weddingConfig.venueCity}.
+              {formatDate(invite.wedding.wedding_date)} · {weddingConfig.venueCity} — an afternoon of vows
+              and an evening of celebration, each with its own setting and soul.
             </p>
           </div>
 
-          <WeddingTimeline events={invite.events} weddingDate={invite.wedding.wedding_date} />
-
-          <div className="grid gap-5">
-            {invite.events.map((event) => (
-              <div key={event.id}>
-                <EventCard event={event} />
-                <div style={{ marginTop: ".875rem", display: "flex", justifyContent: "flex-end" }}>
-                  <AddToCalendarButton
-                    eventTitle={event.event_name}
-                    date={event.date}
-                    startTime={event.time}
-                    venue={event.venue}
-                    description={event.description ?? ""}
-                    size="sm"
-                  />
-                </div>
+          {/* Timeline connector — visible on desktop */}
+          <div className="hidden lg:flex items-center gap-0 mb-10">
+            {/* Church stop */}
+            <div className="flex items-center gap-3 flex-shrink-0">
+              <div
+                style={{
+                  width: 40, height: 40, borderRadius: 10,
+                  background: "rgba(190,45,69,.08)",
+                  border: "1.5px solid rgba(190,45,69,.25)",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                }}
+              >
+                <svg width="14" height="14" viewBox="0 0 18 18" fill="none" aria-hidden>
+                  <line x1="9" y1="1" x2="9" y2="17" stroke="#BE2D45" strokeWidth="2" strokeLinecap="round" />
+                  <line x1="3" y1="6" x2="15" y2="6" stroke="#BE2D45" strokeWidth="2" strokeLinecap="round" />
+                </svg>
               </div>
+              <div>
+                <p style={{ fontSize: ".5rem", letterSpacing: ".32em", textTransform: "uppercase", color: "rgba(190,45,69,.65)", fontWeight: 700 }}>3:00 PM</p>
+                <p style={{ fontSize: ".8rem", fontWeight: 600, color: "var(--color-text-primary)", fontFamily: "var(--font-display,'Cormorant Garamond',serif)" }}>Divine Mercy Church</p>
+              </div>
+            </div>
+
+            {/* Connector line with arrow */}
+            <div style={{ flex: 1, display: "flex", alignItems: "center", margin: "0 1rem" }}>
+              <div style={{ flex: 1, height: 1, background: "linear-gradient(to right, rgba(190,45,69,.30), rgba(168,120,8,.30))" }} />
+              <div style={{
+                margin: "0 .75rem", padding: "4px 12px", borderRadius: 999,
+                background: "var(--color-surface)",
+                border: "1px solid var(--color-border)",
+                fontSize: ".48rem", letterSpacing: ".28em",
+                textTransform: "uppercase", color: "var(--color-text-muted)",
+                fontWeight: 600, whiteSpace: "nowrap",
+              }}>
+                Then at sunset
+              </div>
+              <div style={{ flex: 1, height: 1, background: "linear-gradient(to right, rgba(168,120,8,.30), rgba(168,120,8,.60))" }} />
+            </div>
+
+            {/* Beach stop */}
+            <div className="flex items-center gap-3 flex-shrink-0">
+              <div
+                style={{
+                  width: 40, height: 40, borderRadius: 10,
+                  background: "rgba(168,120,8,.08)",
+                  border: "1.5px solid rgba(168,120,8,.25)",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                }}
+              >
+                <svg width="20" height="12" viewBox="0 0 22 14" fill="none" aria-hidden>
+                  <path d="M1 7 Q4 2 7 7 Q10 12 13 7 Q16 2 19 7 Q20.5 9.5 22 7" stroke="#A87808" strokeWidth="2" strokeLinecap="round" fill="none" />
+                </svg>
+              </div>
+              <div>
+                <p style={{ fontSize: ".5rem", letterSpacing: ".32em", textTransform: "uppercase", color: "rgba(168,120,8,.65)", fontWeight: 700 }}>6:00 PM</p>
+                <p style={{ fontSize: ".8rem", fontWeight: 600, color: "var(--color-text-primary)", fontFamily: "var(--font-display,'Cormorant Garamond',serif)" }}>Blue Bay Beach Resort</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Mobile timeline — compact */}
+          <div className="flex lg:hidden items-center gap-4 mb-8 overflow-x-auto pb-1">
+            <div className="flex items-center gap-2 flex-shrink-0">
+              <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#BE2D45" }} />
+              <span style={{ fontSize: ".65rem", fontWeight: 600, color: "var(--color-text-primary)", whiteSpace: "nowrap" }}>3 PM · Church</span>
+            </div>
+            <div style={{ flex: 1, minWidth: 24, height: 1, background: "linear-gradient(to right, rgba(190,45,69,.4), rgba(168,120,8,.4))" }} />
+            <div className="flex items-center gap-2 flex-shrink-0">
+              <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#A87808" }} />
+              <span style={{ fontSize: ".65rem", fontWeight: 600, color: "var(--color-text-primary)", whiteSpace: "nowrap" }}>6 PM · Beach Resort</span>
+            </div>
+          </div>
+
+          {/* Event cards — 2-col on desktop */}
+          <div className="grid gap-6 lg:grid-cols-2">
+            {invite.events.map((event) => (
+              <EventCard key={event.id} event={event} />
             ))}
           </div>
+
         </Container>
       </section>
 
