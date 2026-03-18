@@ -586,6 +586,47 @@ export interface Database {
           }
         ];
       };
+
+      // ── 012_squad_proposals.sql ──────────────────────────────────────────────
+      squad_proposals: {
+        Row: {
+          id:            string;
+          wedding_id:    string;
+          name:          string;
+          email:         string | null;
+          squad_role:    "bridesmaid" | "groomsman";
+          personal_note: string;
+          proposal_code: string;
+          accepted:      boolean | null;
+          accepted_at:   string | null;
+          response_note: string | null;
+          created_at:    string;
+          opened_at:     string | null;
+        };
+        Insert: {
+          id?:            string;
+          wedding_id:     string;
+          name:           string;
+          email?:         string | null;
+          squad_role:     "bridesmaid" | "groomsman";
+          personal_note:  string;
+          proposal_code:  string;
+          accepted?:      boolean | null;
+          accepted_at?:   string | null;
+          response_note?: string | null;
+          created_at?:    string;
+          opened_at?:     string | null;
+        };
+        Update: Partial<Database["public"]["Tables"]["squad_proposals"]["Insert"]>;
+        Relationships: [
+          {
+            foreignKeyName: "fk_squad_proposals_wedding";
+            columns: ["wedding_id"];
+            referencedRelation: "weddings";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;
