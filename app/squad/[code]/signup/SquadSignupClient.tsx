@@ -74,6 +74,8 @@ export function SquadSignupClient({ proposal, brideName, groomName }: Props) {
 
   // Form state
   const [fullName,       setFullName]       = useState(proposal.profile_full_name       ?? proposal.name);
+  const [email,          setEmail]          = useState(proposal.email                   ?? "");
+  const [password,       setPassword]       = useState("");
   const [phone,          setPhone]          = useState(proposal.profile_phone            ?? "");
   const [dressSize,      setDressSize]      = useState(proposal.profile_dress_size       ?? "");
   const [emergencyName,  setEmergencyName]  = useState(proposal.profile_emergency_name  ?? "");
@@ -90,6 +92,7 @@ export function SquadSignupClient({ proposal, brideName, groomName }: Props) {
   );
   const [error,    setError]    = useState<string | null>(null);
   const [vaultUrl, setVaultUrl] = useState<string | null>(null);
+  const [showPass,  setShowPass]  = useState(false);
 
   // ── Photo picker ──────────────────────────────────────────────────────────
   function handlePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -112,6 +115,8 @@ export function SquadSignupClient({ proposal, brideName, groomName }: Props) {
       const fd = new FormData();
       fd.append("code",       proposal.proposal_code);
       fd.append("full_name",  fullName.trim());
+      fd.append("email",      email.trim());
+      fd.append("password",   password);
       fd.append("phone",      phone.trim());
       if (dressSize.trim())      fd.append("dress_size",      dressSize.trim());
       if (emergencyName.trim())  fd.append("emergency_name",  emergencyName.trim());
@@ -119,11 +124,15 @@ export function SquadSignupClient({ proposal, brideName, groomName }: Props) {
       if (photoFile)             fd.append("photo", photoFile);
 
       const res  = await fetch("/api/squad/profile", { method: "POST", body: fd });
-      const json = (await res.json()) as { success: boolean; vaultUrl?: string | null; message?: string };
+      const json = (await res.json()) as { success: boolean; redirectTo?: string; message?: string };
 
       if (!json.success) throw new Error(json.message ?? "Something went wrong.");
 
-      setVaultUrl(json.vaultUrl ?? null);
+      // API set the auth cookie — navigate directly to vault
+      if (json.redirectTo) {
+        window.location.href = json.redirectTo;
+        return;
+      }
       setStage("confirmed");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
@@ -558,6 +567,83 @@ export function SquadSignupClient({ proposal, brideName, groomName }: Props) {
                     </div>
                   </div>
 
+                  {/* ── Email + Password (vault login credentials) ── */}
+                  <div className="ss-in-3" style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                    <div style={{
+                      padding: ".75rem 1rem", borderRadius: 12,
+                      background: "rgba(190,45,69,.04)",
+                      border: "1px solid rgba(190,45,69,.12)",
+                    }}>
+                      <p style={{ fontFamily: BF, fontSize: ".60rem", letterSpacing: ".22em", textTransform: "uppercase", color: ROSE, fontWeight: 700, marginBottom: ".25rem" }}>
+                        Create your vault login
+                      </p>
+                      <p style={{ fontFamily: DF, fontStyle: "italic", fontSize: ".85rem", color: INK_3, lineHeight: 1.55, margin: 0 }}>
+                        Choose an email and password to access the private vault any time.
+                      </p>
+                    </div>
+                    <div className="ss-grid-2" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                      <div>
+                        <label style={labelStyle}>
+                          Email address <span style={{ color: ROSE }}>*</span>
+                        </label>
+                        <input
+                          className="ss-inp"
+                          style={inp}
+                          type="email"
+                          value={email}
+                          onChange={e => setEmail(e.target.value)}
+                          placeholder="your@email.com"
+                          autoComplete="email"
+                          required
+                        />
+                      </div>
+                      <div>
+                        <label style={labelStyle}>
+                          Password <span style={{ color: ROSE }}>*</span>
+                        </label>
+                        <div style={{ position: "relative" }}>
+                          <input
+                            className="ss-inp"
+                            style={{ ...inp, paddingRight: 44 }}
+                            type={showPass ? "text" : "password"}
+                            value={password}
+                            onChange={e => setPassword(e.target.value)}
+                            placeholder="Min. 8 characters"
+                            autoComplete="new-password"
+                            minLength={8}
+                            required
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowPass(s => !s)}
+                            style={{
+                              position: "absolute", right: 12, top: "50%",
+                              transform: "translateY(-50%)",
+                              background: "none", border: "none", cursor: "pointer",
+                              color: INK_4, padding: 0, lineHeight: 1,
+                            }}
+                            aria-label={showPass ? "Hide password" : "Show password"}
+                          >
+                            {showPass ? (
+                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden>
+                                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+                                <line x1="1" y1="1" x2="23" y2="23"/>
+                              </svg>
+                            ) : (
+                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden>
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                <circle cx="12" cy="12" r="3"/>
+                              </svg>
+                            )}
+                          </button>
+                        </div>
+                        <p style={{ fontFamily: BF, fontSize: ".58rem", color: INK_4, marginTop: ".375rem" }}>
+                          At least 8 characters
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
                   {/* ── Dress / suit size ── */}
                   <div className="ss-in-3">
                     <label style={labelStyle}>
@@ -624,7 +710,7 @@ export function SquadSignupClient({ proposal, brideName, groomName }: Props) {
                     <button
                       type="submit"
                       className="ss-submit"
-                      disabled={stage === "submitting" || !fullName.trim() || !phone.trim()}
+                      disabled={stage === "submitting" || !fullName.trim() || !phone.trim() || !email.trim() || password.length < 8}
                     >
                       {stage === "submitting" ? (
                         <>
