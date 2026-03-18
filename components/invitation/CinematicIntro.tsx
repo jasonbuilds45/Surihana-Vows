@@ -285,8 +285,8 @@ export function CinematicIntro({
 
         /* ── seal animations ── */
         @keyframes ci-seal-pulse {
-          0%,100%{box-shadow:0 0 0 0 rgba(190,45,69,0),0 8px 32px rgba(0,0,0,.45)}
-          50%    {box-shadow:0 0 0 12px rgba(190,45,69,.10),0 12px 40px rgba(0,0,0,.55)}
+          0%,100%{box-shadow:0 0 0 0 rgba(168,120,8,0),0 8px 28px rgba(60,30,0,.28)}
+          50%    {box-shadow:0 0 0 14px rgba(168,120,8,.12),0 12px 36px rgba(60,30,0,.35)}
         }
         @keyframes ci-seal-hover {
           0%  {transform:translateY(0) scale(1) rotate(0deg)}
@@ -724,35 +724,47 @@ export function CinematicIntro({
               alignItems: "center", justifyContent: "center",
               textAlign: "center",
               overflow: "hidden",
-              background: VOID,
+              background: BG,
             }}
           >
-            {/* Full-bleed photo */}
+            {/* Full-bleed photo — brighter, more saturated for light theme */}
             {heroPhotoUrl && (
               <div aria-hidden style={{ position: "absolute", inset: 0, zIndex: 0, overflow: "hidden" }}>
                 <div className="ci-par" style={{
                   position: "absolute", inset: "-10%",
                   backgroundImage: `url(${heroPhotoUrl})`,
                   backgroundSize: "cover", backgroundPosition: "center",
-                  filter: "saturate(.32) brightness(.48) contrast(1.12)",
+                  filter: "saturate(.55) brightness(.82) contrast(1.04)",
                   willChange: "transform",
                   transform: "scale(1.08) translateY(0)",
                 }} />
               </div>
             )}
 
-            {/* Dark overlay — heavier at edges */}
+            {/* Warm cream wash — lets the photo read through, not drowned */}
             <div aria-hidden style={{
               position: "absolute", inset: 0, zIndex: 1,
               background: `linear-gradient(to bottom,
-                rgba(8,5,7,.72) 0%,
-                rgba(8,5,7,.28) 28%,
-                rgba(8,5,7,.24) 58%,
-                rgba(8,5,7,.80) 100%)`,
+                rgba(253,248,242,.88) 0%,
+                rgba(253,248,242,.62) 18%,
+                rgba(253,248,242,.52) 42%,
+                rgba(253,248,242,.72) 68%,
+                rgba(251,243,236,.96) 100%)`,
             }} />
+
+            {/* Warm side vignette — not black, warm linen */}
             <div aria-hidden style={{
               position: "absolute", inset: 0, zIndex: 2,
-              background: "radial-gradient(ellipse 80% 72% at 50% 50%, transparent 28%, rgba(0,0,0,.58) 100%)",
+              background: "radial-gradient(ellipse 90% 78% at 50% 50%, transparent 35%, rgba(241,233,224,.45) 100%)",
+            }} />
+
+            {/* Subtle rose + gold ambient blooms */}
+            <div aria-hidden style={{
+              position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none",
+              background: `
+                radial-gradient(ellipse 55% 44% at 12% 20%, rgba(190,45,69,.05) 0%, transparent 55%),
+                radial-gradient(ellipse 45% 40% at 88% 80%, rgba(168,120,8,.04) 0%, transparent 50%)
+              `,
             }} />
 
             {/* Content */}
@@ -767,22 +779,22 @@ export function CinematicIntro({
                 display: "flex", alignItems: "center", gap: 12,
                 justifyContent: "center", marginBottom: "2.25rem",
               }}>
-                <div style={{ width: 28, height: 1, background: "rgba(190,45,69,.55)" }} />
+                <div style={{ width: 28, height: 1, background: `linear-gradient(to right, transparent, ${ROSE_MID})` }} />
                 <span style={{
                   fontFamily: BF, fontSize: ".44rem", letterSpacing: ".50em",
-                  textTransform: "uppercase", color: "rgba(190,45,69,.72)", fontWeight: 700,
+                  textTransform: "uppercase", color: ROSE, fontWeight: 700,
                 }}>
                   {title}
                 </span>
-                <div style={{ width: 28, height: 1, background: "rgba(190,45,69,.55)" }} />
+                <div style={{ width: 28, height: 1, background: `linear-gradient(to left, transparent, ${ROSE_MID})` }} />
               </div>
 
-              {/* Bride name */}
+              {/* Bride name — dark ink on light wash */}
               <h1 className="h1 h-name" style={{
                 fontFamily: DF,
                 fontSize: "clamp(4rem,13vw,11rem)",
                 fontWeight: 300, lineHeight: .84, letterSpacing: "-.04em",
-                color: "#FFFFFF", marginBottom: ".05em",
+                color: INK, marginBottom: ".05em",
               }}>
                 {brideFirst}
               </h1>
@@ -791,7 +803,7 @@ export function CinematicIntro({
               <p className="h2" style={{
                 fontFamily: DF, fontStyle: "italic", fontWeight: 300,
                 fontSize: "clamp(1.1rem,3.2vw,2.4rem)",
-                color: "rgba(190,45,69,.80)",
+                color: ROSE,
                 letterSpacing: ".12em", lineHeight: 1.2, marginBottom: ".05em",
               }}>
                 &amp;
@@ -802,7 +814,7 @@ export function CinematicIntro({
                 fontFamily: DF,
                 fontSize: "clamp(4rem,13vw,11rem)",
                 fontWeight: 300, lineHeight: .84, letterSpacing: "-.04em",
-                color: "rgba(232,188,20,.88)", marginBottom: "2rem",
+                color: INK_2, marginBottom: "2rem",
               }}>
                 {groomFirst}
               </h1>
@@ -810,7 +822,7 @@ export function CinematicIntro({
               {/* Drawing rule */}
               <div className="h4" style={{
                 width: "min(180px,40%)", height: 1, margin: "0 auto 2rem",
-                background: "linear-gradient(90deg, transparent, rgba(190,45,69,.52), transparent)",
+                background: `linear-gradient(90deg, transparent, ${GOLD_L}, transparent)`,
                 transformOrigin: "center",
               }} />
 
@@ -820,14 +832,14 @@ export function CinematicIntro({
                 justifyContent: "center", gap: ".55rem", marginBottom: "1.375rem",
               }}>
                 {weddingDate && (
-                  <span style={{ fontFamily: BF, fontSize: ".82rem", fontWeight: 500, color: "rgba(255,255,255,.82)", letterSpacing: ".05em" }}>
+                  <span style={{ fontFamily: BF, fontSize: ".82rem", fontWeight: 600, color: INK, letterSpacing: ".05em" }}>
                     {weddingDate}
                   </span>
                 )}
                 {venueName && (
                   <>
-                    <span aria-hidden style={{ width: 3, height: 3, borderRadius: "50%", background: "rgba(190,45,69,.55)", display: "inline-block" }} />
-                    <span style={{ fontFamily: BF, fontSize: ".78rem", color: "rgba(255,255,255,.50)", letterSpacing: ".04em" }}>{venueName}</span>
+                    <span aria-hidden style={{ width: 3, height: 3, borderRadius: "50%", background: ROSE, display: "inline-block", opacity: .55 }} />
+                    <span style={{ fontFamily: BF, fontSize: ".78rem", color: INK_2, letterSpacing: ".04em", fontWeight: 500 }}>{venueName}</span>
                   </>
                 )}
               </div>
@@ -835,11 +847,12 @@ export function CinematicIntro({
               {/* Guest tag */}
               <div className="h6" style={{ marginBottom: "clamp(2.5rem,5vh,3.5rem)" }}>
                 <span style={{
-                  display: "inline-block", padding: "5px 20px",
-                  border: "1px solid rgba(255,255,255,.16)", borderRadius: 999,
+                  display: "inline-block", padding: "6px 22px",
+                  border: `1px solid ${BDR_MD}`, borderRadius: 999,
                   fontFamily: DF, fontStyle: "italic",
                   fontSize: "clamp(.78rem,1.9vw,.92rem)",
-                  color: "rgba(255,255,255,.58)", letterSpacing: ".03em",
+                  color: ROSE, letterSpacing: ".03em",
+                  background: ROSE_PALE,
                 }}>
                   A personal invitation for {guestLabel}
                 </span>
@@ -963,7 +976,7 @@ export function CinematicIntro({
                   <p style={{
                     fontFamily: BF, fontSize: ".48rem",
                     letterSpacing: ".34em", textTransform: "uppercase",
-                    color: "rgba(255,255,255,.30)", fontWeight: 500,
+                    color: INK_4, fontWeight: 500,
                   }}>
                     {sealState === "burst" ? "Opening…" : "Press to enter"}
                   </p>
@@ -980,12 +993,12 @@ export function CinematicIntro({
               }}>
                 <span style={{
                   fontFamily: BF, fontSize: ".40rem", letterSpacing: ".42em",
-                  textTransform: "uppercase", color: "rgba(255,255,255,.28)",
+                  textTransform: "uppercase", color: INK_4,
                 }}>
                   Scroll
                 </span>
-                <div style={{ width: 1, height: 30, background: "linear-gradient(to bottom, rgba(255,255,255,.32), transparent)" }} />
-                <ChevronDown size={11} style={{ color: "rgba(255,255,255,.28)", marginTop: -5 }} />
+                <div style={{ width: 1, height: 30, background: `linear-gradient(to bottom, ${ROSE_MID}, transparent)` }} />
+                <ChevronDown size={11} style={{ color: ROSE_MID, marginTop: -5 }} />
               </div>
             )}
           </section>
