@@ -160,7 +160,7 @@ export default async function FamilyPage() {
         </Container>
 
         {/* ── Sticky tab nav (client component) */}
-        <VaultNav />
+        <VaultNav isSquad={isSquad} />
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════════════

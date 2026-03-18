@@ -8,7 +8,7 @@ import { Card, SectionLabel, Btn, Badge, EmptyState } from "@/components/ui";
 export interface FamilyMemberRow {
   id: string;
   email: string;
-  role: "family" | "admin";
+  role: "family" | "squad" | "admin";
 }
 
 interface FamilyInviteManagerProps {
@@ -134,7 +134,7 @@ export function FamilyInviteManager({ initialMembers, weddingId }: FamilyInviteM
                 <tr key={m.id} style={{ background: i % 2 === 0 ? "#ffffff" : "var(--color-surface-soft)" }}>
                   <td className="px-5 py-4 font-medium" style={{ borderBottom: "1px solid var(--color-border)", color: "var(--color-text-primary)" }}>{m.email}</td>
                   <td className="px-5 py-4" style={{ borderBottom: "1px solid var(--color-border)" }}>
-                    <Badge variant={m.role === "admin" ? "accent" : "neutral"}>{m.role}</Badge>
+                    <Badge variant={m.role === "admin" ? "accent" : m.role === "squad" ? "sage" : "neutral"}>{m.role}</Badge>
                   </td>
                   <td className="px-5 py-4" style={{ borderBottom: "1px solid var(--color-border)" }}>
                     <div className="flex gap-2">
