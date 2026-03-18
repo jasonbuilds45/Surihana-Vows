@@ -590,7 +590,7 @@ export function CinematicIntro({
               </div>
             )}
 
-            {/* ── Scene 4: Venue, bottom-anchored ── */}
+            {/* ── Scene 4: Both venues — cinematic split composition ── */}
             {scene === 4 && (
               <div style={{
                 position: "absolute",
@@ -598,40 +598,81 @@ export function CinematicIntro({
                 left: "clamp(24px,6vw,80px)",
                 right: "clamp(24px,6vw,80px)",
               }}>
+                {/* Eyebrow */}
                 <p className="t-eyebrow" style={{
                   fontFamily: BF, fontSize: ".48rem",
-                  letterSpacing: ".48em", textTransform: "uppercase",
-                  color: "rgba(255,255,255,.28)", fontWeight: 500,
-                  marginBottom: "clamp(.875rem,2vh,1.75rem)",
+                  letterSpacing: ".42em", textTransform: "uppercase",
+                  color: "rgba(255,255,255,.26)", fontWeight: 500,
+                  marginBottom: "clamp(1.25rem,3vh,2.5rem)",
                   opacity: 0, animation: "ci-fade .6s .1s ease forwards",
                 }}>
-                  The venue
+                  The venues
+                  {venueCity ? ` · ${venueCity}` : ""}
                 </p>
-                {venueName && (
-                  <p className="t-venue-name" style={{
-                    fontFamily: DF, fontStyle: "italic", fontWeight: 300,
-                    fontSize: "clamp(2rem,6.5vw,6.5rem)",
-                    letterSpacing: ".01em", lineHeight: .94,
-                    color: "rgba(255,255,255,.88)",
-                    /* Prevent overflow — clamp hard on mobile via class */
-                    overflowWrap: "break-word",
-                    hyphens: "auto",
-                    opacity: 0, animation: "ci-in-up 1.1s .2s cubic-bezier(.16,1,.3,1) forwards",
+
+                {/* Both venues stacked */}
+                <div style={{
+                  display: "flex", flexDirection: "column",
+                  gap: "clamp(.75rem,2vh,1.25rem)",
+                  opacity: 0, animation: "ci-in-up 1.0s .22s cubic-bezier(.16,1,.3,1) forwards",
+                }}>
+
+                  {/* Church — rose accent */}
+                  <div style={{ display: "flex", alignItems: "center", gap: "clamp(.625rem,2vw,1.25rem)" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: ".5rem", flexShrink: 0 }}>
+                      <span style={{
+                        fontFamily: BF, fontSize: "clamp(.55rem,1.3vw,.68rem)",
+                        fontWeight: 700, letterSpacing: ".12em",
+                        color: "rgba(212,72,96,.80)", whiteSpace: "nowrap",
+                      }}>3 PM</span>
+                      <div style={{ width: "clamp(14px,2.5vw,24px)", height: 1, background: "rgba(212,72,96,.40)", flexShrink: 0 }} />
+                    </div>
+                    <p className="t-venue-name" style={{
+                      fontFamily: DF, fontStyle: "italic", fontWeight: 300,
+                      fontSize: "clamp(1.5rem,5vw,4.5rem)",
+                      letterSpacing: ".01em", lineHeight: 1,
+                      color: "rgba(255,255,255,.92)",
+                      overflowWrap: "break-word",
+                    }}>
+                      Divine Mercy Church
+                    </p>
+                  </div>
+
+                  {/* Divider line */}
+                  <div style={{
+                    display: "flex", alignItems: "center", gap: ".625rem",
+                    opacity: 0, animation: "ci-fade .5s .65s ease forwards",
                   }}>
-                    {venueName}
-                  </p>
-                )}
-                {venueCity && (
-                  <p className="t-eyebrow" style={{
-                    marginTop: "clamp(.625rem,1.25vh,1.125rem)",
-                    fontFamily: BF, fontSize: ".58rem",
-                    letterSpacing: ".24em", textTransform: "uppercase",
-                    color: "rgba(201,150,10,.60)", fontWeight: 500,
-                    opacity: 0, animation: "ci-fade .7s .8s ease forwards",
-                  }}>
-                    {venueCity}
-                  </p>
-                )}
+                    <div style={{ flex: 1, height: 1, background: "linear-gradient(to right, rgba(255,255,255,.10), transparent)" }} />
+                    <span style={{
+                      fontFamily: BF, fontSize: ".42rem", letterSpacing: ".28em",
+                      textTransform: "uppercase", color: "rgba(255,255,255,.18)", fontWeight: 500,
+                    }}>then</span>
+                    <div style={{ flex: 1, height: 1, background: "linear-gradient(to left, rgba(255,255,255,.10), transparent)" }} />
+                  </div>
+
+                  {/* Beach — gold accent */}
+                  <div style={{ display: "flex", alignItems: "center", gap: "clamp(.625rem,2vw,1.25rem)" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: ".5rem", flexShrink: 0 }}>
+                      <span style={{
+                        fontFamily: BF, fontSize: "clamp(.55rem,1.3vw,.68rem)",
+                        fontWeight: 700, letterSpacing: ".12em",
+                        color: "rgba(201,150,10,.80)", whiteSpace: "nowrap",
+                      }}>6 PM</span>
+                      <div style={{ width: "clamp(14px,2.5vw,24px)", height: 1, background: "rgba(201,150,10,.40)", flexShrink: 0 }} />
+                    </div>
+                    <p className="t-venue-name" style={{
+                      fontFamily: DF, fontStyle: "italic", fontWeight: 300,
+                      fontSize: "clamp(1.5rem,5vw,4.5rem)",
+                      letterSpacing: ".01em", lineHeight: 1,
+                      color: "rgba(232,188,20,.80)",
+                      overflowWrap: "break-word",
+                    }}>
+                      Blue Bay Beach Resort
+                    </p>
+                  </div>
+
+                </div>
               </div>
             )}
 
@@ -1088,9 +1129,11 @@ export function CinematicIntro({
                     color: INK_2, lineHeight: 1.95,
                   }}>
                     {brideFirst} and {groomFirst} warmly invite you to witness
-                    and celebrate their union. You are not just a guest —
-                    you are part of the story that brought them here.
-                    Your presence on this day means more than words can hold.
+                    and celebrate their union — first at the Holy Matrimony at{" "}
+                    <em>Divine Mercy Church, Kelambakkam</em> at 3 in the afternoon,
+                    and then as the sun sets over the Bay of Bengal, at the Shoreline Reception
+                    at <em>Blue Bay Beach Resort, Mahabalipuram</em>.
+                    You are not just a guest — you are part of the story that brought them here.
                   </p>
                 </div>
 
