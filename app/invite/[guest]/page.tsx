@@ -633,6 +633,7 @@ export default async function InvitePage({ params }: InvitePageProps) {
         <Container className="py-10">
           <ShareInviteButtons
             inviteUrl={inviteUrl}
+            generalUrl={`${(process.env.NEXT_PUBLIC_SITE_URL ?? "").replace(/\/$/, "")}/invite/general`}
             brideName={invite.wedding.bride_name}
             groomName={invite.wedding.groom_name}
             guestName={invite.guest.guest_name}

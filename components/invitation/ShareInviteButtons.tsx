@@ -10,21 +10,26 @@ import { useState } from "react";
 import { Copy, MessageCircle, Send, Smartphone, Check } from "lucide-react";
 
 interface ShareInviteButtonsProps {
-  inviteUrl:   string;
-  brideName:   string;
-  groomName:   string;
-  guestName?:  string;
+  inviteUrl:    string;   // the guest's own personalised link (shown in URL bar)
+  generalUrl?:  string;   // the common invite URL shared with the outside world
+  brideName:    string;
+  groomName:    string;
+  guestName?:   string;
 }
 
 const BF = "var(--font-body), system-ui, sans-serif";
 const DF = "var(--font-display), Georgia, serif";
 
-export function ShareInviteButtons({ inviteUrl, brideName, groomName, guestName }: ShareInviteButtonsProps) {
+export function ShareInviteButtons({ inviteUrl, generalUrl, brideName, groomName, guestName }: ShareInviteButtonsProps) {
   const [copied, setCopied] = useState(false);
 
   const bf = brideName.split(" ")[0]!;
   const gf = groomName.split(" ")[0]!;
-  const msg = `You're invited to ${bf} & ${gf}'s wedding. View your personal invitation here: ${inviteUrl}`;
+
+  // When sharing outward, always use the general URL so recipients
+  // don't land on someone else's personalised invitation.
+  const shareUrl = generalUrl ?? inviteUrl;
+  const msg = `You're invited to ${bf} & ${gf}'s wedding! View the invitation here: ${shareUrl}`;
 
   async function handleCopy() {
     try {
@@ -56,7 +61,7 @@ export function ShareInviteButtons({ inviteUrl, brideName, groomName, guestName 
       color:   "#229ED9",
       bg:      "rgba(34,158,217,0.1)",
       border:  "rgba(34,158,217,0.3)",
-      href:    `https://t.me/share/url?url=${encodeURIComponent(inviteUrl)}&text=${encodeURIComponent(`${bf} & ${gf}'s wedding invitation`)}`,
+      href:    `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(`${bf} & ${gf}'s wedding invitation`)}`,
     },
     {
       label:   "SMS",
@@ -77,7 +82,9 @@ export function ShareInviteButtons({ inviteUrl, brideName, groomName, guestName 
           Share this invitation
         </p>
         <p style={{ fontSize: ".875rem", color: "var(--color-text-secondary)", fontFamily: BF, marginBottom: "1.25rem" }}>
-          {guestName ? `Forward your invite, ${guestName.split(" ")[0]}.` : "Forward your personal invite link."}
+          {guestName
+          ? `Sharing forwards the general wedding invitation — not your personal link.`
+          : "Share the wedding with your family and friends."}
         </p>
 
         {/* Platform buttons */}
@@ -138,11 +145,24 @@ export function ShareInviteButtons({ inviteUrl, brideName, groomName, guestName 
           </button>
         </div>
 
-        {/* URL display */}
-        <div style={{ display: "flex", alignItems: "center", gap: ".75rem", padding: "10px 14px", background: "var(--color-surface-muted)", border: "1px solid var(--color-border)", borderRadius: 12 }}>
-          <p style={{ flex: 1, fontSize: ".75rem", color: "var(--color-text-muted)", fontFamily: "monospace", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-            {inviteUrl}
-          </p>
+        {/* URL display — shows which URL is being shared */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+          {generalUrl && (
+            <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 12px", background: "rgba(190,45,69,.04)", border: "1px solid rgba(190,45,69,.12)", borderRadius: 10 }}>
+              <span style={{ fontSize: ".56rem", letterSpacing: ".22em", textTransform: "uppercase", color: "var(--color-accent)", fontWeight: 700, flexShrink: 0 }}>Sharing</span>
+              <p style={{ flex: 1, fontSize: ".72rem", color: "var(--color-text-secondary)", fontFamily: "monospace", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                {generalUrl}
+              </p>
+            </div>
+          )}
+          <div style={{ display: "flex", alignItems: "center", gap: ".75rem", padding: "10px 14px", background: "var(--color-surface-muted)", border: "1px solid var(--color-border)", borderRadius: 12 }}>
+            <p style={{ flex: 1, fontSize: ".75rem", color: "var(--color-text-muted)", fontFamily: "monospace", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+              {inviteUrl}
+            </p>
+            {generalUrl && (
+              <span style={{ fontSize: ".52rem", letterSpacing: ".18em", textTransform: "uppercase", color: "var(--color-text-muted)", flexShrink: 0 }}>your link</span>
+            )}
+          </div>
         </div>
       </div>
     </div>
