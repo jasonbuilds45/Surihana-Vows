@@ -738,52 +738,96 @@ export function SquadProposalClient({ proposal, brideName, groomName }: Props) {
             </p>
 
             {/* Vault access notice */}
-            {vaultSent && (
-              <div className="sp-in-4" style={{
-                marginBottom: "2rem",
-                padding: "14px 20px",
-                borderRadius: 14,
-                background: "rgba(107,142,110,.08)",
-                border: "1px solid rgba(107,142,110,.22)",
-                textAlign: "left",
-              }}>
-                <p style={{
-                  fontFamily: BF, fontSize: ".50rem", letterSpacing: ".28em",
-                  textTransform: "uppercase", color: "#16a34a",
-                  fontWeight: 700, marginBottom: ".375rem",
-                }}>
-                  ✓ Vault access on its way
-                </p>
-                <p style={{
-                  fontFamily: DF, fontStyle: "italic",
-                  fontSize: ".95rem", color: INK_2, lineHeight: 1.65,
-                }}>
-                  Check your email — {senderFirst} has sent you a private link to the family
-                  vault where all the wedding memories and details will live.
-                </p>
-              </div>
-            )}
+            {/* Vault access CTA — the direct action button */}
+            <div className="sp-in-4" style={{ marginBottom: "2rem", width: "100%" }}>
 
-            {needsManual && (
-              <div className="sp-in-4" style={{
-                marginBottom: "2rem",
-                padding: "14px 20px",
-                borderRadius: 14,
-                background: "rgba(168,120,8,.06)",
-                border: "1px solid rgba(168,120,8,.18)",
-                textAlign: "left",
-              }}>
-                <p style={{
-                  fontFamily: DF, fontStyle: "italic",
-                  fontSize: ".95rem", color: INK_2, lineHeight: 1.65,
+              {/* Email was stored → account created → magic link sent */}
+              {vaultSent && (
+                <div style={{
+                  padding: "1.25rem 1.5rem",
+                  borderRadius: 16,
+                  background: "rgba(107,142,110,.07)",
+                  border: "1px solid rgba(107,142,110,.20)",
+                  marginBottom: "1rem",
+                  textAlign: "left",
                 }}>
-                  {senderFirst} will send you a private vault link shortly with
-                  all the wedding details and memories.
-                </p>
-              </div>
-            )}
+                  <p style={{
+                    fontFamily: BF, fontSize: ".50rem", letterSpacing: ".28em",
+                    textTransform: "uppercase", color: "#16a34a",
+                    fontWeight: 700, marginBottom: ".375rem",
+                  }}>
+                    ✓ Your vault access is ready
+                  </p>
+                  <p style={{
+                    fontFamily: DF, fontStyle: "italic",
+                    fontSize: ".9rem", color: INK_2, lineHeight: 1.65,
+                    marginBottom: 0,
+                  }}>
+                    A private link has been sent to your email. You can also tap the button below to go directly.
+                  </p>
+                </div>
+              )}
 
-            <div className="sp-in-4" style={{
+              {/* No email → account not yet created → vault pending */}
+              {needsManual && (
+                <div style={{
+                  padding: "1.25rem 1.5rem",
+                  borderRadius: 16,
+                  background: "rgba(168,120,8,.06)",
+                  border: "1px solid rgba(168,120,8,.18)",
+                  marginBottom: "1rem",
+                  textAlign: "left",
+                }}>
+                  <p style={{
+                    fontFamily: DF, fontStyle: "italic",
+                    fontSize: ".9rem", color: INK_2, lineHeight: 1.65,
+                  }}>
+                    {senderFirst} will send you your vault access link shortly.
+                    Once they do, tap the button below to enter.
+                  </p>
+                </div>
+              )}
+
+              {/* The vault button — always shown after acceptance */}
+              <a
+                href="/login?hint=vault&redirect=%2Ffamily"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 10,
+                  width: "100%",
+                  padding: "16px 24px",
+                  borderRadius: 999,
+                  background: `linear-gradient(135deg, ${ROSE_L} 0%, ${ROSE} 52%, ${ROSE_H} 100%)`,
+                  color: "#fff",
+                  fontFamily: BF,
+                  fontSize: ".78rem",
+                  fontWeight: 700,
+                  letterSpacing: ".22em",
+                  textTransform: "uppercase",
+                  textDecoration: "none",
+                  boxShadow: "0 8px 28px rgba(190,45,69,.28), 0 2px 8px rgba(190,45,69,.14)",
+                  transition: "filter .2s ease, transform .2s ease",
+                }}
+                onMouseEnter={e => {
+                  (e.currentTarget as HTMLAnchorElement).style.filter = "brightness(1.08)";
+                  (e.currentTarget as HTMLAnchorElement).style.transform = "translateY(-2px)";
+                }}
+                onMouseLeave={e => {
+                  (e.currentTarget as HTMLAnchorElement).style.filter = "brightness(1)";
+                  (e.currentTarget as HTMLAnchorElement).style.transform = "translateY(0)";
+                }}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
+                  <rect x="3" y="11" width="18" height="11" rx="2" stroke="rgba(255,255,255,.85)" strokeWidth="1.8" fill="none"/>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4" stroke="rgba(255,255,255,.85)" strokeWidth="1.8" strokeLinecap="round"/>
+                </svg>
+                Enter the private vault
+              </a>
+            </div>
+
+            <div className="sp-in-5" style={{
               display: "inline-flex", alignItems: "center", gap: 8,
               padding: "8px 20px", borderRadius: 999,
               background: ROSE_PALE, border: `1px solid rgba(190,45,69,.18)`,

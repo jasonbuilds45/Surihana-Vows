@@ -56,14 +56,40 @@ function statusOf(p: SquadProposal): "pending" | "accepted" | "declined" {
 }
 
 export function SquadManager({ initialProposals }: SquadManagerProps) {
-  const [proposals, setProposals] = useState<SquadProposal[]>(initialProposals);
+  const [proposals,    setProposals]    = useState<SquadProposal[]>(initialProposals);
   const [name,         setName]         = useState("");
   const [email,        setEmail]        = useState("");
   const [role,         setRole]         = useState<"bridesmaid" | "groomsman">("bridesmaid");
   const [personalNote, setPersonalNote] = useState("");
-  const [status, setStatus]   = useState<{ success: boolean; message: string } | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [copied,  setCopied]  = useState<string | null>(null);
+  const [status,       setStatus]       = useState<{ success: boolean; message: string } | null>(null);
+  const [loading,      setLoading]      = useState(false);
+  const [copied,       setCopied]       = useState<string | null>(null);
+  const [grantingId,   setGrantingId]   = useState<string | null>(null);
+
+  async function handleGrantVaultAccess(proposal: SquadProposal) {
+    if (!proposal.email) return;
+    setGrantingId(proposal.id);
+    setStatus(null);
+    try {
+      const res = await authFetch("/api/admin/family", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "invite",
+          email: proposal.email,
+          role: "squad",
+          weddingId: "", // family API uses weddingConfig.id server-side
+        }),
+      });
+      const json = (await res.json()) as { success: boolean; message?: string };
+      if (!json.success) throw new Error(json.message ?? "Error.");
+      setStatus({ success: true, message: `Vault access link sent to ${proposal.email}.` });
+    } catch (err) {
+      setStatus({ success: false, message: err instanceof Error ? err.message : "Error." });
+    } finally {
+      setGrantingId(null);
+    }
+  }
 
   // Template notes so the couple doesn't start from a blank page
   const NOTE_TEMPLATES = {
@@ -381,16 +407,37 @@ export function SquadManager({ initialProposals }: SquadManagerProps) {
                           ) : (
                             <span style={{ color: "var(--color-text-muted)", fontSize: "0.8rem" }}>—</span>
                           )}
-                          {/* Vault flag — accepted with no email needs manual grant */}
+                          {/* Vault access button — accepted with email but vault not yet sent */}
+                          {p.accepted === true && p.email && (
+                            <button
+                              type="button"
+                              disabled={grantingId === p.id}
+                              onClick={() => handleGrantVaultAccess(p)}
+                              style={{
+                                marginTop: 5,
+                                display: "inline-flex", alignItems: "center", gap: 4,
+                                padding: "4px 10px", borderRadius: 999, cursor: "pointer",
+                                fontSize: ".56rem", letterSpacing: ".16em",
+                                textTransform: "uppercase", fontWeight: 700,
+                                background: "rgba(107,142,110,.10)",
+                                border: "1.5px solid rgba(107,142,110,.28)",
+                                color: "var(--color-sage)",
+                                fontFamily: "var(--font-body),sans-serif",
+                                opacity: grantingId === p.id ? .6 : 1,
+                              }}
+                            >
+                              {grantingId === p.id ? "Sending…" : "✓ Send vault link"}
+                            </button>
+                          )}
+                          {/* No email — can’t auto-grant, show info */}
                           {p.accepted === true && !p.email && (
                             <p style={{
-                              marginTop: 3,
-                              fontSize: ".56rem", letterSpacing: ".18em",
-                              textTransform: "uppercase", fontWeight: 700,
+                              marginTop: 4,
+                              fontSize: ".56rem", letterSpacing: ".14em",
                               color: "#A87808",
                               fontFamily: "var(--font-body),sans-serif",
                             }}>
-                              ⚠️ Grant vault access
+                              No email — add one to send vault access
                             </p>
                           )}
                         </td>
