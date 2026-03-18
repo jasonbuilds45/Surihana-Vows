@@ -3,7 +3,7 @@
 import type { FormEvent } from "react";
 import { startTransition, useRef, useMemo, useState, useEffect } from "react";
 import { authFetch, storeToken } from "@/lib/client/token";
-import { Copy, Download, FileUp, Link2, Pencil, Plus, RefreshCcw, Save, Trash2, X } from "lucide-react";
+import { Copy, Download, FileUp, Link2, MessageCircle, Pencil, Plus, RefreshCcw, Save, Share2, Trash2, X } from "lucide-react";
 import { Card, SectionLabel, Btn } from "@/components/ui";
 
 export interface GuestTableRow {
@@ -108,7 +108,35 @@ export function GuestTable({ initialRows, weddingId, onRefreshAnalytics }: Guest
   const [statusMsg, setStatusMsg]     = useState<{ success: boolean; message: string } | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [importing, setImporting]     = useState(false);
+  const [shareOpenId, setShareOpenId] = useState<string | null>(null);
   const fileInputRef                  = useRef<HTMLInputElement>(null);
+  const shareRef                      = useRef<HTMLDivElement>(null);
+
+  // Close share popover on outside click
+  useEffect(() => {
+    if (!shareOpenId) return;
+    function handleOutside(e: MouseEvent) {
+      if (shareRef.current && !shareRef.current.contains(e.target as Node)) {
+        setShareOpenId(null);
+      }
+    }
+    document.addEventListener("mousedown", handleOutside);
+    return () => document.removeEventListener("mousedown", handleOutside);
+  }, [shareOpenId]);
+
+  // Share URL builders
+  function shareWhatsApp(link: string, name: string) {
+    const text = encodeURIComponent(`Hi ${name}! You're invited 🎉 Open your personalised invitation here: ${link}`);
+    window.open(`https://wa.me/?text=${text}`, "_blank", "noopener,noreferrer");
+  }
+  function shareTelegram(link: string, name: string) {
+    const text = encodeURIComponent(`Hi ${name}! You're invited 🎉 Open your personalised invitation: ${link}`);
+    window.open(`https://t.me/share/url?url=${encodeURIComponent(link)}&text=${text}`, "_blank", "noopener,noreferrer");
+  }
+  function shareSms(link: string, name: string) {
+    const body = encodeURIComponent(`Hi ${name}! You're invited — open your personalised invitation here: ${link}`);
+    window.open(`sms:?&body=${body}`, "_blank", "noopener,noreferrer");
+  }
 
   // On mount: capture token from URL param (set by login route) and store it
   useEffect(() => {
@@ -537,6 +565,110 @@ export function GuestTable({ initialRows, weddingId, onRefreshAnalytics }: Guest
                           onClick={() => handleDelete(row)} disabled={isSubmitting}>
                           <Trash2 className="h-3 w-3" /> Delete
                         </button>
+
+                        {/* Share button + popover */}
+                        <div ref={shareOpenId === row.id ? shareRef : undefined}
+                          style={{ position: "relative", display: "inline-block" }}>
+                          <button
+                            type="button"
+                            style={{ ...btnSm, borderColor: "rgba(107,142,110,0.35)", background: "rgba(107,142,110,0.08)", color: "var(--color-sage)" }}
+                            onClick={() => setShareOpenId(shareOpenId === row.id ? null : row.id)}
+                          >
+                            <Share2 className="h-3 w-3" /> Share
+                          </button>
+
+                          {shareOpenId === row.id && (
+                            <div style={{
+                              position: "absolute", bottom: "calc(100% + 8px)", right: 0,
+                              zIndex: 50, minWidth: 180,
+                              background: "#fff",
+                              border: "1.5px solid var(--color-border-medium)",
+                              borderRadius: 14,
+                              boxShadow: "0 8px 32px rgba(18,11,14,.12), 0 2px 8px rgba(18,11,14,.07)",
+                              padding: "8px",
+                              display: "flex", flexDirection: "column", gap: 4,
+                            }}>
+                              {/* Popover arrow */}
+                              <div aria-hidden style={{
+                                position: "absolute", bottom: -7, right: 14,
+                                width: 12, height: 12,
+                                background: "#fff",
+                                border: "1.5px solid var(--color-border-medium)",
+                                borderTop: "none", borderLeft: "none",
+                                transform: "rotate(45deg)",
+                              }} />
+
+                              <p style={{
+                                fontSize: ".55rem", letterSpacing: ".22em",
+                                textTransform: "uppercase", fontWeight: 700,
+                                color: "var(--color-text-muted)",
+                                padding: "4px 8px 2px",
+                              }}>
+                                Send invite to {row.guestName.split(" ")[0]}
+                              </p>
+
+                              {/* WhatsApp */}
+                              <button
+                                type="button"
+                                onClick={() => { shareWhatsApp(row.inviteLink, row.guestName.split(" ")[0]!); setShareOpenId(null); }}
+                                style={{
+                                  display: "flex", alignItems: "center", gap: 9,
+                                  padding: "9px 12px", borderRadius: 10,
+                                  border: "none", background: "transparent",
+                                  cursor: "pointer", width: "100%", textAlign: "left",
+                                  transition: "background .15s ease",
+                                }}
+                                onMouseEnter={e => (e.currentTarget.style.background = "#f0fdf4")}
+                                onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
+                              >
+                                {/* WhatsApp icon */}
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="#25D366" aria-hidden>
+                                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+                                </svg>
+                                <span style={{ fontSize: ".78rem", fontWeight: 600, color: "#128C7E" }}>WhatsApp</span>
+                              </button>
+
+                              {/* Telegram */}
+                              <button
+                                type="button"
+                                onClick={() => { shareTelegram(row.inviteLink, row.guestName.split(" ")[0]!); setShareOpenId(null); }}
+                                style={{
+                                  display: "flex", alignItems: "center", gap: 9,
+                                  padding: "9px 12px", borderRadius: 10,
+                                  border: "none", background: "transparent",
+                                  cursor: "pointer", width: "100%", textAlign: "left",
+                                  transition: "background .15s ease",
+                                }}
+                                onMouseEnter={e => (e.currentTarget.style.background = "#f0f9ff")}
+                                onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
+                              >
+                                {/* Telegram icon */}
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="#2AABEE" aria-hidden>
+                                  <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.248l-2.01 9.483c-.148.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L7.88 14.49l-2.95-.924c-.642-.2-.655-.642.134-.953l11.527-4.448c.535-.194 1.003.13.97.082z"/>
+                                </svg>
+                                <span style={{ fontSize: ".78rem", fontWeight: 600, color: "#2AABEE" }}>Telegram</span>
+                              </button>
+
+                              {/* SMS */}
+                              <button
+                                type="button"
+                                onClick={() => { shareSms(row.inviteLink, row.guestName.split(" ")[0]!); setShareOpenId(null); }}
+                                style={{
+                                  display: "flex", alignItems: "center", gap: 9,
+                                  padding: "9px 12px", borderRadius: 10,
+                                  border: "none", background: "transparent",
+                                  cursor: "pointer", width: "100%", textAlign: "left",
+                                  transition: "background .15s ease",
+                                }}
+                                onMouseEnter={e => (e.currentTarget.style.background = "#faf5ff")}
+                                onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
+                              >
+                                <MessageCircle size={16} style={{ color: "#7c3aed", flexShrink: 0 }} />
+                                <span style={{ fontSize: ".78rem", fontWeight: 600, color: "#7c3aed" }}>SMS</span>
+                              </button>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </td>
                   </tr>
