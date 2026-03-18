@@ -129,6 +129,21 @@ export function CinematicIntro({
   );
   const countdown = useCountdown(weddingDate);
 
+  // ── Mount + scroll lock ──────────────────────────────────────────────────
+  // Scroll is locked from the very first render and stays locked through
+  // the entire title sequence and hero phase.
+  // Only the seal click unlocks it.
+  // The cleanup always restores scroll so the body is never left stuck.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    document.body.style.overflow   = "hidden";
+    document.body.style.touchAction = "none";
+    return () => {
+      document.body.style.overflow   = "";
+      document.body.style.touchAction = "";
+    };
+  }, []);
+
   // ── Mount ──────────────────────────────────────────────────────────────
   useEffect(() => {
     setMounted(true);
@@ -136,6 +151,7 @@ export function CinematicIntro({
     const hasCookie  = document.cookie.split(";").some(c => c.trim().startsWith(`${cookieName}=`));
     const hasSession = sessionStorage.getItem(storageKey) === "entered";
     if (hasCookie || hasSession) {
+      // Returning visitor — still need to press the seal, so scroll stays locked
       setPhase("hero");
       setTimeout(() => setHeroVis(true), 80);
     }
@@ -229,7 +245,9 @@ export function CinematicIntro({
     setSealState("burst");
     setTimeout(() => {
       setSealState("gone");
-      // Smooth-scroll to invite content
+      // ── Unlock scroll, then smooth-scroll to content ──
+      document.body.style.overflow    = "";
+      document.body.style.touchAction = "";
       const target = document.getElementById("invite-content");
       if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
     }, 520);
