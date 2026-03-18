@@ -13,14 +13,14 @@ import { GalleryPreview } from "@/components/invitation/GalleryPreview";
 import { weddingConfig } from "@/lib/config";
 import { getGuestMessages } from "@/modules/premium/guestbook-system";
 import { getGalleryPhotos } from "@/modules/premium/photo-gallery";
-import { getWeddingEvents } from "@/modules/elegant/invitation-engine";
+import { getWeddingEvents } from "@/modules/elegant/event-display";
 import { formatDate } from "@/utils/formatDate";
 
 // ── The fixed general invite URL ───────────────────────────────────────────
 // This is the URL shared when a guest forwards the wedding to someone
 // outside the original guest list. It shows the full experience but
 // carries no personalised identity, no RSVP form, no invite tracking.
-export const GENERAL_INVITE_URL =
+const GENERAL_INVITE_URL =
   `${(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").replace(/\/$/, "")}/invite/general`;
 
 export const metadata: Metadata = {
