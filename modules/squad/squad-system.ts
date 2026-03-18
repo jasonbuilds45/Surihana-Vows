@@ -150,6 +150,7 @@ export async function createSquadProposal(
       response_note: null,
       created_at: new Date().toISOString(),
       opened_at: null,
+      ...NULL_PROFILE,
     };
   }
 
