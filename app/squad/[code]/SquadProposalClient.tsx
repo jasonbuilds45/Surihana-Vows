@@ -70,7 +70,7 @@ interface Props {
 }
 
 type State = "sealed" | "opened" | "accepted" | "declined" | "submitting";
-type AcceptResponse = { success: boolean; message?: string; vaultSent?: boolean; needsManualGrant?: boolean };
+type AcceptResponse = { success: boolean; message?: string; vaultUrl?: string | null; needsManualGrant?: boolean };
 
 export function SquadProposalClient({ proposal, brideName, groomName }: Props) {
   const [state,      setState]      = useState<State>(
@@ -81,8 +81,8 @@ export function SquadProposalClient({ proposal, brideName, groomName }: Props) {
   const [sealBurst,    setSealBurst]    = useState(false);
   const [responseNote, setResponseNote] = useState("");
   const [error,        setError]        = useState<string | null>(null);
-  const [vaultSent,    setVaultSent]    = useState(false);
-  const [needsManual,  setNeedsManual]  = useState(false);
+  const [vaultUrl,    setVaultUrl]    = useState<string | null>(null);
+  const [needsManual, setNeedsManual]  = useState(false);
 
   const cfg = ROLE_CONFIG[proposal.squad_role];
   const firstName = proposal.name.split(" ")[0]!;
@@ -120,7 +120,7 @@ export function SquadProposalClient({ proposal, brideName, groomName }: Props) {
       });
       const json = (await res.json()) as AcceptResponse;
       if (!json.success) throw new Error(json.message ?? "Something went wrong.");
-      setVaultSent(json.vaultSent ?? false);
+      setVaultUrl(json.vaultUrl ?? null);
       setNeedsManual(json.needsManualGrant ?? false);
       setState("accepted");
     } catch (err) {
@@ -738,80 +738,37 @@ export function SquadProposalClient({ proposal, brideName, groomName }: Props) {
             </p>
 
             {/* Vault access notice */}
-            {/* Vault access CTA — the direct action button */}
+            {/* Next step — profile signup */}
             <div className="sp-in-4" style={{ marginBottom: "2rem", width: "100%" }}>
+              <p style={{
+                fontFamily: DF, fontStyle: "italic",
+                fontSize: "clamp(.9rem,2vw,1rem)",
+                color: INK_3, lineHeight: 1.7,
+                marginBottom: "1.25rem",
+              }}>
+                One last thing — complete your profile so {senderFirst} has everything
+                they need for the day. It takes two minutes.
+              </p>
 
-              {/* Email was stored → account created → magic link sent */}
-              {vaultSent && (
-                <div style={{
-                  padding: "1.25rem 1.5rem",
-                  borderRadius: 16,
-                  background: "rgba(107,142,110,.07)",
-                  border: "1px solid rgba(107,142,110,.20)",
-                  marginBottom: "1rem",
-                  textAlign: "left",
-                }}>
-                  <p style={{
-                    fontFamily: BF, fontSize: ".50rem", letterSpacing: ".28em",
-                    textTransform: "uppercase", color: "#16a34a",
-                    fontWeight: 700, marginBottom: ".375rem",
-                  }}>
-                    ✓ Your vault access is ready
-                  </p>
-                  <p style={{
-                    fontFamily: DF, fontStyle: "italic",
-                    fontSize: ".9rem", color: INK_2, lineHeight: 1.65,
-                    marginBottom: 0,
-                  }}>
-                    A private link has been sent to your email. You can also tap the button below to go directly.
-                  </p>
-                </div>
-              )}
-
-              {/* No email → account not yet created → vault pending */}
-              {needsManual && (
-                <div style={{
-                  padding: "1.25rem 1.5rem",
-                  borderRadius: 16,
-                  background: "rgba(168,120,8,.06)",
-                  border: "1px solid rgba(168,120,8,.18)",
-                  marginBottom: "1rem",
-                  textAlign: "left",
-                }}>
-                  <p style={{
-                    fontFamily: DF, fontStyle: "italic",
-                    fontSize: ".9rem", color: INK_2, lineHeight: 1.65,
-                  }}>
-                    {senderFirst} will send you your vault access link shortly.
-                    Once they do, tap the button below to enter.
-                  </p>
-                </div>
-              )}
-
-              {/* The vault button — always shown after acceptance */}
+              {/* Primary CTA — complete profile */}
               <a
-                href="/login?hint=vault&redirect=%2Ffamily"
+                href={`/squad/${proposal.proposal_code}/signup`}
                 style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: 10,
-                  width: "100%",
-                  padding: "16px 24px",
+                  display: "flex", alignItems: "center",
+                  justifyContent: "center", gap: 10,
+                  width: "100%", padding: "18px 24px",
                   borderRadius: 999,
-                  background: `linear-gradient(135deg, ${ROSE_L} 0%, ${ROSE} 52%, ${ROSE_H} 100%)`,
+                  background: `linear-gradient(135deg,${ROSE_L} 0%,${ROSE} 52%,${ROSE_H} 100%)`,
                   color: "#fff",
-                  fontFamily: BF,
-                  fontSize: ".78rem",
-                  fontWeight: 700,
-                  letterSpacing: ".22em",
-                  textTransform: "uppercase",
-                  textDecoration: "none",
-                  boxShadow: "0 8px 28px rgba(190,45,69,.28), 0 2px 8px rgba(190,45,69,.14)",
+                  fontFamily: BF, fontSize: ".82rem",
+                  fontWeight: 700, letterSpacing: ".22em",
+                  textTransform: "uppercase", textDecoration: "none",
+                  boxShadow: "0 8px 32px rgba(190,45,69,.32),0 2px 8px rgba(190,45,69,.16)",
                   transition: "filter .2s ease, transform .2s ease",
+                  marginBottom: ".875rem",
                 }}
                 onMouseEnter={e => {
-                  (e.currentTarget as HTMLAnchorElement).style.filter = "brightness(1.08)";
+                  (e.currentTarget as HTMLAnchorElement).style.filter = "brightness(1.09)";
                   (e.currentTarget as HTMLAnchorElement).style.transform = "translateY(-2px)";
                 }}
                 onMouseLeave={e => {
@@ -819,12 +776,42 @@ export function SquadProposalClient({ proposal, brideName, groomName }: Props) {
                   (e.currentTarget as HTMLAnchorElement).style.transform = "translateY(0)";
                 }}
               >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
-                  <rect x="3" y="11" width="18" height="11" rx="2" stroke="rgba(255,255,255,.85)" strokeWidth="1.8" fill="none"/>
-                  <path d="M7 11V7a5 5 0 0 1 10 0v4" stroke="rgba(255,255,255,.85)" strokeWidth="1.8" strokeLinecap="round"/>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden>
+                  <circle cx="12" cy="8" r="4" stroke="rgba(255,255,255,.9)" strokeWidth="1.8" fill="none"/>
+                  <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="rgba(255,255,255,.9)" strokeWidth="1.8" strokeLinecap="round" fill="none"/>
                 </svg>
-                Enter the private vault
+                Complete your profile &amp; enter the vault
               </a>
+
+              {/* Secondary — skip to vault (only if vaultUrl was provisioned) */}
+              {vaultUrl && (
+                <a
+                  href={vaultUrl}
+                  style={{
+                    display: "flex", alignItems: "center",
+                    justifyContent: "center",
+                    width: "100%", padding: "12px",
+                    borderRadius: 999,
+                    background: "transparent",
+                    border: `1.5px solid rgba(190,45,69,.18)`,
+                    color: INK_4,
+                    fontFamily: BF, fontSize: ".68rem",
+                    fontWeight: 500, letterSpacing: ".16em",
+                    textTransform: "uppercase", textDecoration: "none",
+                    transition: "border-color .2s ease, color .2s ease",
+                  }}
+                  onMouseEnter={e => {
+                    (e.currentTarget as HTMLAnchorElement).style.borderColor = `rgba(190,45,69,.38)`;
+                    (e.currentTarget as HTMLAnchorElement).style.color = ROSE;
+                  }}
+                  onMouseLeave={e => {
+                    (e.currentTarget as HTMLAnchorElement).style.borderColor = `rgba(190,45,69,.18)`;
+                    (e.currentTarget as HTMLAnchorElement).style.color = INK_4;
+                  }}
+                >
+                  Skip for now — go straight to the vault
+                </a>
+              )}
             </div>
 
             <div className="sp-in-5" style={{

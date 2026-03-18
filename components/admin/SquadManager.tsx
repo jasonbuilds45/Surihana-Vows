@@ -351,11 +351,58 @@ export function SquadManager({ initialProposals }: SquadManagerProps) {
 
                         {/* Person */}
                         <td className="px-5 py-4" style={{ borderBottom: "1px solid var(--color-border)" }}>
-                          <p className="font-semibold text-sm" style={{ color: "var(--color-text-primary)", fontFamily: "var(--font-display,'Cormorant Garamond',serif)", fontSize: "1.1rem" }}>
-                            {p.name}
-                          </p>
-                          {p.email && (
-                            <p className="text-xs mt-0.5" style={{ color: "var(--color-text-muted)", fontFamily: "var(--font-body),sans-serif" }}>{p.email}</p>
+                          <div style={{ display: "flex", alignItems: "center", gap: ".625rem" }}>
+                            {/* Profile photo thumbnail */}
+                            {p.profile_photo_url ? (
+                              // eslint-disable-next-line @next/next/no-img-element
+                              <img
+                                src={p.profile_photo_url}
+                                alt={p.name}
+                                style={{ width: 36, height: 36, borderRadius: "50%", objectFit: "cover", flexShrink: 0, border: "1.5px solid var(--color-border)" }}
+                              />
+                            ) : (
+                              <div style={{ width: 36, height: 36, borderRadius: "50%", flexShrink: 0, background: "var(--color-surface-soft)", border: "1.5px solid var(--color-border)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                <span style={{ fontFamily: "var(--font-display,'Cormorant Garamond',serif)", fontSize: ".875rem", color: "var(--color-text-muted)" }}>
+                                  {p.name.charAt(0)}
+                                </span>
+                              </div>
+                            )}
+                            <div>
+                              <p style={{ color: "var(--color-text-primary)", fontFamily: "var(--font-display,'Cormorant Garamond',serif)", fontSize: "1.05rem", fontWeight: 600, lineHeight: 1.2 }}>
+                                {p.profile_full_name ?? p.name}
+                              </p>
+                              {p.email && (
+                                <p style={{ color: "var(--color-text-muted)", fontFamily: "var(--font-body),sans-serif", fontSize: ".68rem", marginTop: 1 }}>{p.email}</p>
+                              )}
+                              {p.profile_phone && (
+                                <p style={{ color: "var(--color-text-muted)", fontFamily: "var(--font-body),sans-serif", fontSize: ".68rem" }}>{p.profile_phone}</p>
+                              )}
+                              {p.profile_completed_at && (
+                                <span style={{ display: "inline-block", marginTop: 3, padding: "2px 8px", borderRadius: 999, background: "rgba(107,142,110,.10)", border: "1px solid rgba(107,142,110,.22)", fontSize: ".52rem", letterSpacing: ".18em", textTransform: "uppercase", color: "var(--color-sage)", fontWeight: 700 }}>
+                                  Profile complete
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                          {/* Profile details row */}
+                          {(p.profile_dress_size || p.profile_dietary || p.profile_emergency_name) && (
+                            <div style={{ marginTop: ".5rem", marginLeft: 44, display: "flex", flexWrap: "wrap", gap: ".375rem" }}>
+                              {p.profile_dress_size && (
+                                <span style={{ padding: "2px 8px", borderRadius: 999, background: "var(--color-surface-soft)", border: "1px solid var(--color-border)", fontSize: ".58rem", color: "var(--color-text-muted)", fontFamily: "var(--font-body),sans-serif" }}>
+                                  Size: {p.profile_dress_size}
+                                </span>
+                              )}
+                              {p.profile_dietary && (
+                                <span style={{ padding: "2px 8px", borderRadius: 999, background: "var(--color-surface-soft)", border: "1px solid var(--color-border)", fontSize: ".58rem", color: "var(--color-text-muted)", fontFamily: "var(--font-body),sans-serif" }}>
+                                  {p.profile_dietary}
+                                </span>
+                              )}
+                              {p.profile_emergency_name && (
+                                <span style={{ padding: "2px 8px", borderRadius: 999, background: "var(--color-surface-soft)", border: "1px solid var(--color-border)", fontSize: ".58rem", color: "var(--color-text-muted)", fontFamily: "var(--font-body),sans-serif" }}>
+                                  Emergency: {p.profile_emergency_name} {p.profile_emergency_phone ?? ""}
+                                </span>
+                              )}
+                            </div>
                           )}
                         </td>
 

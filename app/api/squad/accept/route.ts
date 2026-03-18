@@ -5,7 +5,12 @@ import {
   getProposalByCode,
 } from "@/modules/squad/squad-system";
 import { getConfiguredSupabaseClient, shouldFallbackToDemoData } from "@/lib/supabaseClient";
-import { issueFamilyMagicLink } from "@/lib/magicLink";
+import { buildVaultUrl } from "@/lib/magicLink";
+import { createHash } from "node:crypto";
+
+function sha256(value: string) {
+  return createHash("sha256").update(value).digest("hex");
+}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // POST /api/squad/accept
@@ -25,38 +30,67 @@ import { issueFamilyMagicLink } from "@/lib/magicLink";
 //   1. Mark proposal declined in DB
 // ─────────────────────────────────────────────────────────────────────────────
 
-async function ensureFamilyUser(email: string): Promise<void> {
+/**
+ * Ensure a squad family_users row exists, then generate a one-use vault
+ * token and return the /vault/[token] URL so the proposal page can
+ * show a direct "Enter your vault" button — no email required.
+ */
+async function provisionSquadAccess(email: string): Promise<string | null> {
   const client = getConfiguredSupabaseClient(true);
-  if (!client) return; // demo mode — skip
+  if (!client) return null; // demo mode
 
-  // Check if a family_users row already exists for this email
-  const { data: existing, error: lookupErr } = await client
+  const normalizedEmail = email.toLowerCase();
+
+  // 1. Ensure family_users row exists
+  const { data: existing } = await client
     .from("family_users")
     .select("id")
-    .eq("email", email.toLowerCase())
+    .eq("email", normalizedEmail)
     .maybeSingle();
 
-  if (lookupErr && !shouldFallbackToDemoData(lookupErr)) {
-    throw new Error(lookupErr.message);
-  }
+  let userId: string;
 
-  // If not already a member, create the row with squad role
-  if (!existing) {
+  if (existing) {
+    userId = existing.id;
+  } else {
+    const newId = crypto.randomUUID();
     const { error: insertErr } = await client
       .from("family_users")
       .insert({
-        id:            crypto.randomUUID(),
-        email:         email.toLowerCase(),
-        role:          "squad",        // squad > family — gets full vault + squad hub
-        password_hash: null,           // magic-link only — no password
+        id:            newId,
+        email:         normalizedEmail,
+        role:          "squad",
+        password_hash: null,
         created_at:    new Date().toISOString(),
       });
-
     if (insertErr && !shouldFallbackToDemoData(insertErr)) {
       throw new Error(insertErr.message);
     }
+    userId = newId;
   }
-  // If they already exist, their existing role is kept (could be "admin")
+
+  // 2. Generate a single-use magic link token
+  const rawToken  = crypto.randomUUID().replace(/-/g, "") + crypto.randomUUID().replace(/-/g, "");
+  const tokenHash = sha256(rawToken);
+
+  const { error: linkErr } = await client
+    .from("family_magic_links")
+    .insert({
+      id:             crypto.randomUUID(),
+      family_user_id: userId,
+      email:          normalizedEmail,
+      token_hash:     tokenHash,
+      redirect_to:    "/family",
+      expires_at:     new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days
+      created_at:     new Date().toISOString(),
+    });
+
+  if (linkErr && !shouldFallbackToDemoData(linkErr)) {
+    throw new Error(linkErr.message);
+  }
+
+  // 3. Return the /vault/[token] URL — tap it and you're in
+  return buildVaultUrl(rawToken, "/family");
 }
 
 export async function POST(request: NextRequest) {
@@ -80,38 +114,28 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(result, { status: 500 });
     }
 
-    // 2. Fetch the full proposal to get the email
-    let vaultSent      = false;
-    let needsManualGrant = false;
+    // 2. Provision vault access and get a direct login URL
+    let vaultUrl:       string | null = null;
+    let needsManualGrant              = false;
 
     try {
       const proposal = await getProposalByCode(code);
 
       if (proposal?.email) {
-        // 3a. Ensure a family_users row exists for this person
-        await ensureFamilyUser(proposal.email);
-
-        // 3b. Send them a vault magic link — same mechanism as FamilyInviteManager
-        await issueFamilyMagicLink(proposal.email, "/family");
-
-        vaultSent = true;
+        // Creates family_users row (squad role) + magic link token
+        // Returns the /vault/[token] URL they can tap immediately
+        vaultUrl = await provisionSquadAccess(proposal.email);
       } else {
-        // No email stored — couple must grant access manually
         needsManualGrant = true;
       }
     } catch (err) {
-      // Vault access failure is non-fatal — acceptance itself already recorded.
-      // The admin panel will show needsManualGrant = true as a fallback.
       console.error("[squad/accept] Vault provisioning failed:", err);
       needsManualGrant = true;
     }
 
     return NextResponse.json({
       success:          true,
-      message:          vaultSent
-        ? "Accepted. Vault access link sent."
-        : "Accepted. Grant vault access manually in the admin panel.",
-      vaultSent,
+      vaultUrl,           // direct /vault/[token] URL — tap and you're in
       needsManualGrant,
     });
   }

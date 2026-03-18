@@ -12,23 +12,43 @@ import { weddingConfig } from "@/lib/config";
 export type SquadRole = "bridesmaid" | "groomsman";
 
 export interface SquadProposal {
-  id:            string;
-  wedding_id:    string;
-  name:          string;
-  email:         string | null;
-  squad_role:    SquadRole;
-  personal_note: string;
-  proposal_code: string;
-  accepted:      boolean | null;
-  accepted_at:   string | null;
-  response_note: string | null;
-  created_at:    string;
-  opened_at:     string | null;
+  id:                    string;
+  wedding_id:            string;
+  name:                  string;
+  email:                 string | null;
+  squad_role:            SquadRole;
+  personal_note:         string;
+  proposal_code:         string;
+  accepted:              boolean | null;
+  accepted_at:           string | null;
+  response_note:         string | null;
+  created_at:            string;
+  opened_at:             string | null;
+  // Profile fields — filled in by the squad member after accepting
+  profile_full_name:      string | null;
+  profile_phone:          string | null;
+  profile_photo_url:      string | null;
+  profile_dress_size:     string | null;
+  profile_dietary:        string | null;
+  profile_emergency_name: string | null;
+  profile_emergency_phone:string | null;
+  profile_completed_at:   string | null;
 }
 
 const WEDDING_ID = weddingConfig.id;
 
 // ── Demo data (shown when Supabase is not configured) ─────────────────────────
+const NULL_PROFILE = {
+  profile_full_name:       null as string | null,
+  profile_phone:           null as string | null,
+  profile_photo_url:       null as string | null,
+  profile_dress_size:      null as string | null,
+  profile_dietary:         null as string | null,
+  profile_emergency_name:  null as string | null,
+  profile_emergency_phone: null as string | null,
+  profile_completed_at:    null as string | null,
+};
+
 const DEMO_PROPOSALS: SquadProposal[] = [
   {
     id: "demo-sq-1",
@@ -43,6 +63,7 @@ const DEMO_PROPOSALS: SquadProposal[] = [
     response_note: null,
     created_at: new Date().toISOString(),
     opened_at: null,
+    ...NULL_PROFILE,
   },
   {
     id: "demo-sq-2",
@@ -57,6 +78,7 @@ const DEMO_PROPOSALS: SquadProposal[] = [
     response_note: "I would be honoured!",
     created_at: new Date().toISOString(),
     opened_at: new Date().toISOString(),
+    ...NULL_PROFILE,
   },
 ];
 
@@ -208,4 +230,39 @@ export async function deleteSquadProposal(id: string): Promise<void> {
     .eq("id", id);
 
   if (error) throw new Error(error.message);
+}
+
+export interface SquadProfileInput {
+  full_name:       string;
+  phone:           string;
+  photo_url?:      string | null;
+  dress_size?:     string | null;
+  dietary?:        string | null;
+  emergency_name?: string | null;
+  emergency_phone?:string | null;
+}
+
+export async function saveSquadProfile(
+  code: string,
+  profile: SquadProfileInput
+): Promise<{ success: boolean; message: string }> {
+  const client = getConfiguredSupabaseClient(true);
+  if (!client) return { success: true, message: "Saved (demo mode)." };
+
+  const { error } = await client
+    .from("squad_proposals")
+    .update({
+      profile_full_name:       profile.full_name,
+      profile_phone:           profile.phone,
+      profile_photo_url:       profile.photo_url       ?? null,
+      profile_dress_size:      profile.dress_size      ?? null,
+      profile_dietary:         profile.dietary         ?? null,
+      profile_emergency_name:  profile.emergency_name  ?? null,
+      profile_emergency_phone: profile.emergency_phone ?? null,
+      profile_completed_at:    new Date().toISOString(),
+    })
+    .eq("proposal_code", code);
+
+  if (error) return { success: false, message: error.message };
+  return { success: true, message: "Profile saved." };
 }
