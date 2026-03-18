@@ -14,12 +14,27 @@ export const metadata: Metadata = {
 export default async function SquadSignupPage({ params }: Props) {
   const proposal = await getProposalByCode(params.code);
 
-  // Must exist and be accepted
+  // Unknown code → 404
   if (!proposal) notFound();
-  if (!proposal.accepted) redirect(`/squad/${params.code}`);
 
-  // Already completed — go straight to vault if we have a way in
-  // (They may come back to this URL later — just show the form again)
+  // Explicitly declined → send back to proposal page
+  if (proposal.accepted === false) {
+    redirect(`/squad/${params.code}`);
+  }
+
+  // accepted === null (pending) or accepted === true — both show the form.
+  //
+  // Why allow pending here?
+  // The "Complete your profile" button appears on the client immediately after
+  // the person taps "Yes". There is a small window where the DB write from
+  // /api/squad/accept has succeeded (the client received { success: true })
+  // but the server-side fetch in this page might still see the old row due to
+  // replication lag or cache. Redirecting back to /squad/[code] in that case
+  // creates a confusing loop.
+  //
+  // The profile API route (/api/squad/profile) independently validates that
+  // accepted === true before saving, so there's no security issue with showing
+  // the form to someone whose acceptance hasn't propagated yet.
 
   return (
     <SquadSignupClient
