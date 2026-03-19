@@ -396,6 +396,404 @@ function Hero() {
 }
 
 // ════════════════════════════════════════════════════════════════════════════
+function TravelHeroContent() {
+  const stops = [
+    {
+      time: formatTime(weddingConfig.weddingTime),
+      title: weddingConfig.venueName,
+      detail: weddingConfig.venueAddress,
+      href: weddingConfig.mapLink,
+      accent: ROSE,
+      surface: "var(--rose-pale)",
+      border: "var(--rose-mid)",
+    },
+    {
+      time: formatTime(weddingConfig.weddingTime2),
+      title: weddingConfig.receptionVenueName,
+      detail: weddingConfig.receptionVenueAddress,
+      href: weddingConfig.receptionMapLink,
+      accent: GOLD,
+      surface: "var(--gold-pale)",
+      border: "rgba(168,120,8,.22)",
+    },
+  ];
+
+  return (
+    <>
+      <style>{`
+        .travel-hero-layout{
+          display:grid;
+          grid-template-columns:minmax(0,1.1fr) minmax(300px,.9fr);
+          gap:clamp(1.5rem,4vw,3rem);
+          align-items:center;
+        }
+        .travel-hero-actions{
+          display:flex;
+          flex-wrap:wrap;
+          gap:.75rem;
+          margin-top:1.75rem;
+        }
+        .travel-hero-btn{
+          display:inline-flex;
+          align-items:center;
+          gap:.55rem;
+          padding:.9rem 1.2rem;
+          border-radius:999px;
+          font-family:var(--font-body),'Manrope',sans-serif;
+          font-size:.64rem;
+          font-weight:700;
+          letter-spacing:.14em;
+          text-transform:uppercase;
+          text-decoration:none;
+          transition:transform .18s ease,background .18s ease,border-color .18s ease,box-shadow .18s ease,color .18s ease;
+        }
+        .travel-hero-btn:hover{
+          transform:translateY(-1px);
+        }
+        .travel-hero-btn-primary{
+          background:var(--rose);
+          border:1px solid var(--rose);
+          color:#fff;
+          box-shadow:0 14px 30px rgba(190,45,69,.16);
+        }
+        .travel-hero-btn-primary:hover{
+          background:#a9243a;
+          border-color:#a9243a;
+        }
+        .travel-hero-btn-secondary{
+          background:rgba(255,255,255,.82);
+          border:1px solid rgba(18,11,14,.08);
+          color:var(--ink);
+          box-shadow:0 10px 24px rgba(82,47,54,.06);
+        }
+        .travel-hero-btn-secondary:hover{
+          background:#fff;
+          border-color:rgba(168,120,8,.35);
+        }
+        .travel-hero-card{
+          background:rgba(255,252,248,.92);
+          border:1px solid rgba(190,45,69,.10);
+          border-radius:28px;
+          padding:clamp(1.25rem,2vw,1.75rem);
+          box-shadow:0 24px 50px rgba(82,47,54,.08);
+        }
+        .travel-hero-stops{
+          display:flex;
+          flex-direction:column;
+          gap:.875rem;
+          margin:1.25rem 0 1rem;
+        }
+        .travel-hero-stop{
+          display:grid;
+          grid-template-columns:auto minmax(0,1fr) auto;
+          gap:.875rem;
+          align-items:center;
+          padding:1rem 1.05rem;
+          border-radius:20px;
+          text-decoration:none;
+          transition:transform .18s ease,background .18s ease,border-color .18s ease;
+        }
+        .travel-hero-stop:hover{
+          transform:translateY(-1px);
+        }
+        .travel-hero-meta{
+          display:grid;
+          grid-template-columns:repeat(3,minmax(0,1fr));
+          gap:.75rem;
+          margin-top:1rem;
+        }
+        .travel-hero-meta-card{
+          padding:.85rem .9rem;
+          border-radius:16px;
+          background:rgba(255,255,255,.72);
+          border:1px solid rgba(18,11,14,.06);
+        }
+        @media(max-width:900px){
+          .travel-hero-layout{
+            grid-template-columns:1fr;
+            align-items:start;
+          }
+        }
+        @media(max-width:560px){
+          .travel-hero-meta{
+            grid-template-columns:1fr;
+          }
+          .travel-hero-stop{
+            grid-template-columns:auto minmax(0,1fr);
+          }
+          .travel-hero-stop-arrow{
+            display:none;
+          }
+        }
+      `}</style>
+
+      <section style={{
+        position: "relative",
+        overflow: "hidden",
+        background: "linear-gradient(180deg,#FFF9F3 0%,#F8EFE5 100%)",
+        borderBottom: "1px solid rgba(190,45,69,.09)",
+      }}>
+        <div aria-hidden style={{
+          position: "absolute",
+          inset: 0,
+          pointerEvents: "none",
+          background: `
+            radial-gradient(ellipse 52% 58% at 100% 0%, rgba(190,45,69,.06) 0%, transparent 62%),
+            radial-gradient(ellipse 32% 36% at 0% 100%, rgba(168,120,8,.05) 0%, transparent 58%)
+          `,
+        }} />
+        <div aria-hidden style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          height: 2,
+          background: "linear-gradient(90deg,transparent,var(--rose-mid) 25%,var(--gold) 50%,var(--rose-mid) 75%,transparent)",
+        }} />
+
+        <div style={{
+          maxWidth: "var(--max-w)",
+          margin: "0 auto",
+          padding: "clamp(5rem,9vh,6.5rem) var(--pad-x) clamp(3rem,6vh,4.5rem)",
+          position: "relative",
+          zIndex: 1,
+        }}>
+          <div className="travel-hero-layout">
+            <div style={{ minWidth: 0 }}>
+              <div style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: ".6rem",
+                marginBottom: "1.25rem",
+              }}>
+                <div style={{ width: 22, height: 1, background: ROSE, opacity: .5 }} />
+                <span style={{
+                  fontFamily: BF,
+                  fontSize: ".56rem",
+                  letterSpacing: ".34em",
+                  textTransform: "uppercase",
+                  color: ROSE,
+                  fontWeight: 700,
+                }}>
+                  Travel guide
+                </span>
+              </div>
+
+              <h1 style={{
+                fontFamily: DF,
+                fontWeight: 300,
+                margin: 0,
+                fontSize: "clamp(3rem,8vw,6.25rem)",
+                lineHeight: .9,
+                letterSpacing: "-.04em",
+                color: INK,
+              }}>
+                Arrive
+                <br />
+                <span style={{ color: ROSE, fontStyle: "italic" }}>with ease.</span>
+              </h1>
+
+              <p style={{
+                fontFamily: BF,
+                fontSize: "clamp(.95rem,1.6vw,1.08rem)",
+                color: "var(--ink-3)",
+                lineHeight: 1.8,
+                maxWidth: "38rem",
+                marginTop: "1.25rem",
+              }}>
+                From the ceremony to the reception, everything you need for a smooth day is here:
+                directions, timing, nearby stays, and the quickest route between venues.
+              </p>
+
+              <p style={{
+                fontFamily: BF,
+                fontSize: ".72rem",
+                letterSpacing: ".16em",
+                textTransform: "uppercase",
+                color: "var(--ink-4)",
+                fontWeight: 700,
+                marginTop: "1.25rem",
+              }}>
+                {weddingConfig.brideName} &middot; {formatDate(weddingConfig.weddingDate)} &middot; {weddingConfig.venueCity}
+              </p>
+
+              <div className="travel-hero-actions">
+                <a
+                  href={weddingConfig.mapLink}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="travel-hero-btn travel-hero-btn-primary"
+                >
+                  Church directions <ArrowUpRight size={14} />
+                </a>
+                <a
+                  href={weddingConfig.receptionMapLink}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="travel-hero-btn travel-hero-btn-secondary"
+                >
+                  Resort directions <ArrowUpRight size={14} />
+                </a>
+                <a
+                  href="#hotels"
+                  className="travel-hero-btn travel-hero-btn-secondary"
+                >
+                  Browse hotels
+                </a>
+              </div>
+
+              <p style={{
+                fontFamily: BF,
+                fontSize: ".88rem",
+                color: "var(--ink-3)",
+                lineHeight: 1.75,
+                maxWidth: "34rem",
+                marginTop: "1.5rem",
+              }}>
+                The ceremony begins at {formatTime(weddingConfig.weddingTime)} and the celebration continues
+                by the coast at {formatTime(weddingConfig.weddingTime2)}.
+              </p>
+            </div>
+
+            <div className="travel-hero-card">
+              <p style={{
+                fontFamily: BF,
+                fontSize: ".56rem",
+                letterSpacing: ".32em",
+                textTransform: "uppercase",
+                color: "var(--ink-4)",
+                fontWeight: 700,
+              }}>
+                The day at a glance
+              </p>
+
+              <div className="travel-hero-stops">
+                {stops.map((stop) => {
+                  const [timeValue, meridiem = ""] = stop.time.split(" ");
+
+                  return (
+                    <a
+                      key={stop.title}
+                      href={stop.href}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="travel-hero-stop"
+                      style={{
+                        background: stop.surface,
+                        border: `1px solid ${stop.border}`,
+                      }}
+                    >
+                      <div style={{
+                        width: 56,
+                        height: 56,
+                        borderRadius: 18,
+                        background: stop.accent,
+                        boxShadow: `0 12px 24px ${stop.accent === ROSE ? "rgba(190,45,69,.20)" : "rgba(168,120,8,.18)"}`,
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        flexShrink: 0,
+                      }}>
+                        <span style={{
+                          fontFamily: BF,
+                          fontSize: ".72rem",
+                          fontWeight: 800,
+                          color: "#fff",
+                          lineHeight: 1,
+                        }}>
+                          {timeValue}
+                        </span>
+                        <span style={{
+                          fontFamily: BF,
+                          fontSize: ".43rem",
+                          fontWeight: 700,
+                          color: "rgba(255,255,255,.82)",
+                          letterSpacing: ".08em",
+                        }}>
+                          {meridiem}
+                        </span>
+                      </div>
+
+                      <div style={{ minWidth: 0 }}>
+                        <p style={{
+                          fontFamily: DF,
+                          fontSize: "1.15rem",
+                          fontWeight: 600,
+                          color: INK,
+                          lineHeight: 1.12,
+                          marginBottom: ".2rem",
+                        }}>
+                          {stop.title}
+                        </p>
+                        <p style={{
+                          fontFamily: BF,
+                          fontSize: ".72rem",
+                          color: "var(--ink-3)",
+                          lineHeight: 1.55,
+                        }}>
+                          {stop.detail}
+                        </p>
+                      </div>
+
+                      <ArrowUpRight
+                        size={15}
+                        className="travel-hero-stop-arrow"
+                        style={{ color: stop.accent, flexShrink: 0 }}
+                      />
+                    </a>
+                  );
+                })}
+              </div>
+
+              <div className="travel-hero-meta">
+                {[
+                  { label:"Date", value:formatDate(weddingConfig.weddingDate) },
+                  { label:"Route", value:"15 km on ECR" },
+                  { label:"Airport", value:"MAA 50-60 km" },
+                ].map(({ label, value }) => (
+                  <div key={label} className="travel-hero-meta-card">
+                    <p style={{
+                      fontFamily: BF,
+                      fontSize: ".52rem",
+                      letterSpacing: ".26em",
+                      textTransform: "uppercase",
+                      color: "var(--ink-4)",
+                      fontWeight: 700,
+                      marginBottom: ".35rem",
+                    }}>
+                      {label}
+                    </p>
+                    <p style={{
+                      fontFamily: DF,
+                      fontSize: "1rem",
+                      fontWeight: 600,
+                      color: INK,
+                      lineHeight: 1.15,
+                    }}>
+                      {value}
+                    </p>
+                  </div>
+                ))}
+              </div>
+
+              <p style={{
+                fontFamily: BF,
+                fontSize: ".82rem",
+                color: "var(--ink-3)",
+                lineHeight: 1.7,
+                marginTop: "1rem",
+              }}>
+                For the most comfortable transfer, leave the church by 5:30 PM and head south on East Coast Road.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </>
+  );
+}
+
 // JOURNEY MAP (route card)
 // ════════════════════════════════════════════════════════════════════════════
 function JourneyCard() {
