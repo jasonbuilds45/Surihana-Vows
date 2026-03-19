@@ -842,104 +842,17 @@ export function TravelPageClient({ sections, essentials, faq, arrivalTips }: Gui
       <div style={{ maxWidth: "var(--max-w)", margin: "0 auto",
         padding: "clamp(3rem,6vh,5rem) var(--pad-x) clamp(4rem,8vh,6rem)" }}>
 
-        {/* 1 ── Route + Weather ───────────────────────────────────────────── */}
-        <section>
-          <SH ey="The route" ti="Church to coast"
-            sub="Two venues 15 km apart on the East Coast Road. The evening drive along ECR is one of Chennai's most scenic stretches." />
-          <div className="tr-2">
-            {/* Journey card (reuse boarding pass style) */}
-            <div style={{ borderRadius: "var(--r-xl)", overflow: "hidden",
-              border: "1px solid var(--bdr-md)", boxShadow: "var(--sh-lg)" }}>
-              <div style={{ background: "linear-gradient(150deg,#0F0A0B 0%,#1C1214 60%,#0F0A0B 100%)",
-                padding: "1.75rem 2rem", position: "relative", overflow: "hidden" }}>
-                <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2,
-                  background: "linear-gradient(90deg,transparent,var(--rose) 30%,var(--gold-l) 50%,var(--rose) 70%,transparent)" }} />
-                <div aria-hidden style={{ position: "absolute", top: "-20%", right: "-5%", width: "45%", height: "150%",
-                  borderRadius: "50%", background: "radial-gradient(circle,rgba(190,45,69,.09) 0%,transparent 65%)", pointerEvents: "none" }} />
-                <p style={{ fontFamily: BF, fontSize: ".44rem", letterSpacing: ".40em", textTransform: "uppercase",
-                  color: "rgba(240,190,198,.55)", fontWeight: 700, marginBottom: "1.375rem", position: "relative", zIndex: 1 }}>
-                  The route · 20 May 2026
-                </p>
-                <div style={{ display: "flex", alignItems: "flex-end", position: "relative", zIndex: 1 }}>
-                  <div style={{ flex: 1, paddingBottom: "1.5rem" }}>
-                    <div style={{ display: "inline-flex", alignItems: "center", gap: 5, padding: "3px 10px",
-                      borderRadius: 999, background: "rgba(190,45,69,.18)", border: "1px solid rgba(190,45,69,.35)",
-                      marginBottom: ".75rem" }}>
-                      <div style={{ width: 5, height: 5, borderRadius: "50%", background: ROSE }} />
-                      <span style={{ fontFamily: BF, fontSize: ".44rem", letterSpacing: ".22em",
-                        textTransform: "uppercase", color: ROSE, fontWeight: 700 }}>3:00 PM</span>
-                    </div>
-                    <h3 style={{ fontFamily: DF, fontSize: "clamp(1rem,2.5vw,1.5rem)", fontWeight: 600,
-                      color: "#fff", lineHeight: 1.1, marginBottom: ".4rem" }}>
-                      Divine Mercy<br />Church
-                    </h3>
-                    <p style={{ fontFamily: BF, fontSize: ".70rem", color: "rgba(255,255,255,.42)" }}>
-                      Kelambakkam, Chennai
-                    </p>
-                  </div>
-                  <div style={{ width: "clamp(60px,13%,120px)", display: "flex", flexDirection: "column",
-                    alignItems: "center", justifyContent: "center", gap: ".5rem", paddingBottom: "1.5rem" }}>
-                    <div style={{ position: "relative", width: "100%", height: 2 }}>
-                      <div style={{ position: "absolute", inset: 0,
-                        background: "repeating-linear-gradient(90deg,rgba(255,255,255,.22) 0,rgba(255,255,255,.22) 6px,transparent 6px,transparent 12px)" }} />
-                      <div style={{ position: "absolute", right: -1, top: "50%", transform: "translateY(-50%)",
-                        width: 0, height: 0, borderTop: "3px solid transparent", borderBottom: "3px solid transparent",
-                        borderLeft: "5px solid rgba(255,255,255,.30)" }} />
-                    </div>
-                    <p style={{ fontFamily: BF, fontSize: ".44rem", letterSpacing: ".12em",
-                      textTransform: "uppercase", color: "rgba(255,255,255,.26)", textAlign: "center", lineHeight: 1.4 }}>
-                      15 km
-                    </p>
-                  </div>
-                  <div style={{ flex: 1, paddingBottom: "1.5rem", textAlign: "right" }}>
-                    <div style={{ display: "inline-flex", alignItems: "center", gap: 5, padding: "3px 10px",
-                      borderRadius: 999, background: "rgba(168,120,8,.20)", border: "1px solid rgba(168,120,8,.38)",
-                      marginBottom: ".75rem" }}>
-                      <span style={{ fontFamily: BF, fontSize: ".44rem", letterSpacing: ".22em",
-                        textTransform: "uppercase", color: "var(--gold-l)", fontWeight: 700 }}>6:00 PM</span>
-                      <div style={{ width: 5, height: 5, borderRadius: "50%", background: GOLD }} />
-                    </div>
-                    <h3 style={{ fontFamily: DF, fontSize: "clamp(1rem,2.5vw,1.5rem)", fontWeight: 600,
-                      color: "#fff", lineHeight: 1.1, marginBottom: ".4rem" }}>
-                      Blue Bay<br />Beach Resort
-                    </h3>
-                    <p style={{ fontFamily: BF, fontSize: ".70rem", color: "rgba(255,255,255,.42)" }}>
-                      Mahabalipuram, ECR
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", background: "var(--bg-warm)" }}>
-                {[
-                  { label: "Church directions", href: "https://share.google/SCdoX1GZAvGSlOIrQ",     rose: true  },
-                  { label: "Resort directions", href: "https://maps.app.goo.gl/vu56aH1Jvp29gSuu7", rose: false },
-                ].map(({ label, href, rose }, i) => (
-                  <a key={label} href={href} target="_blank" rel="noreferrer"
-                    style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
-                      padding: ".875rem", borderTop: "1px solid var(--bdr)",
-                      borderRight: i === 0 ? "1px solid var(--bdr)" : "none",
-                      fontFamily: BF, fontSize: ".60rem", fontWeight: 700, letterSpacing: ".12em",
-                      textTransform: "uppercase", color: rose ? ROSE : GOLD, textDecoration: "none",
-                      transition: "background .18s" }}
-                    onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = rose ? "var(--rose-pale)" : "var(--gold-pale)"; }}
-                    onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = "transparent"; }}>
-                    <Navigation size={11} />{label}
-                  </a>
-                ))}
-              </div>
-            </div>
-            <WeatherCard />
-          </div>
-        </section>
-
-        <Div />
-
-        {/* 2 ── Getting here ─────────────────────────────────────────────── */}
+        {/* 1 ── Getting here: Weather + Transport ─────────────────────── */}
         <section id="transport">
           <SH ey="Getting here" ti="How to arrive"
-            sub="Chennai is well connected by air, rail, and road. All routes converge on East Coast Road." />
+            sub="Chennai is well connected by air, rail, and road. The East Coast Road is your gateway to both venues." />
           <div className="tr-2">
-            {TRANSPORT.map(t => <TransportCard key={t.title} {...t} />)}
+            {/* Left — weather */}
+            <WeatherCard />
+            {/* Right — transport 2×2 grid */}
+            <div className="tr-h">
+              {TRANSPORT.map(t => <TransportCard key={t.title} {...t} />)}
+            </div>
           </div>
         </section>
 
