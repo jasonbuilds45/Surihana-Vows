@@ -129,6 +129,10 @@ function Divider() {
 // Light parchment background with warm radial blooms. No dark sections.
 // ════════════════════════════════════════════════════════════════════════════
 function Hero() {
+  if (weddingConfig.mapLink) {
+    return <TravelHeroContent />;
+  }
+
   return (
     <>
       <style>{`
