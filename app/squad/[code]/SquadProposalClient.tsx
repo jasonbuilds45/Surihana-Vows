@@ -138,14 +138,27 @@ export function SquadProposalClient({ proposal, brideName, groomName }: Props) {
   }
 
   // ── Wax seal SVG — role-coloured ─────────────────────────────────────────
-  const WaxSeal = ({ size = 200, burst = false }: { size?: number; burst?: boolean }) => (
+  // Shadow lives inside SVG <defs> as a proper feDropShadow filter applied
+  // only to the disc group — never on the <svg> element itself. This prevents
+  // the browser from creating a rectangular compositing region that shows as
+  // a visible square before GPU compositing, which was the previous bug.
+  const WaxSeal = ({ size = 200, burst = false }: { size?: number; burst?: boolean }) => {
+    const shadowId = `sp-shadow-${proposal.squad_role}`;
+    return (
     <svg
       viewBox="0 0 200 200"
       width={size} height={size}
-      style={{ display: "block", overflow: "visible", filter: burst ? "none" : "drop-shadow(0 12px 40px rgba(0,0,0,.55)) drop-shadow(0 4px 10px rgba(0,0,0,.35))" }}
+      style={{ display: "block", overflow: "visible" }}
       aria-hidden
     >
       <defs>
+        {/* Shadow filter — applied to the disc group, not the SVG element */}
+        {!burst && (
+          <filter id={shadowId} x="-25%" y="-25%" width="150%" height="150%" colorInterpolationFilters="sRGB">
+            <feDropShadow dx="0" dy="10" stdDeviation="18" floodColor="rgba(0,0,0,.50)" />
+            <feDropShadow dx="0" dy="3"  stdDeviation="5"  floodColor="rgba(0,0,0,.30)" />
+          </filter>
+        )}
         <radialGradient id={`sg-${proposal.squad_role}`} cx="36%" cy="32%" r="70%">
           <stop offset="0%"   stopColor={cfg.sealColor1} />
           <stop offset="40%"  stopColor={cfg.sealColor2} />
@@ -155,57 +168,63 @@ export function SquadProposalClient({ proposal, brideName, groomName }: Props) {
           <stop offset="0%"   stopColor="rgba(255,255,255,.28)" />
           <stop offset="100%" stopColor="rgba(255,255,255,0)"   />
         </radialGradient>
-        {/* Star notch path for the seal edge */}
-        <path id="sp-edge" d="M100,14 L108,30 L126,24 L120,42 L138,44 L126,58 L140,68 L124,72 L128,90 L112,88 L108,106 L100,92 L92,106 L88,88 L72,90 L76,72 L60,68 L74,58 L62,44 L80,42 L74,24 L92,30 Z" />
       </defs>
 
-      {/* Outer decorative ring — 24 points */}
-      {Array.from({ length: 24 }, (_, i) => {
-        const a  = (i / 24) * Math.PI * 2 - Math.PI / 2;
-        const r1 = 90, r2 = 98;
-        return (
-          <line key={i}
-            x1={100 + r1 * Math.cos(a)} y1={100 + r1 * Math.sin(a)}
-            x2={100 + r2 * Math.cos(a)} y2={100 + r2 * Math.sin(a)}
-            stroke="rgba(255,255,255,.18)" strokeWidth="1.5"
+      {/* Everything in one <g> so the shadow filter is scoped to the
+          circular disc — the browser composites the shadow from the
+          actual painted pixels of this group, which are all circular,
+          so the shadow is always perfectly round from first paint. */}
+      <g filter={burst ? undefined : `url(#${shadowId})`}>
+
+        {/* Outer decorative ring — 24 tick marks */}
+        {Array.from({ length: 24 }, (_, i) => {
+          const a  = (i / 24) * Math.PI * 2 - Math.PI / 2;
+          const r1 = 90, r2 = 98;
+          return (
+            <line key={i}
+              x1={100 + r1 * Math.cos(a)} y1={100 + r1 * Math.sin(a)}
+              x2={100 + r2 * Math.cos(a)} y2={100 + r2 * Math.sin(a)}
+              stroke="rgba(255,255,255,.18)" strokeWidth="1.5"
+            />
+          );
+        })}
+
+        {/* Main disc */}
+        <circle cx="100" cy="100" r="90" fill={`url(#sg-${proposal.squad_role})`} />
+
+        {/* Concentric rings */}
+        <circle cx="100" cy="100" r="89" fill="none" stroke="rgba(255,255,255,.14)" strokeWidth="1" />
+        <circle cx="100" cy="100" r="78" fill="none" stroke="rgba(255,255,255,.10)" strokeWidth="1" />
+        <circle cx="100" cy="100" r="66" fill="none" stroke="rgba(255,255,255,.08)" strokeWidth=".8" />
+
+        {/* Sheen */}
+        <circle cx="100" cy="100" r="90" fill={`url(#sh-${proposal.squad_role})`} />
+
+        {/* Initials */}
+        <text
+          x="100" y="115"
+          textAnchor="middle"
+          fontFamily="'Cormorant Garamond',Georgia,serif"
+          fontSize="52" fontWeight="600"
+          letterSpacing="6"
+          fill="rgba(255,255,255,.88)"
+        >
+          {initials}
+        </text>
+
+        {/* Small decorative diamonds */}
+        {[[-1, 0], [1, 0], [0, -1], [0, 1]].map(([dx, dy], i) => (
+          <polygon key={i}
+            points={`${100 + dx! * 82},${100 + dy! * 82} ${100 + dx! * 82 - 3},${100 + dy! * 82 + 3} ${100 + dx! * 82},${100 + dy! * 82 + 6} ${100 + dx! * 82 + 3},${100 + dy! * 82 + 3}`}
+            fill="rgba(255,255,255,.22)"
+            transform={`rotate(${i * 90}, 100, 100)`}
           />
-        );
-      })}
+        ))}
 
-      {/* Main disc */}
-      <circle cx="100" cy="100" r="90" fill={`url(#sg-${proposal.squad_role})`} />
-
-      {/* Concentric rings */}
-      <circle cx="100" cy="100" r="89" fill="none" stroke="rgba(255,255,255,.14)" strokeWidth="1" />
-      <circle cx="100" cy="100" r="78" fill="none" stroke="rgba(255,255,255,.10)" strokeWidth="1" />
-      <circle cx="100" cy="100" r="66" fill="none" stroke="rgba(255,255,255,.08)" strokeWidth=".8" />
-
-      {/* Sheen */}
-      <circle cx="100" cy="100" r="90" fill={`url(#sh-${proposal.squad_role})`} />
-
-      {/* Initials */}
-      <text
-        x="100" y="115"
-        textAnchor="middle"
-        fontFamily="'Cormorant Garamond',Georgia,serif"
-        fontSize="52" fontWeight="600"
-        letterSpacing="6"
-        fill="rgba(255,255,255,.88)"
-        style={{ textShadow: "0 2px 4px rgba(0,0,0,.4)" }}
-      >
-        {initials}
-      </text>
-
-      {/* Small decorative diamonds top / bottom */}
-      {[[-1, 0], [1, 0], [0, -1], [0, 1]].map(([dx, dy], i) => (
-        <polygon key={i}
-          points={`${100 + dx * 82},${100 + dy * 82} ${100 + dx * 82 - 3},${100 + dy * 82 + 3} ${100 + dx * 82},${100 + dy * 82 + 6} ${100 + dx * 82 + 3},${100 + dy * 82 + 3}`}
-          fill="rgba(255,255,255,.22)"
-          transform={`rotate(${i * 90}, 100, 100)`}
-        />
-      ))}
+      </g>
     </svg>
-  );
+    );
+  };
 
   // ─────────────────────────────────────────────────────────────────────────
   return (
