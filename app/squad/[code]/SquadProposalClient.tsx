@@ -137,49 +137,68 @@ export function SquadProposalClient({ proposal, brideName, groomName }: Props) {
     }
   }
 
-  // ── Wax seal SVG — role-coloured ─────────────────────────────────────────
-  // Shadow lives inside SVG <defs> as a proper feDropShadow filter applied
-  // only to the disc group — never on the <svg> element itself. This prevents
-  // the browser from creating a rectangular compositing region that shows as
-  // a visible square before GPU compositing, which was the previous bug.
-  const WaxSeal = ({ size = 200, burst = false }: { size?: number; burst?: boolean }) => {
-    const shadowId = `sp-shadow-${proposal.squad_role}`;
-    return (
-    <svg
-      viewBox="0 0 200 200"
-      width={size} height={size}
-      style={{ display: "block", overflow: "visible" }}
-      aria-hidden
-    >
-      <defs>
-        {/* Shadow filter — applied to the disc group, not the SVG element */}
-        {!burst && (
-          <filter id={shadowId} x="-25%" y="-25%" width="150%" height="150%" colorInterpolationFilters="sRGB">
-            <feDropShadow dx="0" dy="10" stdDeviation="18" floodColor="rgba(0,0,0,.50)" />
-            <feDropShadow dx="0" dy="3"  stdDeviation="5"  floodColor="rgba(0,0,0,.30)" />
-          </filter>
-        )}
-        <radialGradient id={`sg-${proposal.squad_role}`} cx="36%" cy="32%" r="70%">
-          <stop offset="0%"   stopColor={cfg.sealColor1} />
-          <stop offset="40%"  stopColor={cfg.sealColor2} />
-          <stop offset="100%" stopColor={cfg.sealColor3} />
-        </radialGradient>
-        <radialGradient id={`sh-${proposal.squad_role}`} cx="32%" cy="26%" r="55%">
-          <stop offset="0%"   stopColor="rgba(255,255,255,.28)" />
-          <stop offset="100%" stopColor="rgba(255,255,255,0)"   />
-        </radialGradient>
-      </defs>
+  // ── Wax seal ─────────────────────────────────────────────────────
+  //
+  // THE SHADOW TECHNIQUE — why this is correct:
+  //
+  // Any CSS/SVG filter (drop-shadow, feDropShadow) applied to an <svg> or
+  // a <g> inside one creates a rectangular filter primitive subregion.
+  // The browser allocates and composites this region as a rectangle on
+  // first paint, which is visible as a faint square — the bug we had.
+  //
+  // The only shadow primitive that is truly circular with zero rectangular
+  // region is CSS `box-shadow` applied to an HTML element whose border-box
+  // IS a circle (border-radius: 50%). The shadow is derived from the
+  // element’s border-box geometry, not from painted pixel content, so
+  // there is no compositing rectangle ever — not even for one frame.
+  //
+  // Solution: wrap the SVG in a div with border-radius:50%, overflow:hidden,
+  // and box-shadow. The SVG has overflow:hidden so tick marks are clipped
+  // to the circle. No filter anywhere.
+  //
+  const WaxSeal = ({ size = 200, burst = false, className = "", onClick, cursor = "default" }: { size?: number; burst?: boolean; className?: string; onClick?: () => void; cursor?: string }) => (
+    <div
+      className={className}
+      onClick={onClick}
+      style={{
+        width:        size,
+        height:       size,
+        borderRadius: "50%",
+        overflow:     "hidden",
+        flexShrink:   0,
+        cursor,
+        // Shadow from box geometry — always circular, never rectangular.
+        // Suppressed during burst animation so the element can shrink to 0
+        // without leaving a shadow ghost.
+        boxShadow: burst ? "none" : [
+          "0 14px 44px rgba(0,0,0,.52)",
+          "0 4px 12px rgba(0,0,0,.32)",
+          "0 1px 3px rgba(0,0,0,.18)",
+        ].join(","),
+      }}>
+      <svg
+        viewBox="0 0 200 200"
+        width={size}
+        height={size}
+        style={{ display: "block" }}  // overflow:hidden from parent div
+        aria-hidden
+      >
+        <defs>
+          <radialGradient id={`sg-${proposal.squad_role}`} cx="36%" cy="32%" r="70%">
+            <stop offset="0%"   stopColor={cfg.sealColor1} />
+            <stop offset="40%"  stopColor={cfg.sealColor2} />
+            <stop offset="100%" stopColor={cfg.sealColor3} />
+          </radialGradient>
+          <radialGradient id={`sh-${proposal.squad_role}`} cx="32%" cy="26%" r="55%">
+            <stop offset="0%"   stopColor="rgba(255,255,255,.28)" />
+            <stop offset="100%" stopColor="rgba(255,255,255,0)"   />
+          </radialGradient>
+        </defs>
 
-      {/* Everything in one <g> so the shadow filter is scoped to the
-          circular disc — the browser composites the shadow from the
-          actual painted pixels of this group, which are all circular,
-          so the shadow is always perfectly round from first paint. */}
-      <g filter={burst ? undefined : `url(#${shadowId})`}>
-
-        {/* Outer decorative ring — 24 tick marks */}
+        {/* Outer decorative tick marks */}
         {Array.from({ length: 24 }, (_, i) => {
           const a  = (i / 24) * Math.PI * 2 - Math.PI / 2;
-          const r1 = 90, r2 = 98;
+          const r1 = 88, r2 = 97;
           return (
             <line key={i}
               x1={100 + r1 * Math.cos(a)} y1={100 + r1 * Math.sin(a)}
@@ -190,15 +209,15 @@ export function SquadProposalClient({ proposal, brideName, groomName }: Props) {
         })}
 
         {/* Main disc */}
-        <circle cx="100" cy="100" r="90" fill={`url(#sg-${proposal.squad_role})`} />
+        <circle cx="100" cy="100" r="97" fill={`url(#sg-${proposal.squad_role})`} />
 
         {/* Concentric rings */}
-        <circle cx="100" cy="100" r="89" fill="none" stroke="rgba(255,255,255,.14)" strokeWidth="1" />
-        <circle cx="100" cy="100" r="78" fill="none" stroke="rgba(255,255,255,.10)" strokeWidth="1" />
-        <circle cx="100" cy="100" r="66" fill="none" stroke="rgba(255,255,255,.08)" strokeWidth=".8" />
+        <circle cx="100" cy="100" r="88" fill="none" stroke="rgba(255,255,255,.14)" strokeWidth="1" />
+        <circle cx="100" cy="100" r="76" fill="none" stroke="rgba(255,255,255,.10)" strokeWidth="1" />
+        <circle cx="100" cy="100" r="64" fill="none" stroke="rgba(255,255,255,.08)" strokeWidth=".8" />
 
         {/* Sheen */}
-        <circle cx="100" cy="100" r="90" fill={`url(#sh-${proposal.squad_role})`} />
+        <circle cx="100" cy="100" r="97" fill={`url(#sh-${proposal.squad_role})`} />
 
         {/* Initials */}
         <text
@@ -212,19 +231,17 @@ export function SquadProposalClient({ proposal, brideName, groomName }: Props) {
           {initials}
         </text>
 
-        {/* Small decorative diamonds */}
+        {/* Decorative diamonds */}
         {[[-1, 0], [1, 0], [0, -1], [0, 1]].map(([dx, dy], i) => (
           <polygon key={i}
-            points={`${100 + dx! * 82},${100 + dy! * 82} ${100 + dx! * 82 - 3},${100 + dy! * 82 + 3} ${100 + dx! * 82},${100 + dy! * 82 + 6} ${100 + dx! * 82 + 3},${100 + dy! * 82 + 3}`}
+            points={`${100 + dx! * 80},${100 + dy! * 80} ${100 + dx! * 80 - 3},${100 + dy! * 80 + 3} ${100 + dx! * 80},${100 + dy! * 80 + 6} ${100 + dx! * 80 + 3},${100 + dy! * 80 + 3}`}
             fill="rgba(255,255,255,.22)"
             transform={`rotate(${i * 90}, 100, 100)`}
           />
         ))}
-
-      </g>
-    </svg>
-    );
-  };
+      </svg>
+    </div>
+  );
 
   // ─────────────────────────────────────────────────────────────────────────
   return (
@@ -264,8 +281,13 @@ export function SquadProposalClient({ proposal, brideName, groomName }: Props) {
         .sp-unfold{opacity:0;animation:sp-unfold .65s .2s cubic-bezier(.16,1,.3,1) forwards}
 
         /* ── Seal states ── */
+        /* sp-pulse animates box-shadow on the WaxSeal div (border-radius:50%)
+           so the pulsing glow ring is always perfectly circular. The base
+           shadow is included in both keyframe stops so there is no flash
+           when the animation takes over from the inline style. */
         .sp-seal-idle { animation:sp-pulse 4s 1.2s ease-in-out infinite, sp-float 6s 0s ease-in-out infinite; }
         .sp-seal-burst{ animation:sp-burst .6s ease forwards; }
+        .sp-seal-stamp{ animation:sp-stamp .65s .1s cubic-bezier(.34,1.56,.64,1) both; }
 
         /* ── Accept button ── */
         .sp-accept {
@@ -455,16 +477,13 @@ export function SquadProposalClient({ proposal, brideName, groomName }: Props) {
                   </>
                 )}
 
-                <div
+                <WaxSeal
+                  size={clamp(160, 200)}
+                  burst={state === "opening"}
                   className={state === "sealed" ? "sp-seal-idle" : "sp-seal-burst"}
                   onClick={state === "sealed" ? handleOpen : undefined}
-                  style={{
-                    cursor: state === "sealed" ? "pointer" : "default",
-                    display: "block",
-                  }}
-                >
-                  <WaxSeal size={clamp(160, 200)} burst={state === "opening"} />
-                </div>
+                  cursor={state === "sealed" ? "pointer" : "default"}
+                />
               </div>
 
               {/* Hint text */}
@@ -858,12 +877,8 @@ export function SquadProposalClient({ proposal, brideName, groomName }: Props) {
             </div>
 
             {/* The celebratory seal — smaller, stamped feel */}
-            <div className="sp-1" style={{
-              display: "flex", justifyContent: "center",
-              marginBottom: "1.75rem",
-              animation: "sp-stamp .65s .1s cubic-bezier(.34,1.56,.64,1) both",
-            }}>
-              <WaxSeal size={100} />
+            <div className="sp-1" style={{ display: "flex", justifyContent: "center", marginBottom: "1.75rem" }}>
+              <WaxSeal size={100} className="sp-seal-stamp" />
             </div>
 
             {/* Headline */}
