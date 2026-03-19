@@ -22,6 +22,8 @@ import {
 } from "lucide-react";
 import { NearbyEssentials } from "@/components/invitation/NearbyEssentials";
 import type { EssentialItem } from "@/components/invitation/NearbyEssentials";
+import { weddingConfig } from "@/lib/config";
+import { formatDate, formatTime } from "@/utils/formatDate";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 interface TravelSection {
