@@ -47,11 +47,11 @@ export function Navbar() {
   // Nav bar uses a floating pill design when scrolled, full-width when not
   const navBg = ghost
     ? "transparent"
-    : "rgba(253, 250, 247, 0.86)";
+    : "rgba(255, 255, 255, 0.92)";
 
   const navBorder = ghost
     ? "none"
-    : "1px solid rgba(190, 45, 69, 0.09)";
+    : "1px solid rgba(190, 45, 69, 0.12)";
 
   return (
     <>
@@ -68,7 +68,7 @@ export function Navbar() {
           pointerEvents: "none",
         }}
       >
-        {/* Top rose-gold line — only when not scrolled */}
+        {/* Top rose-gold line — only when not scrolled on non-home pages */}
         {!scrolled && !isHome && (
           <div style={{
             height: 2,
@@ -85,9 +85,11 @@ export function Navbar() {
             WebkitBackdropFilter: ghost ? "none" : "blur(24px) saturate(180%)",
             border: navBorder,
             borderRadius: scrolled ? "999px" : 0,
-            boxShadow: scrolled
-              ? "0 4px 24px rgba(15,10,11,0.07), 0 1px 4px rgba(15,10,11,0.04), inset 0 1px 0 rgba(255,255,255,0.70)"
-              : "none",
+            boxShadow: ghost
+              ? "none"
+              : scrolled
+                ? "0 4px 24px rgba(15,10,11,0.07), 0 1px 4px rgba(15,10,11,0.04), inset 0 1px 0 rgba(255,255,255,0.70)"
+                : "0 1px 0 rgba(190,45,69,0.08), 0 2px 12px rgba(15,10,11,0.05)",
             transition: "all 0.45s cubic-bezier(0.16,1,0.3,1)",
             pointerEvents: "auto",
           }}

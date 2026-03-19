@@ -201,10 +201,10 @@ function Hero() {
         <div aria-hidden style={{ position:"absolute",top:0,left:0,right:0,height:2,
           background:"linear-gradient(90deg,transparent,var(--rose-mid) 25%,var(--rose) 50%,var(--rose-mid) 75%,transparent)" }} />
 
-        {/* Content */}
+        {/* Content — top padding accounts for the 68px fixed navbar */}
         <div style={{
           maxWidth: "var(--max-w)", margin: "0 auto",
-          padding: "clamp(3.5rem,8vh,5.5rem) var(--pad-x) clamp(3rem,7vh,5rem)",
+          padding: "clamp(5rem,10vh,7rem) var(--pad-x) clamp(3rem,7vh,5rem)",
           position: "relative", zIndex: 1,
         }}>
           <div className="h-layout">
