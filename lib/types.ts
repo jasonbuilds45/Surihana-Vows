@@ -28,10 +28,14 @@ export interface WeddingConfig {
   introQuote: string;
   weddingDate: string;
   weddingTime: string;
+  weddingTime2: string;
   venueName: string;
   venueAddress: string;
   venueCity: string;
   mapLink: string;
+  receptionVenueName: string;
+  receptionVenueAddress: string;
+  receptionMapLink: string;
   dressCode: string;
   contactEmail: string;
   // Phase 4.2 — shown on /thank-you
