@@ -3,6 +3,9 @@
 /**
  * SquadProposalClient — Enhanced
  *
+ * Renders SquadCinematicIntro first (trailer + handoff screen), then
+ * unmounts it and shows the sealed proposal experience.
+ *
  * The sealed letter proposal experience.
  * Design language: "A Letter Worth Keeping"
  * — Feels like receiving a beautifully crafted physical letter.
@@ -11,6 +14,7 @@
 
 import { useState } from "react";
 import type { SquadProposal } from "@/modules/squad/squad-system";
+import { SquadCinematicIntro } from "./SquadCinematicIntro";
 
 // ── Design tokens ─────────────────────────────────────────────────────────
 const ROSE      = "#BE2D45";
@@ -78,6 +82,13 @@ type State = "sealed" | "opening" | "opened" | "accepted" | "declined" | "submit
 type AcceptResponse = { success: boolean; message?: string; vaultUrl?: string | null; needsManualGrant?: boolean };
 
 export function SquadProposalClient({ proposal, brideName, groomName }: Props) {
+  // Show the cinematic trailer first, then reveal the sealed letter.
+  // Already-accepted proposals skip straight to the accepted state so
+  // returning visitors don't replay the trailer unnecessarily.
+  const [introSeen, setIntroSeen] = useState(
+    proposal.accepted === true || proposal.accepted === false
+  );
+
   const [state,        setState]        = useState<State>(
     proposal.accepted === true  ? "accepted" :
     proposal.accepted === false ? "declined" :
@@ -244,6 +255,18 @@ export function SquadProposalClient({ proposal, brideName, groomName }: Props) {
   );
 
   // ─────────────────────────────────────────────────────────────────────────
+  // Trailer gate — shown before the sealed letter on first visit
+  if (!introSeen) {
+    return (
+      <SquadCinematicIntro
+        proposal={proposal}
+        brideName={brideName}
+        groomName={groomName}
+        onEnter={() => setIntroSeen(true)}
+      />
+    );
+  }
+
   return (
     <>
       <style>{`
