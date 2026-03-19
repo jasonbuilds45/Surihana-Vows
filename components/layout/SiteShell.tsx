@@ -27,20 +27,23 @@ const SHELL_SUPPRESSED_PREFIXES = [
   "/admin",     // admin dashboard
   "/vault/",    // magic-link redirect bridge
   "/login",     // login page — no chrome
+  "/squad/",    // squad proposal — private, unbranded
 ];
 
 export function SiteShell({ children }: PropsWithChildren) {
   const pathname = usePathname();
 
-  // Exact match for "/" and "/login", prefix match for others
-  const suppress =
-    pathname === "/" ||
-    pathname === "/login" ||
-    SHELL_SUPPRESSED_PREFIXES.filter(p => p !== "/" && p !== "/login").some((prefix) =>
-      pathname === prefix ||
-      pathname.startsWith(prefix + "/") ||
-      pathname === prefix.replace(/\/$/, "")
-    );
+  // Suppress if the current path matches any suppressed prefix.
+  // Prefixes ending in "/" are treated as directory prefixes.
+  // Prefixes without trailing "/" match the exact path or any sub-path.
+  const suppress = SHELL_SUPPRESSED_PREFIXES.some((prefix) => {
+    if (prefix.endsWith("/")) {
+      // e.g. "/squad/" matches "/squad/anything"
+      return pathname === prefix.slice(0, -1) || pathname.startsWith(prefix);
+    }
+    // e.g. "/family" matches "/family" and "/family/anything"
+    return pathname === prefix || pathname.startsWith(prefix + "/");
+  });
 
   // Pages with their own layout (invite / family / admin)
   if (suppress) {
