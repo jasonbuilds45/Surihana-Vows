@@ -318,6 +318,7 @@ export default async function InvitePage({ params }: InvitePageProps) {
           background: "var(--color-surface-muted)",
           borderTop: "1px solid var(--color-border)",
           borderBottom: "1px solid var(--color-border)",
+          scrollMarginTop: "6rem",
         }}
       >
         <Container className="py-14">
@@ -446,7 +447,7 @@ export default async function InvitePage({ params }: InvitePageProps) {
       {/* ── RSVP ────────────────────────────────────────────────────────────────── */}
       <section
         id="rsvp"
-        style={{ background: "var(--color-background)", borderTop: "1px solid var(--color-border)" }}
+        style={{ background: "var(--color-background)", borderTop: "1px solid var(--color-border)", scrollMarginTop: "6rem" }}
       >
         <Container className="py-14">
           <div className="grid gap-10 lg:grid-cols-2 lg:items-start">

@@ -2,98 +2,143 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useState, type CSSProperties } from "react";
 import { Menu, X } from "lucide-react";
-import classNames from "classnames";
 import { Container } from "@/components/layout/Container";
 import { weddingConfig } from "@/lib/config";
+import { formatDate } from "@/utils/formatDate";
 
-// ─────────────────────────────────────────────────────────────────────────────
-// GuestNavbar — minimal navigation shown on /invite/[guest] and the live hub.
-//
-// Deliberately exposes ONLY guest-relevant links.
-// Admin, Family Vault, and Login links must NEVER appear here — they break the
-// cinematic illusion and signal backend infrastructure guests should not see.
-// ─────────────────────────────────────────────────────────────────────────────
+const PUBLIC_GUEST_LINKS = [
+  { label: "Story",       href: "/story" },
+  { label: "Events",      href: "/events" },
+  { label: "Travel",      href: "/travel" },
+  { label: "Guestbook",   href: "/guestbook" },
+  { label: "Predictions", href: "/predictions" },
+  { label: "Gallery",     href: "/gallery" },
+] as const;
 
-const GUEST_LINKS = [
-  { label: "Story",     href: "#story"     },
-  { label: "Events",    href: "#events"    },
-  { label: "RSVP",      href: "#rsvp"      },
-  { label: "Travel",    href: "#travel"    },
-  { label: "Guestbook", href: "/guestbook" },
-  { label: "Gallery",   href: "/gallery"   },
-];
+function NavItem({
+  href,
+  label,
+  active,
+  mobile = false,
+  onNavigate,
+}: {
+  href: string;
+  label: string;
+  active: boolean;
+  mobile?: boolean;
+  onNavigate: () => void;
+}) {
+  const className = mobile
+    ? "rounded-2xl px-4 py-3 text-sm transition"
+    : "rounded-full px-4 py-2 text-sm transition";
+  const style: CSSProperties = {
+    color: active ? "var(--rose)" : "var(--ink-3)",
+    background: active ? "rgba(190,45,69,.08)" : "transparent",
+    textDecoration: "none",
+    fontWeight: active ? 700 : 600,
+    letterSpacing: mobile ? "0.01em" : "0.02em",
+  };
+
+  if (href.startsWith("#")) {
+    return (
+      <a href={href} className={className} style={style} onClick={onNavigate}>
+        {label}
+      </a>
+    );
+  }
+
+  return (
+    <Link href={href} className={className} style={style} onClick={onNavigate}>
+      {label}
+    </Link>
+  );
+}
 
 export function GuestNavbar() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
 
-  const isLive = pathname === "/live";
+  const isInvite = pathname.startsWith("/invite/");
+  const isPersonalInvite = isInvite && pathname !== "/invite/general";
+  const inviteHref = isInvite ? pathname : "/invite/general";
+  const rsvpHref = isPersonalInvite ? "#rsvp" : "/rsvp";
+  const navLinks = [
+    ...(isInvite ? [{ label: "Invitation", href: inviteHref }] : []),
+    ...PUBLIC_GUEST_LINKS,
+  ];
+
+  function closeMenu() {
+    setIsOpen(false);
+  }
+
+  function isActive(href: string) {
+    return !href.startsWith("#") && pathname === href;
+  }
 
   return (
-    <header className="sticky top-0 z-50 border-b border-white/20 bg-stone-950/85 backdrop-blur-xl">
-      <Container className="flex items-center justify-between py-4">
-        {/* Brand — couple names only, no platform name */}
-        <div className="flex flex-col">
-          <span className="font-display text-base uppercase tracking-[0.35em] text-white">
+    <header
+      className="sticky top-0 z-50 border-b backdrop-blur-xl"
+      style={{
+        borderColor: "rgba(190,45,69,.10)",
+        background: "rgba(253,250,247,.88)",
+      }}
+    >
+      <Container className="flex items-center justify-between gap-4 py-4">
+        <div className="flex min-w-0 flex-col">
+          <span className="truncate font-display text-base uppercase tracking-[0.35em]" style={{ color: "var(--ink)" }}>
             {weddingConfig.brideName.split(" ")[0]} &amp; {weddingConfig.groomName.split(" ")[0]}
           </span>
-          <span className="text-[10px] uppercase tracking-[0.3em] text-white/40">
-            {weddingConfig.weddingDate} · {weddingConfig.venueName}
+          <span className="truncate text-[10px] uppercase tracking-[0.3em]" style={{ color: "var(--ink-4)" }}>
+            {formatDate(weddingConfig.weddingDate)} · {weddingConfig.venueName}
           </span>
         </div>
 
-        {/* Mobile toggle */}
         <button
           aria-label="Toggle navigation"
-          className="rounded-full border border-white/20 p-2 text-white/70 lg:hidden"
-          onClick={() => setIsOpen((v) => !v)}
+          className="rounded-full border p-2 lg:hidden"
+          style={{ borderColor: "rgba(190,45,69,.14)", color: "var(--ink-3)" }}
+          onClick={() => setIsOpen((value) => !value)}
           type="button"
         >
           {isOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
         </button>
 
-        {/* Desktop nav */}
         <nav className="hidden items-center gap-1 lg:flex">
-          {isLive ? (
-            <span className="inline-flex items-center gap-2 rounded-full bg-rose-500/20 px-4 py-2 text-xs uppercase tracking-[0.24em] text-rose-300">
-              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-rose-400" />
-              Live now
-            </span>
-          ) : null}
-          {GUEST_LINKS.map((link) => (
-            <a
+          {navLinks.map((link) => (
+            <NavItem
               key={link.href}
               href={link.href}
-              className="rounded-full px-4 py-2 text-sm text-white/70 transition hover:bg-white/10 hover:text-white"
-            >
-              {link.label}
-            </a>
+              label={link.label}
+              active={isActive(link.href)}
+              onNavigate={closeMenu}
+            />
           ))}
+          <NavItem href={rsvpHref} label="RSVP" active={false} onNavigate={closeMenu} />
         </nav>
       </Container>
 
-      {/* Mobile menu */}
       {isOpen ? (
-        <div className="border-t border-white/10 bg-stone-950/95 lg:hidden">
+        <div
+          className="border-t lg:hidden"
+          style={{
+            borderColor: "rgba(190,45,69,.10)",
+            background: "rgba(253,250,247,.96)",
+          }}
+        >
           <Container className="grid gap-1 py-4">
-            {isLive ? (
-              <span className="inline-flex items-center gap-2 rounded-2xl px-4 py-3 text-sm text-rose-300">
-                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-rose-400" />
-                Live now
-              </span>
-            ) : null}
-            {GUEST_LINKS.map((link) => (
-              <a
+            {navLinks.map((link) => (
+              <NavItem
                 key={link.href}
                 href={link.href}
-                className="rounded-2xl px-4 py-3 text-sm text-white/70 transition hover:bg-white/10 hover:text-white"
-                onClick={() => setIsOpen(false)}
-              >
-                {link.label}
-              </a>
+                label={link.label}
+                active={isActive(link.href)}
+                mobile
+                onNavigate={closeMenu}
+              />
             ))}
+            <NavItem href={rsvpHref} label="RSVP" active={false} mobile onNavigate={closeMenu} />
           </Container>
         </div>
       ) : null}

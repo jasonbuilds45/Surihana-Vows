@@ -29,6 +29,7 @@
 import type { ReactNode } from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ChevronDown, SkipForward, VolumeX, Volume2 } from "lucide-react";
+import { GuestNavbar } from "@/components/layout/GuestNavbar";
 
 // ── Platform tokens ────────────────────────────────────────────────────────
 const ROSE      = "#BE2D45";
@@ -1106,6 +1107,7 @@ export function CinematicIntro({
 
           {/* ── PERSONAL MESSAGE ── first thing visible after seal pops ── */}
           <div id="invite-content">
+            <GuestNavbar />
             <section style={{
               background: BG_LINEN,
               borderBottom: `1px solid rgba(190,45,69,.10)`,

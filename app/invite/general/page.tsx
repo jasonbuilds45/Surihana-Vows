@@ -163,6 +163,7 @@ export default async function GeneralInvitePage() {
           background: "var(--color-surface-muted)",
           borderTop: "1px solid var(--color-border)",
           borderBottom: "1px solid var(--color-border)",
+          scrollMarginTop: "6rem",
         }}
       >
         <Container className="py-14">
