@@ -123,83 +123,265 @@ function Divider() {
 
 // ════════════════════════════════════════════════════════════════════════════
 // HERO
+// Two-zone layout: left = editorial headline block, right = venue + nav panel
+// Light parchment background with warm radial blooms. No dark sections.
 // ════════════════════════════════════════════════════════════════════════════
 function Hero() {
   return (
     <>
       <style>{`
-        @keyframes tr-up { from{opacity:0;transform:translateY(22px)} to{opacity:1;transform:none} }
-        .h-0{opacity:0;animation:tr-up .85s .05s cubic-bezier(.16,1,.3,1) forwards}
-        .h-1{opacity:0;animation:tr-up .85s .18s cubic-bezier(.16,1,.3,1) forwards}
-        .h-2{opacity:0;animation:tr-up .85s .30s cubic-bezier(.16,1,.3,1) forwards}
-        .h-3{opacity:0;animation:tr-up .80s .44s cubic-bezier(.16,1,.3,1) forwards}
-        .h-4{opacity:0;animation:tr-up .80s .58s cubic-bezier(.16,1,.3,1) forwards}
-        @keyframes dash-anim { to{stroke-dashoffset:-24} }
+        @keyframes h-rise { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:none} }
+        @keyframes h-fade { from{opacity:0} to{opacity:1} }
+        @keyframes h-line { from{transform:scaleX(0)} to{transform:scaleX(1)} }
+
+        .h-0{opacity:0;animation:h-rise .80s .05s cubic-bezier(.16,1,.3,1) forwards}
+        .h-1{opacity:0;animation:h-rise .85s .18s cubic-bezier(.16,1,.3,1) forwards}
+        .h-2{opacity:0;animation:h-rise .80s .30s cubic-bezier(.16,1,.3,1) forwards}
+        .h-3{opacity:0;animation:h-rise .75s .44s cubic-bezier(.16,1,.3,1) forwards}
+        .h-4{opacity:0;animation:h-fade .70s .60s ease forwards}
+        .h-rule{
+          opacity:0;transform-origin:left;
+          animation:h-line .75s .90s ease forwards;
+        }
+
+        /* Right panel venue rows */
+        .h-venue-row{
+          display:flex;align-items:center;gap:1rem;
+          padding:.875rem 1.125rem;
+          border-radius:14px;
+          transition:background .18s;
+        }
+        .h-venue-row:hover{ background:rgba(255,255,255,.65); }
+
+        /* Anchor nav strip */
+        .h-nav-link{
+          display:inline-flex;align-items:center;gap:5px;
+          padding:.4rem .875rem;border-radius:999px;
+          font-family:var(--font-body),'Manrope',sans-serif;
+          font-size:.60rem;font-weight:600;letter-spacing:.08em;
+          color:var(--ink-3);text-decoration:none;
+          border:1px solid transparent;
+          transition:color .16s,border-color .16s,background .16s;
+          white-space:nowrap;
+        }
+        .h-nav-link:hover{
+          color:var(--rose);
+          border-color:var(--rose-mid);
+          background:var(--rose-pale);
+        }
+
+        /* Two-column layout — stacks on mobile */
+        .h-layout{
+          display:grid;
+          grid-template-columns:1fr auto;
+          gap:clamp(2rem,5vw,5rem);
+          align-items:center;
+        }
+        @media(max-width:720px){
+          .h-layout{ grid-template-columns:1fr!important; gap:2rem!important; }
+          .h-right{ border-left:none!important; padding-left:0!important; }
+        }
       `}</style>
 
-      <div className="page-hero" style={{ paddingBottom: "clamp(3rem,6vh,4.5rem)" }}>
-        <div className="page-hero-inner">
+      {/* Outer wrapper — warm parchment, not .page-hero generic */}
+      <div style={{
+        position: "relative", overflow: "hidden",
+        background: "linear-gradient(158deg,#FEF9F4 0%,#FAF3EA 55%,#FEF9F4 100%)",
+        borderBottom: "1px solid rgba(190,45,69,.09)",
+      }}>
 
-          {/* Couple + date eyebrow */}
-          <div className="h-0" style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: "1.5rem" }}>
-            <div style={{ width: 24, height: 1, background: `linear-gradient(to right,transparent,var(--rose-mid))` }} />
-            <span style={{ fontFamily: BF, fontSize: ".46rem", letterSpacing: ".50em", textTransform: "uppercase",
-              color: ROSE, fontWeight: 700 }}>
-              Marion &amp; Livingston · 20 May 2026 · Chennai
-            </span>
-          </div>
+        {/* Ambient background blooms */}
+        <div aria-hidden style={{ position:"absolute",inset:0,pointerEvents:"none",
+          background:`
+            radial-gradient(ellipse 55% 65% at 100% 0%,   rgba(190,45,69,.065) 0%,transparent 60%),
+            radial-gradient(ellipse 40% 50% at 0%   100%, rgba(168,120,8,.050) 0%,transparent 55%)
+          ` }} />
 
-          {/* Main headline */}
-          <h1 className="h-1" style={{
-            fontFamily: DF, fontWeight: 300,
-            fontSize: "clamp(3.5rem,10vw,8rem)",
-            lineHeight: .86, letterSpacing: "-.035em",
-            color: INK, marginBottom: "clamp(.875rem,2.5vh,1.5rem)",
-          }}>
-            Getting<br /><em style={{ color: ROSE }}>there.</em>
-          </h1>
+        {/* Top accent rule */}
+        <div aria-hidden style={{ position:"absolute",top:0,left:0,right:0,height:2,
+          background:"linear-gradient(90deg,transparent,var(--rose-mid) 25%,var(--rose) 50%,var(--rose-mid) 75%,transparent)" }} />
 
-          {/* Subtitle */}
-          <p className="h-2" style={{
-            fontFamily: DF, fontStyle: "italic",
-            fontSize: "clamp(1rem,2vw,1.25rem)",
-            color: "var(--ink-3)", maxWidth: "38rem",
-            lineHeight: 1.75, marginBottom: "2rem",
-          }}>
-            Two beautiful venues. One coastal road between them.
-            Everything you need to arrive rested and ready.
-          </p>
+        {/* Content */}
+        <div style={{
+          maxWidth: "var(--max-w)", margin: "0 auto",
+          padding: "clamp(3.5rem,8vh,5.5rem) var(--pad-x) clamp(3rem,7vh,5rem)",
+          position: "relative", zIndex: 1,
+        }}>
+          <div className="h-layout">
 
-          {/* Venue chips */}
-          <div className="h-3" style={{ display: "flex", flexWrap: "wrap", gap: ".625rem", marginBottom: "2.5rem" }}>
-            {[
-              { label: "Divine Mercy Church, Kelambakkam", time: "3 PM", rose: true  },
-              { label: "Blue Bay Beach Resort, Mahabalipuram", time: "6 PM", rose: false },
-            ].map(({ label, time, rose }) => (
-              <span key={label} style={{
-                display: "inline-flex", alignItems: "center", gap: 7,
-                padding: "6px 16px", borderRadius: 999,
-                background: rose ? "var(--rose-pale)" : "var(--gold-pale)",
-                border: `1px solid ${rose ? "var(--rose-mid)" : "rgba(168,120,8,.25)"}`,
-                fontFamily: BF, fontSize: ".65rem", fontWeight: 600, color: "var(--ink-2)",
+            {/* ── LEFT: Headline block ──────────────────────────────────── */}
+            <div style={{ minWidth: 0 }}>
+
+              {/* Eyebrow */}
+              <div className="h-0" style={{ display:"flex",alignItems:"center",
+                gap:10, marginBottom:"1.5rem" }}>
+                <div style={{ width:20,height:1,
+                  background:"linear-gradient(to right,var(--rose),transparent)" }} />
+                <span style={{ fontFamily:BF,fontSize:".44rem",letterSpacing:".50em",
+                  textTransform:"uppercase",color:ROSE,fontWeight:700 }}>
+                  Marion &amp; Livingston &nbsp;&middot;&nbsp; 20 May 2026
+                </span>
+              </div>
+
+              {/* Headline */}
+              <h1 className="h-1" style={{
+                fontFamily: DF, fontWeight: 300, margin: 0,
+                fontSize: "clamp(3.25rem,9vw,7rem)",
+                lineHeight: .86, letterSpacing: "-.04em", color: INK,
               }}>
-                <span style={{ color: rose ? ROSE : GOLD, fontWeight: 700 }}>{time}</span>
-                {label}
-              </span>
-            ))}
-          </div>
+                Getting
+              </h1>
+              <h1 className="h-1" style={{
+                fontFamily: DF, fontWeight: 300, fontStyle: "italic", margin: 0,
+                fontSize: "clamp(3.25rem,9vw,7rem)",
+                lineHeight: .88, letterSpacing: "-.04em", color: ROSE,
+                marginBottom: "clamp(1rem,3vh,1.75rem)",
+              }}>
+                there.
+              </h1>
 
-          {/* Quick links */}
-          <div className="h-4" style={{ display: "flex", flexWrap: "wrap", gap: ".75rem" }}>
-            <a href="#transport" className="btn-ghost" style={{ padding: ".625rem 1.25rem", fontSize: ".72rem", letterSpacing: ".1em" }}>
-              Getting here ↓
-            </a>
-            <a href="#hotels" className="btn-ghost" style={{ padding: ".625rem 1.25rem", fontSize: ".72rem", letterSpacing: ".1em" }}>
-              Where to stay ↓
-            </a>
-            <a href="#faq" className="btn-ghost" style={{ padding: ".625rem 1.25rem", fontSize: ".72rem", letterSpacing: ".1em" }}>
-              FAQ ↓
-            </a>
+              {/* Animated hairline */}
+              <div className="h-rule" style={{
+                height:1,width:"min(80px,18%)",
+                background:"linear-gradient(to right,var(--rose),var(--rose-mid),transparent)",
+                marginBottom:"1.375rem",
+              }} />
+
+              {/* Subtitle */}
+              <p className="h-2" style={{
+                fontFamily: DF, fontStyle: "italic",
+                fontSize: "clamp(.95rem,1.6vw,1.125rem)",
+                color: "var(--ink-3)", lineHeight: 1.82,
+                maxWidth: "30rem", marginBottom: "2.25rem",
+              }}>
+                Two beautiful venues. One coastal road between them.
+                Everything you need to arrive rested and ready.
+              </p>
+
+              {/* Page nav strip */}
+              <div className="h-4" style={{ display:"flex",flexWrap:"wrap",gap:".375rem" }}>
+                <span style={{ fontFamily:BF,fontSize:".44rem",letterSpacing:".32em",
+                  textTransform:"uppercase",color:"var(--ink-4)",fontWeight:600,
+                  alignSelf:"center",paddingRight:".25rem" }}>Jump to</span>
+                {[
+                  { label:"Getting here", href:"#transport" },
+                  { label:"Hotels",       href:"#hotels"    },
+                  { label:"Dress code",   href:"#dresscode" },
+                  { label:"FAQ",          href:"#faq"       },
+                  { label:"Help",         href:"#help"      },
+                ].map(({ label, href }) => (
+                  <a key={href} href={href} className="h-nav-link">{label}</a>
+                ))}
+              </div>
+            </div>
+
+            {/* ── RIGHT: Venue + details panel ─────────────────────────── */}
+            <div className="h-right" style={{
+              minWidth: "clamp(220px,28vw,320px)",
+              borderLeft: "1px solid rgba(190,45,69,.10)",
+              paddingLeft: "clamp(1.5rem,3vw,3rem)",
+            }}>
+
+              {/* Panel label */}
+              <p className="h-3" style={{ fontFamily:BF,fontSize:".44rem",letterSpacing:".38em",
+                textTransform:"uppercase",color:"var(--ink-4)",fontWeight:600,
+                marginBottom:"1rem" }}>
+                The day
+              </p>
+
+              {/* Venue rows — rose then gold */}
+              <div className="h-3" style={{ display:"flex",flexDirection:"column",gap:".5rem",
+                marginBottom:"1.5rem" }}>
+
+                {/* Church */}
+                <a href="https://share.google/SCdoX1GZAvGSlOIrQ"
+                  target="_blank" rel="noreferrer"
+                  className="h-venue-row"
+                  style={{ textDecoration:"none",
+                    background:"var(--rose-pale)",
+                    border:"1px solid var(--rose-mid)" }}>
+                  {/* Time badge */}
+                  <div style={{ flexShrink:0,
+                    width:48,height:48,borderRadius:12,
+                    background:ROSE,
+                    display:"flex",flexDirection:"column",
+                    alignItems:"center",justifyContent:"center",
+                    boxShadow:"0 3px 10px rgba(190,45,69,.28)" }}>
+                    <span style={{ fontFamily:BF,fontSize:".70rem",fontWeight:800,
+                      color:"#fff",lineHeight:1 }}>3</span>
+                    <span style={{ fontFamily:BF,fontSize:".42rem",fontWeight:600,
+                      color:"rgba(255,255,255,.75)",letterSpacing:".06em" }}>PM</span>
+                  </div>
+                  <div style={{ flex:1,minWidth:0 }}>
+                    <p style={{ fontFamily:DF,fontSize:"1rem",fontWeight:600,
+                      color:INK,lineHeight:1.15,marginBottom:".15rem" }}>
+                      Divine Mercy Church
+                    </p>
+                    <p style={{ fontFamily:BF,fontSize:".68rem",
+                      color:"var(--ink-3)",overflow:"hidden",
+                      textOverflow:"ellipsis",whiteSpace:"nowrap" }}>
+                      Kelambakkam, Chennai
+                    </p>
+                  </div>
+                  <Navigation size={13} style={{ color:ROSE,flexShrink:0,opacity:.6 }} />
+                </a>
+
+                {/* Resort */}
+                <a href="https://maps.app.goo.gl/vu56aH1Jvp29gSuu7"
+                  target="_blank" rel="noreferrer"
+                  className="h-venue-row"
+                  style={{ textDecoration:"none",
+                    background:"var(--gold-pale)",
+                    border:"1px solid rgba(168,120,8,.22)" }}>
+                  <div style={{ flexShrink:0,
+                    width:48,height:48,borderRadius:12,
+                    background:GOLD,
+                    display:"flex",flexDirection:"column",
+                    alignItems:"center",justifyContent:"center",
+                    boxShadow:"0 3px 10px rgba(168,120,8,.24)" }}>
+                    <span style={{ fontFamily:BF,fontSize:".70rem",fontWeight:800,
+                      color:"#fff",lineHeight:1 }}>6</span>
+                    <span style={{ fontFamily:BF,fontSize:".42rem",fontWeight:600,
+                      color:"rgba(255,255,255,.75)",letterSpacing:".06em" }}>PM</span>
+                  </div>
+                  <div style={{ flex:1,minWidth:0 }}>
+                    <p style={{ fontFamily:DF,fontSize:"1rem",fontWeight:600,
+                      color:INK,lineHeight:1.15,marginBottom:".15rem" }}>
+                      Blue Bay Beach Resort
+                    </p>
+                    <p style={{ fontFamily:BF,fontSize:".68rem",
+                      color:"var(--ink-3)",overflow:"hidden",
+                      textOverflow:"ellipsis",whiteSpace:"nowrap" }}>
+                      Mahabalipuram, ECR
+                    </p>
+                  </div>
+                  <Navigation size={13} style={{ color:GOLD,flexShrink:0,opacity:.6 }} />
+                </a>
+              </div>
+
+              {/* Key facts */}
+              <div className="h-4" style={{ display:"flex",flexDirection:"column",gap:".5rem" }}>
+                {[
+                  { label:"Between venues", value:"15 km · ECR"     },
+                  { label:"From airport",   value:"50 – 60 km"     },
+                  { label:"Date",           value:"Wed, 20 May 2026" },
+                ].map(({ label, value }) => (
+                  <div key={label} style={{
+                    display:"flex",alignItems:"baseline",
+                    justifyContent:"space-between",gap:".75rem",
+                    padding:".5rem 0",
+                    borderBottom:"1px solid rgba(190,45,69,.07)",
+                  }}>
+                    <span style={{ fontFamily:BF,fontSize:".58rem",letterSpacing:".12em",
+                      textTransform:"uppercase",color:"var(--ink-4)",fontWeight:600,
+                      flexShrink:0 }}>{label}</span>
+                    <span style={{ fontFamily:DF,fontSize:".9rem",
+                      color:INK,fontWeight:600,textAlign:"right" }}>{value}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
           </div>
         </div>
       </div>
