@@ -223,72 +223,145 @@ function Hero() {
           <div style={{ display: "flex", gap: "clamp(2rem,5vw,5rem)",
             alignItems: "flex-start", flexWrap: "wrap" }}>
 
-            {/* ── LEFT: Typography block ─────────────────────────────────── */}
-            <div style={{ flex: "1 1 min(100%,420px)", minWidth: 0 }}>
+            {/* ── LEFT: Editorial content block ───────────────────────── */}
+            <div style={{ flex: "1 1 min(100%,440px)", minWidth: 0 }}>
 
-              {/* Couple tag */}
+              {/* Occasion tag — ruled line + label */}
               <div className="he-0" style={{ display: "flex", alignItems: "center",
-                gap: 10, marginBottom: "1.625rem" }}>
-                {/* Rose pip */}
-                <div style={{ width: 6, height: 6, borderRadius: "50%",
-                  background: ROSE, flexShrink: 0 }} />
-                <span style={{ fontFamily: BF, fontSize: ".46rem", letterSpacing: ".50em",
+                gap: 12, marginBottom: "2rem" }}>
+                <div style={{ width: 32, height: 1,
+                  background: "linear-gradient(to right,var(--rose),transparent)" }} />
+                <span style={{ fontFamily: BF, fontSize: ".44rem", letterSpacing: ".52em",
                   textTransform: "uppercase", color: ROSE, fontWeight: 700 }}>
-                  Marion &amp; Livingston · 20 May 2026
+                  Travel guide · Marion &amp; Livingston
                 </span>
-                <div style={{ flex: 1, height: "1px",
-                  background: "linear-gradient(to right,var(--rose-mid),transparent)", maxWidth: 80 }} />
               </div>
 
-              {/* Headline */}
-              <div className="he-1">
+              {/* Headline — stacked with mixed weight/style */}
+              <div className="he-1" style={{ marginBottom: "clamp(1rem,2.5vh,1.75rem)" }}>
+                {/* "Getting" — ink, light weight, very large */}
                 <h1 style={{ fontFamily: DF, fontWeight: 300, margin: 0,
-                  fontSize: "clamp(4rem,12vw,8.5rem)",
-                  lineHeight: .84, letterSpacing: "-.04em", color: INK }}>
+                  fontSize: "clamp(3.5rem,10vw,7.5rem)",
+                  lineHeight: .84, letterSpacing: "-.04em", color: INK,
+                  display: "block" }}>
                   Getting
                 </h1>
-                <div style={{ position: "relative", display: "inline-block" }}>
-                  <h1 style={{ fontFamily: DF, fontStyle: "italic", fontWeight: 300, margin: 0,
-                    fontSize: "clamp(4rem,12vw,8.5rem)",
-                    lineHeight: .88, letterSpacing: "-.04em", color: ROSE }}>
-                    there.
-                  </h1>
-                  {/* Animated dashed underline */}
-                  <svg viewBox="0 0 300 14" fill="none" aria-hidden
-                    style={{ position: "absolute", left: 0, bottom: "-4px",
-                      width: "100%", overflow: "visible" }}>
-                    <path d="M4 10 Q75 3 150 8 Q225 13 296 5"
-                      stroke="var(--rose-mid)" strokeWidth="1.5" strokeLinecap="round"
-                      strokeDasharray="7 5" fill="none"
-                      style={{ animation: "hDsh 2.5s linear infinite" }} />
-                  </svg>
+
+                {/* "there" — rose italic with animated wave underline + date chip inline */}
+                <div style={{ display: "flex", alignItems: "flex-end",
+                  gap: "clamp(.5rem,2vw,1.25rem)", flexWrap: "wrap" }}>
+                  <div style={{ position: "relative" }}>
+                    <h1 style={{ fontFamily: DF, fontStyle: "italic", fontWeight: 300, margin: 0,
+                      fontSize: "clamp(3.5rem,10vw,7.5rem)",
+                      lineHeight: .88, letterSpacing: "-.04em", color: ROSE }}>
+                      there.
+                    </h1>
+                    {/* Animated wave underline */}
+                    <svg viewBox="0 0 300 14" fill="none" aria-hidden
+                      style={{ position: "absolute", left: 0, bottom: "-6px",
+                        width: "100%", overflow: "visible" }}>
+                      <path d="M2 10 Q40 2 80 9 Q120 16 160 8 Q200 2 240 9 Q270 14 298 6"
+                        stroke="var(--rose)" strokeWidth="1.5" strokeLinecap="round"
+                        strokeDasharray="6 4" fill="none"
+                        style={{ animation: "hDsh 2.8s linear infinite" }} />
+                    </svg>
+                  </div>
+                  {/* Date chip — sits beside "there." at baseline */}
+                  <div style={{ paddingBottom: ".5rem",
+                    display: "flex", flexDirection: "column", gap: ".2rem" }}>
+                    <span style={{ fontFamily: BF, fontSize: ".44rem", letterSpacing: ".30em",
+                      textTransform: "uppercase", color: ROSE, fontWeight: 700,
+                      display: "block" }}>20 · 05 · 2026</span>
+                    <span style={{ fontFamily: DF, fontStyle: "italic", fontSize: ".82rem",
+                      color: "var(--ink-4)", display: "block" }}>Chennai, India</span>
+                  </div>
                 </div>
               </div>
 
-              {/* Hairline */}
-              <div className="he-ln" style={{ height: 1, width: "min(100px,20%)", marginTop: "1.25rem",
+              {/* Animated hairline rule */}
+              <div className="he-ln" style={{ height: 1, width: "min(100px,22%)", marginBottom: "1.75rem",
                 background: "linear-gradient(to right,var(--rose),var(--rose-mid),transparent)" }} />
 
-              {/* Subline */}
-              <p className="he-2" style={{ fontFamily: DF, fontStyle: "italic",
-                fontSize: "clamp(.95rem,1.7vw,1.15rem)",
-                color: "var(--ink-3)", lineHeight: 1.82,
-                maxWidth: "28rem", marginTop: "1.25rem", marginBottom: "2rem" }}>
-                Two beautiful venues. One coastal road between them.
-                Everything you need to arrive rested and ready for the celebration.
-              </p>
+              {/* Venue timeline — vertical spine with two nodes */}
+              <div className="he-2" style={{ position: "relative", paddingLeft: "1.625rem",
+                marginBottom: "2rem" }}>
+                {/* Spine */}
+                <div style={{ position: "absolute", left: ".3rem", top: 6, bottom: 6, width: 1,
+                  background: "linear-gradient(to bottom,var(--rose) 0%,var(--rose-mid) 55%,var(--gold) 100%)" }} />
 
-              {/* Quick-jump anchor pills */}
-              <div className="he-4" style={{ display: "flex", flexWrap: "wrap", gap: ".5rem" }}>
+                {/* Node A — Church */}
+                <div style={{ marginBottom: "1.125rem" }}>
+                  <div style={{ position: "absolute", left: 0, width: 10, height: 10,
+                    borderRadius: "50%", background: ROSE,
+                    boxShadow: "0 0 0 3px var(--rose-pale)", marginTop: 2 }} />
+                  <div style={{ display: "flex", alignItems: "baseline",
+                    gap: ".625rem", flexWrap: "wrap" }}>
+                    <span style={{ fontFamily: BF, fontSize: ".56rem", fontWeight: 700,
+                      letterSpacing: ".14em", textTransform: "uppercase",
+                      color: ROSE, flexShrink: 0 }}>3:00 PM</span>
+                    <span style={{ fontFamily: DF, fontSize: "1.1rem", fontWeight: 600,
+                      color: INK, lineHeight: 1.1 }}>Divine Mercy Church</span>
+                  </div>
+                  <p style={{ fontFamily: BF, fontSize: ".76rem", color: "var(--ink-4)",
+                    marginTop: ".15rem" }}>Kelambakkam, Chennai</p>
+                </div>
+
+                {/* Node B — Resort */}
+                <div>
+                  <div style={{ position: "absolute", left: 0, width: 10, height: 10,
+                    borderRadius: "50%", background: GOLD,
+                    boxShadow: "0 0 0 3px var(--gold-pale)", marginTop: 2 }} />
+                  <div style={{ display: "flex", alignItems: "baseline",
+                    gap: ".625rem", flexWrap: "wrap" }}>
+                    <span style={{ fontFamily: BF, fontSize: ".56rem", fontWeight: 700,
+                      letterSpacing: ".14em", textTransform: "uppercase",
+                      color: GOLD, flexShrink: 0 }}>6:00 PM</span>
+                    <span style={{ fontFamily: DF, fontSize: "1.1rem", fontWeight: 600,
+                      color: INK, lineHeight: 1.1 }}>Blue Bay Beach Resort</span>
+                  </div>
+                  <p style={{ fontFamily: BF, fontSize: ".76rem", color: "var(--ink-4)",
+                    marginTop: ".15rem" }}>Mahabalipuram, ECR</p>
+                </div>
+              </div>
+
+              {/* Stat strip — 3 key facts */}
+              <div className="he-3" style={{ display: "flex", flexWrap: "wrap",
+                gap: ".75rem", marginBottom: "2rem" }}>
                 {[
-                  { label: "Getting here",  href: "#transport" },
-                  { label: "Where to stay", href: "#hotels"    },
-                  { label: "Dress code",    href: "#dresscode" },
-                  { label: "FAQ",           href: "#faq"       },
-                  { label: "Help",          href: "#help"      },
-                ].map(({ label, href }) => (
-                  <a key={href} href={href} className="anc-pill">{label}</a>
+                  { value: "15 km",     label: "between venues",  rose: true  },
+                  { value: "50–60 km",  label: "from airport",    rose: false },
+                  { value: "~40 km",    label: "from Chennai city", rose: false },
+                ].map(({ value, label, rose }) => (
+                  <div key={label} style={{ display: "flex", flexDirection: "column",
+                    padding: ".625rem 1rem", borderRadius: 12,
+                    background: rose ? "var(--rose-pale)" : "rgba(255,255,255,.70)",
+                    border: `1px solid ${rose ? "var(--rose-mid)" : "var(--bdr-md)"}`,
+                    backdropFilter: "blur(8px)", gap: ".1rem" }}>
+                    <span style={{ fontFamily: DF, fontSize: "1.25rem", fontWeight: 600,
+                      color: rose ? ROSE : INK, lineHeight: 1 }}>{value}</span>
+                    <span style={{ fontFamily: BF, fontSize: ".58rem", letterSpacing: ".12em",
+                      textTransform: "uppercase", color: "var(--ink-4)",
+                      fontWeight: 600 }}>{label}</span>
+                  </div>
                 ))}
+              </div>
+
+              {/* Page navigation — inline list, not floating pills */}
+              <div className="he-4">
+                <p style={{ fontFamily: BF, fontSize: ".44rem", letterSpacing: ".38em",
+                  textTransform: "uppercase", color: "var(--ink-4)", fontWeight: 600,
+                  marginBottom: ".625rem" }}>On this page</p>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: ".5rem" }}>
+                  {[
+                    { label: "Getting here",  href: "#transport" },
+                    { label: "Where to stay", href: "#hotels"    },
+                    { label: "Dress code",    href: "#dresscode" },
+                    { label: "FAQ",           href: "#faq"       },
+                    { label: "Help",          href: "#help"      },
+                  ].map(({ label, href }) => (
+                    <a key={href} href={href} className="anc-pill">{label}</a>
+                  ))}
+                </div>
               </div>
             </div>
 
