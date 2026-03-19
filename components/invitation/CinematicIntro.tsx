@@ -303,8 +303,8 @@ export function CinematicIntro({
 
         /* ── seal animations ── */
         @keyframes ci-seal-pulse {
-          0%,100%{box-shadow:0 0 0 0 rgba(168,120,8,0),0 8px 28px rgba(60,30,0,.28)}
-          50%    {box-shadow:0 0 0 14px rgba(168,120,8,.12),0 12px 36px rgba(60,30,0,.35)}
+          0%,100%{box-shadow:0 12px 36px rgba(0,0,0,.50),0 4px 10px rgba(0,0,0,.28),0 0 0 0 rgba(168,120,8,0)}
+          50%    {box-shadow:0 14px 40px rgba(0,0,0,.55),0 4px 10px rgba(0,0,0,.28),0 0 0 16px rgba(168,120,8,.14)}
         }
         @keyframes ci-seal-hover {
           0%  {transform:translateY(0) scale(1) rotate(0deg)}
@@ -991,7 +991,14 @@ export function CinematicIntro({
                         position: "relative",
                         width: "clamp(130px,22vw,172px)",
                         height: "clamp(130px,22vw,172px)",
+                        borderRadius: "50%",
+                        overflow: "hidden",
                         cursor: "pointer",
+                        // box-shadow on a border-radius:50% div is always
+                        // circular — no rectangular filter region ever.
+                        boxShadow: sealState === "burst"
+                          ? "none"
+                          : "0 12px 36px rgba(0,0,0,.52), 0 4px 10px rgba(0,0,0,.30), 0 1px 3px rgba(0,0,0,.18)",
                         animation:
                           sealState === "idle"  ? "ci-seal-pulse 3.8s 1.2s ease-in-out infinite" :
                           sealState === "hover" ? "ci-seal-hover .3s ease forwards" :
@@ -1000,15 +1007,16 @@ export function CinematicIntro({
                       }}
                     >
                       {/*
-                        WAX SEAL — pure SVG circular wax disc
-                        Warm gold radial gradient, 16 radial ridges from edge,
-                        two debossed inner rings, dome highlight overlay.
-                        Initials sit on top via absolute div so they inherit
-                        font variables correctly.
+                        WAX SEAL — SVG clipped by the parent div's border-radius:50%.
+                        No filter on the SVG or any <g> — shadow lives on the
+                        wrapper div via box-shadow so there is never a rectangular
+                        compositing region. The SVG viewBox fills the div edge-to-edge
+                        so the disc clips cleanly to the circle.
                       */}
                       <svg
                         viewBox="0 0 160 160"
-                        style={{ width: "100%", height: "100%", display: "block", overflow: "visible" }}
+                        width="100%" height="100%"
+                        style={{ display: "block" }}
                         aria-hidden
                       >
                         <defs>
@@ -1023,33 +1031,28 @@ export function CinematicIntro({
                             <stop offset="100%" stopColor="rgba(255,248,210,0)" />
                           </radialGradient>
                         </defs>
-                        {/* Shadow group */}
-                        <g style={{ filter: "drop-shadow(0 10px 30px rgba(0,0,0,.60)) drop-shadow(0 3px 8px rgba(0,0,0,.40))" }}>
-                          {/* Wax body */}
-                          <circle cx="80" cy="80" r="74" fill="url(#sealGold)" />
-                          {/* 16 radial ridges */}
-                          {Array.from({ length: 16 }, (_, i) => {
-                            const a = (i / 16) * Math.PI * 2;
-                            return (
-                              <line
-                                key={i}
-                                x1={80 + 64 * Math.cos(a)} y1={80 + 64 * Math.sin(a)}
-                                x2={80 + 74 * Math.cos(a)} y2={80 + 74 * Math.sin(a)}
-                                stroke="rgba(60,35,0,.30)" strokeWidth="1.4"
-                              />
-                            );
-                          })}
-                          {/* Outer edge ring */}
-                          <circle cx="80" cy="80" r="73" fill="none" stroke="rgba(255,240,170,.20)" strokeWidth="1" />
-                          {/* Inner debossed border */}
-                          <circle cx="80" cy="80" r="62" fill="none" stroke="rgba(60,35,0,.28)" strokeWidth="1.4" />
-                          {/* Second inner ring */}
-                          <circle cx="80" cy="80" r="53" fill="none" stroke="rgba(60,35,0,.18)" strokeWidth=".8" />
-                          {/* Dome sheen */}
-                          <circle cx="80" cy="80" r="74" fill="url(#sealSheen)" />
-                        </g>
+                        {/* Wax body — fills to edge, clipped by parent div */}
+                        <circle cx="80" cy="80" r="80" fill="url(#sealGold)" />
+                        {/* 16 radial ridges */}
+                        {Array.from({ length: 16 }, (_, i) => {
+                          const a = (i / 16) * Math.PI * 2;
+                          return (
+                            <line
+                              key={i}
+                              x1={80 + 64 * Math.cos(a)} y1={80 + 64 * Math.sin(a)}
+                              x2={80 + 79 * Math.cos(a)} y2={80 + 79 * Math.sin(a)}
+                              stroke="rgba(60,35,0,.30)" strokeWidth="1.4"
+                            />
+                          );
+                        })}
+                        {/* Inner debossed border */}
+                        <circle cx="80" cy="80" r="62" fill="none" stroke="rgba(60,35,0,.28)" strokeWidth="1.4" />
+                        {/* Second inner ring */}
+                        <circle cx="80" cy="80" r="53" fill="none" stroke="rgba(60,35,0,.18)" strokeWidth=".8" />
+                        {/* Dome sheen */}
+                        <circle cx="80" cy="80" r="80" fill="url(#sealSheen)" />
                       </svg>
-                      {/* Initials — on top of SVG */}
+                      {/* Initials — overlay on top of SVG */}
                       <div style={{
                         position: "absolute", inset: 0,
                         display: "flex", alignItems: "center", justifyContent: "center",
