@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { Menu, X } from "lucide-react";
 import { weddingConfig } from "@/lib/config";
+import { readInvitePath, saveInvitePath } from "@/lib/client/invite-context";
 
 const SUPPRESS = ["/family", "/admin", "/vault/"];
 
@@ -22,6 +23,7 @@ export function Navbar() {
   const [open,    setOpen]    = useState(false);
   const [scrolled,setScrolled]= useState(false);
   const [hidden,  setHidden]  = useState(false);
+  const [inviteHref, setInviteHref] = useState<string | null>(null);
   const lastY = useRef(0);
 
   const suppressed = SUPPRESS.some(p => pathname.startsWith(p));
@@ -33,16 +35,30 @@ export function Navbar() {
     function onScroll() {
       const y = window.scrollY;
       setScrolled(y > 48);
-      setHidden(y > lastY.current && y > 160 && !open);
+      const allowAutoHide = window.innerWidth >= 1024;
+      setHidden(allowAutoHide && y > lastY.current && y > 160 && !open);
       lastY.current = y;
     }
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, [open]);
 
+  useEffect(() => {
+    if (pathname.startsWith("/invite/")) {
+      saveInvitePath(pathname);
+      setInviteHref(pathname);
+      return;
+    }
+
+    setInviteHref(readInvitePath());
+  }, [pathname]);
+
   if (suppressed) return null;
 
   const ghost = isHome && !scrolled && !open;
+  const visibleLinks = inviteHref
+    ? [{ label: "Invitation", href: inviteHref }, ...NAV_LINKS]
+    : NAV_LINKS;
 
   // Nav bar uses a floating pill design when scrolled, full-width when not
   const navBg = ghost
@@ -178,7 +194,7 @@ export function Navbar() {
               className="hidden lg:flex"
               style={{ gap: "0.1rem", alignItems: "center" }}
             >
-              {NAV_LINKS.map(({ label, href }) => {
+              {visibleLinks.map(({ label, href }) => {
                 const active = pathname === href;
                 return (
                   <Link
@@ -307,7 +323,7 @@ export function Navbar() {
             }}
           >
             <nav style={{ display: "flex", flexDirection: "column", gap: "0.25rem", marginBottom: "1rem" }}>
-              {NAV_LINKS.map(({ label, href }) => {
+              {visibleLinks.map(({ label, href }) => {
                 const active = pathname === href;
                 return (
                   <Link

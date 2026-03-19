@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, type CSSProperties } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 import { Menu, X } from "lucide-react";
 import { Container } from "@/components/layout/Container";
 import { weddingConfig } from "@/lib/config";
 import { formatDate } from "@/utils/formatDate";
+import { saveInvitePath } from "@/lib/client/invite-context";
 
 const PUBLIC_GUEST_LINKS = [
   { label: "Story",       href: "/story" },
@@ -68,6 +69,12 @@ export function GuestNavbar() {
     ...(isInvite ? [{ label: "Invitation", href: inviteHref }] : []),
     ...PUBLIC_GUEST_LINKS,
   ];
+
+  useEffect(() => {
+    if (isInvite) {
+      saveInvitePath(pathname);
+    }
+  }, [isInvite, pathname]);
 
   function closeMenu() {
     setIsOpen(false);
