@@ -474,8 +474,7 @@ export function SquadProposalClient({ proposal, brideName, groomName }: Props) {
             <div className="sp-4" style={{ marginTop: "2rem" }}>
               <p style={{
                 fontFamily: BF, fontSize: ".46rem", letterSpacing: ".28em",
-                textTransform: "uppercase", color: PARCHMENT,
-                color: INK_4, fontWeight: 500,
+                textTransform: "uppercase", color: INK_4, fontWeight: 500,
               }}>
                 20 · 05 · 2026 · Chennai
               </p>
