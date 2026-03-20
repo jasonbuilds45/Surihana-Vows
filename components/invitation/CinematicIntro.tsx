@@ -784,77 +784,85 @@ export function CinematicIntro({
               alignItems: "center", justifyContent: "center",
               textAlign: "center",
               overflow: "hidden",
-              background: BG,
+              background: "#0A0608",
             }}
           >
-            {/* Full-bleed photo — brighter, more saturated for light theme */}
+            {/* Full-bleed photo — deep cinematic, heavily desaturated */}
             {heroPhotoUrl && (
               <div aria-hidden style={{ position: "absolute", inset: 0, zIndex: 0, overflow: "hidden" }}>
                 <div className="ci-par" style={{
                   position: "absolute", inset: "-10%",
                   backgroundImage: `url(${heroPhotoUrl})`,
-                  backgroundSize: "cover", backgroundPosition: "center",
-                  filter: "saturate(.55) brightness(.82) contrast(1.04)",
+                  backgroundSize: "cover", backgroundPosition: "center top",
+                  filter: "saturate(.18) brightness(.28) contrast(1.12)",
                   willChange: "transform",
                   transform: "scale(1.08) translateY(0)",
                 }} />
               </div>
             )}
 
-            {/* Warm cream wash — lets the photo read through, not drowned */}
+            {/* Primary dark gradient overlay */}
             <div aria-hidden style={{
               position: "absolute", inset: 0, zIndex: 1,
-              background: `linear-gradient(to bottom,
-                rgba(253,248,242,.88) 0%,
-                rgba(253,248,242,.62) 18%,
-                rgba(253,248,242,.52) 42%,
-                rgba(253,248,242,.72) 68%,
-                rgba(251,243,236,.96) 100%)`,
+              background: "linear-gradient(to bottom, rgba(6,3,8,.50) 0%, rgba(6,3,8,.22) 40%, rgba(6,3,8,.50) 75%, rgba(4,2,6,.92) 100%)",
             }} />
 
-            {/* Warm side vignette — not black, warm linen */}
+            {/* Edge vignette — focuses the centre */}
             <div aria-hidden style={{
               position: "absolute", inset: 0, zIndex: 2,
-              background: "radial-gradient(ellipse 90% 78% at 50% 50%, transparent 35%, rgba(241,233,224,.45) 100%)",
+              background: "radial-gradient(ellipse 78% 72% at 50% 46%, transparent 28%, rgba(4,2,6,.72) 100%)",
             }} />
 
-            {/* Subtle rose + gold ambient blooms */}
+            {/* Rose bloom top-left */}
             <div aria-hidden style={{
-              position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none",
-              background: `
-                radial-gradient(ellipse 55% 44% at 12% 20%, rgba(190,45,69,.05) 0%, transparent 55%),
-                radial-gradient(ellipse 45% 40% at 88% 80%, rgba(168,120,8,.04) 0%, transparent 50%)
-              `,
+              position: "absolute", top: "-12%", left: "-6%",
+              width: "52%", height: "65%", borderRadius: "50%",
+              background: "radial-gradient(circle, rgba(190,45,69,.08) 0%, transparent 65%)",
+              zIndex: 2, pointerEvents: "none",
+            }} />
+            {/* Gold bloom bottom-right */}
+            <div aria-hidden style={{
+              position: "absolute", bottom: "-6%", right: "-4%",
+              width: "44%", height: "52%", borderRadius: "50%",
+              background: "radial-gradient(circle, rgba(168,120,8,.07) 0%, transparent 65%)",
+              zIndex: 2, pointerEvents: "none",
+            }} />
+
+            {/* Top rose-gold accent stripe */}
+            <div aria-hidden style={{
+              position: "absolute", top: 0, left: 0, right: 0, height: 2, zIndex: 3,
+              background: "linear-gradient(90deg, transparent 5%, rgba(190,45,69,.48) 28%, rgba(201,150,10,.72) 50%, rgba(190,45,69,.48) 72%, transparent 95%)",
             }} />
 
             {/* Content */}
             <div style={{
               position: "relative", zIndex: 5,
-              padding: "7rem 1.5rem 9rem",
-              maxWidth: 820, width: "100%",
+              padding: "7rem clamp(1.25rem,5vw,3rem) 9rem",
+              maxWidth: 860, width: "100%",
             }}>
 
-              {/* Eyebrow */}
+              {/* Occasion tag — flanked rules */}
               <div className="h0" style={{
-                display: "flex", alignItems: "center", gap: 12,
-                justifyContent: "center", marginBottom: "2.25rem",
+                display: "flex", alignItems: "center", gap: 14,
+                justifyContent: "center", marginBottom: "2.5rem",
               }}>
-                <div style={{ width: 28, height: 1, background: `linear-gradient(to right, transparent, ${ROSE_MID})` }} />
+                <div style={{ flex: 1, maxWidth: 56, height: 1, background: "linear-gradient(to right, transparent, rgba(190,45,69,.52))" }} />
                 <span style={{
-                  fontFamily: BF, fontSize: ".44rem", letterSpacing: ".50em",
-                  textTransform: "uppercase", color: ROSE, fontWeight: 700,
+                  fontFamily: BF, fontSize: ".42rem", letterSpacing: ".54em",
+                  textTransform: "uppercase", color: "rgba(190,45,69,.82)", fontWeight: 700,
                 }}>
                   {title}
                 </span>
-                <div style={{ width: 28, height: 1, background: `linear-gradient(to left, transparent, ${ROSE_MID})` }} />
+                <div style={{ flex: 1, maxWidth: 56, height: 1, background: "linear-gradient(to left, transparent, rgba(190,45,69,.52))" }} />
               </div>
 
-              {/* Bride name — dark ink on light wash */}
+              {/* Bride name — white, commanding */}
               <h1 className="h1 h-name" style={{
-                fontFamily: DF,
+                fontFamily: DF, fontWeight: 300,
                 fontSize: "clamp(4rem,13vw,11rem)",
-                fontWeight: 300, lineHeight: .84, letterSpacing: "-.04em",
-                color: INK, marginBottom: ".05em",
+                lineHeight: .84, letterSpacing: "-.04em",
+                color: "rgba(255,252,248,.96)",
+                marginBottom: ".05em",
               }}>
                 {brideFirst}
               </h1>
@@ -863,95 +871,96 @@ export function CinematicIntro({
               <p className="h2" style={{
                 fontFamily: DF, fontStyle: "italic", fontWeight: 300,
                 fontSize: "clamp(1.1rem,3.2vw,2.4rem)",
-                color: ROSE,
-                letterSpacing: ".12em", lineHeight: 1.2, marginBottom: ".05em",
+                color: "rgba(190,45,69,.72)",
+                letterSpacing: ".14em", lineHeight: 1.2, marginBottom: ".05em",
               }}>
                 &amp;
               </p>
 
-              {/* Groom name */}
+              {/* Groom name — slightly dimmed, secondary */}
               <h1 className="h3 h-name" style={{
-                fontFamily: DF,
+                fontFamily: DF, fontWeight: 300,
                 fontSize: "clamp(4rem,13vw,11rem)",
-                fontWeight: 300, lineHeight: .84, letterSpacing: "-.04em",
-                color: INK_2, marginBottom: "2rem",
+                lineHeight: .84, letterSpacing: "-.04em",
+                color: "rgba(232,220,200,.78)",
+                marginBottom: "clamp(1.75rem,4vh,2.5rem)",
               }}>
                 {groomFirst}
               </h1>
 
-              {/* Drawing rule */}
+              {/* Gold hairline rule */}
               <div className="h4" style={{
-                width: "min(180px,40%)", height: 1, margin: "0 auto 2rem",
-                background: `linear-gradient(90deg, transparent, ${GOLD_L}, transparent)`,
-                transformOrigin: "center",
+                width: "min(200px,44%)", height: 1, margin: "0 auto clamp(1.5rem,3.5vh,2.25rem)",
+                background: "linear-gradient(90deg, transparent, rgba(201,150,10,.68) 38%, rgba(201,150,10,.68) 62%, transparent)",
               }} />
 
-              {/* Date · both venues */}
-              <div className="h5" style={{
-                display: "flex", flexDirection: "column",
-                alignItems: "center", gap: ".75rem", marginBottom: "1.375rem",
-              }}>
-                {/* Date row */}
-                {weddingDate && (
-                  <span style={{
-                    fontFamily: BF, fontSize: ".82rem", fontWeight: 600,
-                    color: INK, letterSpacing: ".05em",
-                  }}>
-                    {weddingDate}
-                  </span>
-                )}
-
-                {/* Two venue chips — rose for church, gold for beach */}
-                <div style={{
-                  display: "flex", flexWrap: "wrap",
-                  justifyContent: "center", gap: ".5rem",
+              {/* Date — gold, wide tracking */}
+              {weddingDate && (
+                <p className="h5" style={{
+                  fontFamily: BF, fontSize: ".72rem", fontWeight: 600,
+                  letterSpacing: ".38em", textTransform: "uppercase",
+                  color: "rgba(201,150,10,.85)",
+                  marginBottom: "1.375rem",
                 }}>
-                  {/* Church */}
-                  <span style={{
-                    display: "inline-flex", alignItems: "center", gap: 6,
-                    padding: "5px 14px", borderRadius: 999,
-                    background: "rgba(190,45,69,.07)",
-                    border: "1px solid rgba(190,45,69,.18)",
-                    fontFamily: BF, fontSize: ".62rem", fontWeight: 600,
-                    color: INK_2, letterSpacing: ".03em",
-                  }}>
-                    {/* Cross micro-icon */}
-                    <svg width="9" height="9" viewBox="0 0 10 10" fill="none" aria-hidden>
-                      <line x1="5" y1="0" x2="5" y2="10" stroke={ROSE} strokeWidth="1.8" strokeLinecap="round" />
-                      <line x1="1" y1="3.5" x2="9" y2="3.5" stroke={ROSE} strokeWidth="1.8" strokeLinecap="round" />
-                    </svg>
-                    <span>Divine Mercy Church</span>
-                    <span style={{ color: ROSE, fontWeight: 700, opacity: .8 }}>· 3 PM</span>
-                  </span>
+                  {weddingDate}
+                </p>
+              )}
 
-                  {/* Beach */}
-                  <span style={{
-                    display: "inline-flex", alignItems: "center", gap: 6,
-                    padding: "5px 14px", borderRadius: 999,
-                    background: "rgba(168,120,8,.07)",
-                    border: "1px solid rgba(168,120,8,.18)",
-                    fontFamily: BF, fontSize: ".62rem", fontWeight: 600,
-                    color: INK_2, letterSpacing: ".03em",
-                  }}>
-                    {/* Wave micro-icon */}
-                    <svg width="14" height="7" viewBox="0 0 14 7" fill="none" aria-hidden>
-                      <path d="M0.5 4 Q2 1 3.5 4 Q5 7 6.5 4 Q8 1 9.5 4 Q11 7 12.5 4" stroke={GOLD_L} strokeWidth="1.5" strokeLinecap="round" fill="none" />
-                    </svg>
-                    <span>Blue Bay Beach Resort</span>
-                    <span style={{ color: GOLD_L, fontWeight: 700, opacity: .85 }}>· 6 PM</span>
-                  </span>
-                </div>
+              {/* Venue pills — dark glass */}
+              <div className="h5" style={{
+                display: "flex", flexWrap: "wrap",
+                justifyContent: "center", gap: ".625rem",
+                marginBottom: "clamp(2rem,4.5vh,3rem)",
+              }}>
+                {/* Church */}
+                <span style={{
+                  display: "inline-flex", alignItems: "center", gap: 7,
+                  padding: "7px 18px", borderRadius: 999,
+                  background: "rgba(190,45,69,.14)",
+                  border: "1px solid rgba(190,45,69,.36)",
+                  backdropFilter: "blur(8px)",
+                  fontFamily: BF, fontSize: ".62rem", fontWeight: 600,
+                  color: "rgba(255,255,255,.82)", letterSpacing: ".04em",
+                }}>
+                  <svg width="9" height="9" viewBox="0 0 10 10" fill="none" aria-hidden>
+                    <line x1="5" y1="0" x2="5" y2="10" stroke="rgba(190,45,69,.90)" strokeWidth="1.8" strokeLinecap="round" />
+                    <line x1="1" y1="3.5" x2="9" y2="3.5" stroke="rgba(190,45,69,.90)" strokeWidth="1.8" strokeLinecap="round" />
+                  </svg>
+                  <span>Divine Mercy Church</span>
+                  <span style={{ color: "rgba(190,45,69,.82)", fontWeight: 700 }}>· 3 PM</span>
+                </span>
+
+                {/* Beach */}
+                <span style={{
+                  display: "inline-flex", alignItems: "center", gap: 7,
+                  padding: "7px 18px", borderRadius: 999,
+                  background: "rgba(168,120,8,.14)",
+                  border: "1px solid rgba(168,120,8,.42)",
+                  backdropFilter: "blur(8px)",
+                  fontFamily: BF, fontSize: ".62rem", fontWeight: 600,
+                  color: "rgba(255,255,255,.82)", letterSpacing: ".04em",
+                }}>
+                  <svg width="14" height="7" viewBox="0 0 14 7" fill="none" aria-hidden>
+                    <path d="M0.5 4 Q2 1 3.5 4 Q5 7 6.5 4 Q8 1 9.5 4 Q11 7 12.5 4" stroke="rgba(201,150,10,.90)" strokeWidth="1.5" strokeLinecap="round" fill="none" />
+                  </svg>
+                  <span>Blue Bay Beach Resort</span>
+                  <span style={{ color: "rgba(201,150,10,.85)", fontWeight: 700 }}>· 6 PM</span>
+                </span>
               </div>
 
-              {/* Guest tag */}
+              {/* Guest tag — dark glass, white italic */}
               <div className="h6" style={{ marginBottom: "clamp(2.5rem,5vh,3.5rem)" }}>
                 <span style={{
-                  display: "inline-block", padding: "6px 22px",
-                  border: `1px solid ${BDR_MD}`, borderRadius: 999,
+                  display: "inline-block",
+                  padding: "8px 26px",
+                  border: "1px solid rgba(255,255,255,.13)",
+                  borderRadius: 999,
+                  background: "rgba(255,255,255,.06)",
+                  backdropFilter: "blur(12px)",
                   fontFamily: DF, fontStyle: "italic",
                   fontSize: "clamp(.78rem,1.9vw,.92rem)",
-                  color: ROSE, letterSpacing: ".03em",
-                  background: ROSE_PALE,
+                  color: "rgba(255,252,248,.68)",
+                  letterSpacing: ".04em",
                 }}>
                   A personal invitation for {guestLabel}
                 </span>
