@@ -29,10 +29,15 @@ const SHELL_SUPPRESSED_PREFIXES = [
   "/login",    // login page — standalone
 ];
 
+// Homepage suppressed separately — exact match only, no prefix bleed
+const HOMEPAGE_EXACT = "/";
+
 export function SiteShell({ children }: PropsWithChildren) {
   const pathname = usePathname();
 
-  const suppress = SHELL_SUPPRESSED_PREFIXES.some((prefix) => {
+  const isHomepage = pathname === HOMEPAGE_EXACT;
+
+  const suppress = isHomepage || SHELL_SUPPRESSED_PREFIXES.some((prefix) => {
     if (prefix.endsWith("/")) {
       return pathname === prefix.slice(0, -1) || pathname.startsWith(prefix);
     }
