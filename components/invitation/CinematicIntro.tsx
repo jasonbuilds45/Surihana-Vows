@@ -1107,6 +1107,49 @@ export function CinematicIntro({
 
           {/* ── PERSONAL MESSAGE ── first thing visible after seal pops ── */}
           <div id="invite-content">
+
+            {/* ── Couple identity strip — anchors the guest after the seal ── */}
+            <div style={{
+              borderBottom: "1px solid rgba(190,45,69,.10)",
+              background: "rgba(253,250,247,.94)",
+              backdropFilter: "blur(16px)",
+              WebkitBackdropFilter: "blur(16px)",
+              padding: "clamp(.875rem,2vh,1.125rem) clamp(1.25rem,5vw,5rem)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: "1rem",
+              flexWrap: "wrap",
+            }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: 3, minWidth: 0 }}>
+                <span style={{
+                  fontFamily: "var(--font-display),'Cormorant Garamond',Georgia,serif",
+                  fontSize: "clamp(.875rem,2.5vw,1.05rem)",
+                  fontWeight: 700,
+                  color: "var(--ink,#120B0E)",
+                  letterSpacing: "0.35em",
+                  textTransform: "uppercase",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                }}>
+                  {brideFirst} &amp; {groomFirst}
+                </span>
+                <span style={{
+                  fontFamily: "var(--font-body),'Manrope',system-ui,sans-serif",
+                  fontSize: ".60rem",
+                  letterSpacing: ".28em",
+                  textTransform: "uppercase",
+                  color: "var(--ink-4,#A88888)",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                }}>
+                  {weddingDate ?? ""}{", " }{venueName ?? ""}
+                </span>
+              </div>
+            </div>
+
             <section style={{
               background: BG_LINEN,
               borderBottom: `1px solid rgba(190,45,69,.10)`,
