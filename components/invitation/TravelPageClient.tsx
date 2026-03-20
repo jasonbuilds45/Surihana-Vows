@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { NearbyEssentials } from "@/components/invitation/NearbyEssentials";
 import type { EssentialItem } from "@/components/invitation/NearbyEssentials";
+import { LuxuryPageHero } from "@/components/layout/LuxuryPageHero";
 import { weddingConfig } from "@/lib/config";
 import { formatDate, formatTime } from "@/utils/formatDate";
 
