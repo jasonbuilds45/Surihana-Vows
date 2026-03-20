@@ -837,14 +837,14 @@ export function CinematicIntro({
             {/* Content */}
             <div style={{
               position: "relative", zIndex: 5,
-              padding: "7rem clamp(1.25rem,5vw,3rem) 9rem",
+              padding: "clamp(4.5rem,8vh,7rem) clamp(1.25rem,5vw,3rem) clamp(3.5rem,6vh,5rem)",
               maxWidth: 860, width: "100%",
             }}>
 
               {/* Occasion tag — flanked rules */}
               <div className="h0" style={{
                 display: "flex", alignItems: "center", gap: 14,
-                justifyContent: "center", marginBottom: "2.5rem",
+                justifyContent: "center", marginBottom: "clamp(1.25rem,3vh,2.5rem)",
               }}>
                 <div style={{ flex: 1, maxWidth: 56, height: 1, background: "linear-gradient(to right, transparent, rgba(190,45,69,.52))" }} />
                 <span style={{
@@ -859,7 +859,7 @@ export function CinematicIntro({
               {/* Bride name — white, commanding */}
               <h1 className="h1 h-name" style={{
                 fontFamily: DF, fontWeight: 300,
-                fontSize: "clamp(4rem,13vw,11rem)",
+                fontSize: "clamp(3.25rem,13vw,11rem)",
                 lineHeight: .84, letterSpacing: "-.04em",
                 color: "rgba(255,252,248,.96)",
                 marginBottom: ".05em",
@@ -870,7 +870,7 @@ export function CinematicIntro({
               {/* & */}
               <p className="h2" style={{
                 fontFamily: DF, fontStyle: "italic", fontWeight: 300,
-                fontSize: "clamp(1.1rem,3.2vw,2.4rem)",
+                fontSize: "clamp(1rem,3.2vw,2.4rem)",
                 color: "rgba(190,45,69,.72)",
                 letterSpacing: ".14em", lineHeight: 1.2, marginBottom: ".05em",
               }}>
@@ -880,17 +880,17 @@ export function CinematicIntro({
               {/* Groom name — slightly dimmed, secondary */}
               <h1 className="h3 h-name" style={{
                 fontFamily: DF, fontWeight: 300,
-                fontSize: "clamp(4rem,13vw,11rem)",
+                fontSize: "clamp(3.25rem,13vw,11rem)",
                 lineHeight: .84, letterSpacing: "-.04em",
                 color: "rgba(232,220,200,.78)",
-                marginBottom: "clamp(1.75rem,4vh,2.5rem)",
+                marginBottom: "clamp(1rem,2.5vh,2.5rem)",
               }}>
                 {groomFirst}
               </h1>
 
               {/* Gold hairline rule */}
               <div className="h4" style={{
-                width: "min(200px,44%)", height: 1, margin: "0 auto clamp(1.5rem,3.5vh,2.25rem)",
+                width: "min(200px,44%)", height: 1, margin: "0 auto clamp(.875rem,2vh,2.25rem)",
                 background: "linear-gradient(90deg, transparent, rgba(201,150,10,.68) 38%, rgba(201,150,10,.68) 62%, transparent)",
               }} />
 
@@ -900,7 +900,7 @@ export function CinematicIntro({
                   fontFamily: BF, fontSize: ".72rem", fontWeight: 600,
                   letterSpacing: ".38em", textTransform: "uppercase",
                   color: "rgba(201,150,10,.85)",
-                  marginBottom: "1.375rem",
+                  marginBottom: "clamp(.75rem,1.5vh,1.375rem)",
                 }}>
                   {weddingDate}
                 </p>
@@ -910,7 +910,7 @@ export function CinematicIntro({
               <div className="h5" style={{
                 display: "flex", flexWrap: "wrap",
                 justifyContent: "center", gap: ".625rem",
-                marginBottom: "clamp(2rem,4.5vh,3rem)",
+                marginBottom: "clamp(1.25rem,3vh,3rem)",
               }}>
                 {/* Church */}
                 <span style={{
@@ -949,7 +949,7 @@ export function CinematicIntro({
               </div>
 
               {/* Guest tag — dark glass, white italic */}
-              <div className="h6" style={{ marginBottom: "clamp(2.5rem,5vh,3.5rem)" }}>
+              <div className="h6" style={{ marginBottom: "clamp(1.25rem,3vh,3.5rem)" }}>
                 <span style={{
                   display: "inline-block",
                   padding: "8px 26px",
