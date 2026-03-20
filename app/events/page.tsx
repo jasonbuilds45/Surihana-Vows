@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Calendar, MapPin, Clock, Navigation, Waves, Church } from "lucide-react";
 import { EventCard } from "@/components/invitation/EventCard";
 import { CalendarButton } from "@/components/navigation/CalendarButton";
+import { LuxuryPageHero } from "@/components/layout/LuxuryPageHero";
 import { weddingConfig } from "@/lib/config";
 import { getWeddingEvents } from "@/modules/elegant/event-display";
 
@@ -28,158 +29,61 @@ export default async function EventsPage() {
   return (
     <div style={{ background: "var(--bg,#FDFAF7)", minHeight: "100vh" }}>
 
-      {/* ════════════════════════════════════════════════════════════════
-          HERO — dark, cinematic, full-bleed
-      ════════════════════════════════════════════════════════════════ */}
-      <div style={{
-        position: "relative",
-        background: "linear-gradient(160deg,#0A0608 0%,#120B0D 55%,#0A0608 100%)",
-        overflow: "hidden",
-        borderBottom: "1px solid rgba(190,45,69,.12)",
-      }}>
-        {/* Ambient blooms */}
-        <div aria-hidden style={{
-          position: "absolute", inset: 0, pointerEvents: "none",
-          background: `
-            radial-gradient(ellipse 60% 70% at 90% 0%,   rgba(190,45,69,.09) 0%, transparent 55%),
-            radial-gradient(ellipse 45% 55% at 0%  90%,  rgba(168,120,8,.07)  0%, transparent 50%),
-            radial-gradient(ellipse 35% 45% at 50% 50%,  rgba(190,45,69,.03) 0%, transparent 60%)
-          `,
-        }} />
-
-        {/* Top accent stripe */}
-        <div aria-hidden style={{
-          position: "absolute", top: 0, left: 0, right: 0, height: 2,
-          background: "linear-gradient(90deg,transparent 5%,rgba(190,45,69,.50) 30%,rgba(201,150,10,.72) 50%,rgba(190,45,69,.50) 70%,transparent 95%)",
-        }} />
-
-        {/* Large decorative letterform */}
-        <div aria-hidden style={{
-          position: "absolute", right: "clamp(1rem,8vw,6rem)", top: "50%",
-          transform: "translateY(-50%)",
-          fontFamily: DF, fontSize: "clamp(14rem,30vw,28rem)",
-          fontWeight: 300, lineHeight: 1,
-          color: "rgba(255,255,255,.018)",
-          letterSpacing: "-.04em", userSelect: "none", pointerEvents: "none",
-        }}>
-          W
-        </div>
-
-        <div style={{
-          maxWidth: "var(--max-w,1320px)", margin: "0 auto",
-          padding: "clamp(5rem,10vh,8rem) var(--pad-x,clamp(1.25rem,5vw,5rem)) clamp(4rem,8vh,6rem)",
-          position: "relative", zIndex: 1,
-        }}>
-
-          {/* Eyebrow */}
-          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: "1.75rem" }}>
-            <div style={{ width: 24, height: 1, background: "rgba(190,45,69,.55)" }} />
-            <span style={{
-              fontFamily: BF, fontSize: ".46rem", letterSpacing: ".48em",
-              textTransform: "uppercase", color: "rgba(190,45,69,.80)", fontWeight: 700,
-            }}>
-              Wednesday, 20 May 2026
-            </span>
-          </div>
-
-          {/* Headline */}
-          <h1 style={{
-            fontFamily: DF, fontWeight: 300,
-            fontSize: "clamp(3rem,8vw,7rem)",
-            lineHeight: .88, letterSpacing: "-.035em",
-            color: "rgba(255,252,248,.96)",
-            marginBottom: "clamp(1.25rem,3vh,2rem)",
-          }}>
+      <LuxuryPageHero
+        eyebrow="Wednesday, 20 May 2026"
+        letter="E"
+        title={
+          <>
             The wedding<br />
             <em style={{ color: "rgba(201,150,10,.85)" }}>itinerary.</em>
-          </h1>
-
-          {/* Subline */}
-          <p style={{
-            fontFamily: DF, fontStyle: "italic",
-            fontSize: "clamp(1rem,1.8vw,1.2rem)",
-            color: "rgba(255,255,255,.48)",
-            lineHeight: 1.8, maxWidth: "38rem",
-            marginBottom: "2.5rem",
-          }}>
-            Two sacred venues. One coastal road between them.
-            From a church ceremony in the afternoon to a shoreline reception at sunset —
-            this is the full story of the day.
-          </p>
-
-          {/* Day-at-a-glance strip */}
+          </>
+        }
+        subtitle="Two sacred venues. One coastal road between them. From a church ceremony in the afternoon to a shoreline reception at sunset."
+        below={
+          /* Day-at-a-glance strip */
           <div style={{
             display: "flex", flexWrap: "wrap",
             alignItems: "stretch", gap: 0,
-            maxWidth: "clamp(340px,80vw,620px)",
+            maxWidth: "clamp(340px,80vw,580px)",
             borderRadius: 14, overflow: "hidden",
             border: "1px solid rgba(255,255,255,.08)",
             boxShadow: "0 8px 32px rgba(0,0,0,.24)",
           }}>
-            {/* Church block */}
-            <div style={{
-              flex: 1, minWidth: 140,
-              padding: "1.125rem 1.375rem",
-              background: "rgba(190,45,69,.12)",
-              borderRight: "1px solid rgba(255,255,255,.06)",
-            }}>
-              <p style={{
-                fontFamily: BF, fontSize: ".44rem", letterSpacing: ".28em",
+            <div style={{ flex: 1, minWidth: 130, padding: "1rem 1.25rem",
+              background: "rgba(190,45,69,.12)", borderRight: "1px solid rgba(255,255,255,.06)" }}>
+              <p style={{ fontFamily: BF, fontSize: ".42rem", letterSpacing: ".28em",
                 textTransform: "uppercase", color: "rgba(190,45,69,.75)",
-                fontWeight: 700, marginBottom: ".375rem",
-              }}>Ceremony</p>
-              <p style={{
-                fontFamily: DF, fontSize: "clamp(1.1rem,2.5vw,1.4rem)",
-                fontWeight: 600, color: "rgba(255,252,248,.92)",
-                lineHeight: 1.1, marginBottom: ".25rem",
-              }}>3:00 PM</p>
-              <p style={{ fontFamily: BF, fontSize: ".68rem", color: "rgba(255,255,255,.38)" }}>
-                Kelambakkam
-              </p>
+                fontWeight: 700, marginBottom: ".3rem" }}>Ceremony</p>
+              <p style={{ fontFamily: DF, fontSize: "clamp(1rem,2.5vw,1.3rem)",
+                fontWeight: 600, color: "rgba(255,252,248,.92)", lineHeight: 1.1,
+                marginBottom: ".2rem" }}>3:00 PM</p>
+              <p style={{ fontFamily: BF, fontSize: ".66rem", color: "rgba(255,255,255,.36)" }}>Kelambakkam</p>
             </div>
-
-            {/* Connector */}
-            <div style={{
-              width: "clamp(52px,10vw,80px)", flexShrink: 0,
+            <div style={{ width: "clamp(48px,9vw,72px)", flexShrink: 0,
               background: "rgba(255,255,255,.04)",
               display: "flex", flexDirection: "column",
-              alignItems: "center", justifyContent: "center", gap: 4,
-              padding: ".5rem",
-            }}>
-              <span style={{ fontFamily: BF, fontSize: ".46rem", color: "rgba(255,255,255,.22)", letterSpacing: ".12em" }}>15 km</span>
+              alignItems: "center", justifyContent: "center", gap: 3, padding: ".5rem" }}>
+              <span style={{ fontFamily: BF, fontSize: ".42rem", color: "rgba(255,255,255,.20)", letterSpacing: ".10em" }}>15 km</span>
               <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
                 {[0,1,2,3].map(i => (
-                  <div key={i} style={{
-                    width: 3, height: 3, borderRadius: "50%",
-                    background: i === 1 || i === 2 ? "rgba(201,150,10,.60)" : "rgba(255,255,255,.14)",
-                  }} />
+                  <div key={i} style={{ width: 3, height: 3, borderRadius: "50%",
+                    background: i === 1 || i === 2 ? "rgba(201,150,10,.60)" : "rgba(255,255,255,.14)" }} />
                 ))}
               </div>
             </div>
-
-            {/* Beach block */}
-            <div style={{
-              flex: 1, minWidth: 140,
-              padding: "1.125rem 1.375rem",
-              background: "rgba(168,120,8,.10)",
-            }}>
-              <p style={{
-                fontFamily: BF, fontSize: ".44rem", letterSpacing: ".28em",
+            <div style={{ flex: 1, minWidth: 130, padding: "1rem 1.25rem",
+              background: "rgba(168,120,8,.10)" }}>
+              <p style={{ fontFamily: BF, fontSize: ".42rem", letterSpacing: ".28em",
                 textTransform: "uppercase", color: "rgba(201,150,10,.75)",
-                fontWeight: 700, marginBottom: ".375rem",
-              }}>Reception</p>
-              <p style={{
-                fontFamily: DF, fontSize: "clamp(1.1rem,2.5vw,1.4rem)",
-                fontWeight: 600, color: "rgba(255,252,248,.92)",
-                lineHeight: 1.1, marginBottom: ".25rem",
-              }}>6:00 PM</p>
-              <p style={{ fontFamily: BF, fontSize: ".68rem", color: "rgba(255,255,255,.38)" }}>
-                Mahabalipuram
-              </p>
+                fontWeight: 700, marginBottom: ".3rem" }}>Reception</p>
+              <p style={{ fontFamily: DF, fontSize: "clamp(1rem,2.5vw,1.3rem)",
+                fontWeight: 600, color: "rgba(255,252,248,.92)", lineHeight: 1.1,
+                marginBottom: ".2rem" }}>6:00 PM</p>
+              <p style={{ fontFamily: BF, fontSize: ".66rem", color: "rgba(255,255,255,.36)" }}>Mahabalipuram</p>
             </div>
           </div>
-        </div>
-      </div>
+        }
+      />
 
       {/* ════════════════════════════════════════════════════════════════
           DAY FLOW — editorial section explaining the day's narrative
