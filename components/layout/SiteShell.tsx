@@ -9,43 +9,36 @@ import { Footer } from "@/components/layout/Footer";
 ──────────────────────────────────────────────────────────────────────────────
 SiteShell — global layout wrapper
 
-Purpose
-• Adds Navbar + Footer for public marketing pages
-• Suppresses them for special layouts (invite, family, admin)
+Navbar is shown on EVERY public page — homepage, invite pages, story, travel,
+gallery, etc. The Navbar component itself handles:
+  • Ghost/transparent mode on the homepage hero
+  • Suppressing itself on /family, /admin, /vault/, /squad/, /login
 
-Design Improvements
-• Ensures page fills full viewport height
-• Prevents footer jumping
-• Creates consistent vertical layout structure
+This shell ONLY suppresses Navbar+Footer for routes that have their own full
+layout chrome (family vault, admin dashboard, vault bridge, squad proposals,
+login). All guest-facing public pages get the floating navbar.
 ──────────────────────────────────────────────────────────────────────────────
 */
 
+// Routes that render their OWN complete layout — no global chrome needed
 const SHELL_SUPPRESSED_PREFIXES = [
-  "/",          // landing page — full screen, no chrome
-  "/invite/",   // guest cinematic experience
-  "/family",    // family vault
-  "/admin",     // admin dashboard
-  "/vault/",    // magic-link redirect bridge
-  "/login",     // login page — no chrome
-  "/squad/",    // squad proposal — private, unbranded
+  "/family",   // family vault — has its own header/footer
+  "/admin",    // admin dashboard — has its own header
+  "/vault/",   // magic-link redirect bridge — transparent redirect
+  "/squad/",   // squad proposal — private cinematic experience
+  "/login",    // login page — standalone
 ];
 
 export function SiteShell({ children }: PropsWithChildren) {
   const pathname = usePathname();
 
-  // Suppress if the current path matches any suppressed prefix.
-  // Prefixes ending in "/" are treated as directory prefixes.
-  // Prefixes without trailing "/" match the exact path or any sub-path.
   const suppress = SHELL_SUPPRESSED_PREFIXES.some((prefix) => {
     if (prefix.endsWith("/")) {
-      // e.g. "/squad/" matches "/squad/anything"
       return pathname === prefix.slice(0, -1) || pathname.startsWith(prefix);
     }
-    // e.g. "/family" matches "/family" and "/family/anything"
     return pathname === prefix || pathname.startsWith(prefix + "/");
   });
 
-  // Pages with their own layout (invite / family / admin)
   if (suppress) {
     return <>{children}</>;
   }
@@ -53,12 +46,7 @@ export function SiteShell({ children }: PropsWithChildren) {
   return (
     <div className="flex min-h-screen flex-col bg-[var(--color-background)]">
       <Navbar />
-
-      {/* Main content */}
-      <main className="flex-1">
-        {children}
-      </main>
-
+      <main className="flex-1">{children}</main>
       <Footer />
     </div>
   );
