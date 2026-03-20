@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Surihana Vows - Client Clone and Deployment Audit</title>
+  <style>
+    :root {
+      --bg: #f6f1eb;
+      --paper: #fffdf9;
+      --ink: #1f1714;
+      --muted: #6c5d56;
+      --line: #d9c8b9;
+      --accent: #8e5e3b;
+      --accent-soft: #efe1d4;
+      --code: #f4eee8;
+      --warn: #7b2f2f;
+      --ok: #2d5d3d;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: Georgia, "Times New Roman", serif;
+      line-height: 1.55;
+    }
+
+    body {
+      margin: 0;
+      padding: 32px 0 64px;
+    }
+
+    .page {
+      width: min(980px, calc(100vw - 48px));
+      margin: 0 auto;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      box-shadow: 0 18px 48px rgba(31, 23, 20, 0.08);
+      padding: 56px 64px;
+    }
+
+    h1, h2, h3 {
+      margin: 0 0 14px;
+      line-height: 1.15;
+      color: #17100d;
+    }
+
+    h1 {
+      font-size: 34px;
+      margin-bottom: 10px;
+    }
+
+    h2 {
+      font-size: 22px;
+      margin-top: 34px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+    }
+
+    h3 {
+      font-size: 17px;
+      margin-top: 22px;
+    }
+
+    p {
+      margin: 0 0 12px;
+    }
+
+    ul, ol {
+      margin: 10px 0 14px 22px;
+      padding: 0;
+    }
+
+    li {
+      margin: 0 0 7px;
+    }
+
+    .lede {
+      color: var(--muted);
+      font-size: 16px;
+      margin-bottom: 20px;
+    }
+
+    .meta {
+      display: grid;
+      grid-template-columns: 180px 1fr;
+      gap: 8px 16px;
+      margin: 22px 0 6px;
+      padding: 18px 20px;
+      background: var(--accent-soft);
+      border: 1px solid var(--line);
+    }
+
+    .meta strong {
+      color: #2c1c15;
+    }
+
+    .callout,
+    .warning,
+    .success {
+      margin: 16px 0;
+      padding: 14px 16px;
+      border-left: 4px solid var(--accent);
+      background: #faf5ef;
+    }
+
+    .warning {
+      border-left-color: var(--warn);
+      background: #fbf2f2;
+    }
+
+    .success {
+      border-left-color: var(--ok);
+      background: #f3f8f4;
+    }
+
+    code {
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 0.92em;
+      background: var(--code);
+      padding: 1px 5px;
+      border-radius: 4px;
+    }
+
+    pre {
+      margin: 12px 0 16px;
+      padding: 16px 18px;
+      overflow-x: auto;
+      background: var(--code);
+      border: 1px solid var(--line);
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 14px 0 20px;
+      font-size: 14px;
+    }
+
+    th, td {
+      border: 1px solid var(--line);
+      padding: 10px 12px;
+      vertical-align: top;
+      text-align: left;
+    }
+
+    th {
+      background: #f5ede4;
+    }
+
+    .small {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .section-break {
+      page-break-before: always;
+    }
+
+    @page {
+      size: A4;
+      margin: 16mm;
+    }
+
+    @media print {
+      body {
+        padding: 0;
+        background: #fff;
+      }
+
+      .page {
+        width: auto;
+        margin: 0;
+        border: none;
+        box-shadow: none;
+        padding: 0;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <h1>Surihana Vows Client Clone and Deployment Audit</h1>
+    <p class="lede">
+      Source-of-truth operating guide for cloning this template, curating it for a new wedding client,
+      provisioning infrastructure, migrating the database cleanly, deploying on Vercel, and handing the
+      finished platform over without cross-client leakage.
+    </p>
+
+    <div class="meta">
+      <strong>Prepared from repo state</strong><span>2026-03-20</span>
+      <strong>Workspace</strong><span><code>d:\Surihana Vows\Surihana Projects\surihana-vows-template</code></span>
+      <strong>Stack</strong><span>Git / GitHub, Next.js 14, Vercel, Supabase, custom domain, Resend</span>
+      <strong>Primary intent</strong><span>Turn this template into a repeatable client-delivery system</span>
+    </div>
+
+    <div class="callout">
+      <strong>Recommended operating model:</strong> one Git repo, one Vercel project, one Supabase project,
+      one email/domain setup, and one production domain per client. Do not serve multiple client weddings
+      from the same Supabase project or production deployment.
+    </div>
+
+    <h2>1. Executive Summary</h2>
+    <p>
+      This codebase is a workable client template, but the safest cloning process is more manual than the
+      existing docs suggest. The front-end wedding content is primarily driven by local JSON config files in
+      <code>config/</code>, while operational features such as guests, RSVP, uploads, family vault access,
+      predictions, and planning modules depend on Supabase tables and storage buckets.
+    </p>
+    <p>
+      For clean delivery, treat the repo as the presentation layer and content seed, and treat Supabase as
+      the per-client data store. Provision a fresh Supabase project for each client, run the schema once on
+      that blank project, create client-specific accounts, import the guest list, verify the invite flow,
+      then connect the final domain and set <code>NEXT_PUBLIC_SITE_URL</code> to that exact live URL.
+    </p>
+
+    <div class="warning">
+      <strong>Important audit conclusion:</strong> the existing <code>DEPLOY.md</code> and some setup scripts
+      are partially out of sync with the codebase. This document should be treated as the operational source
+      of truth until those files are refreshed.
+    </div>
+
+    <h2>2. What Lives Where</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Layer</th>
+          <th>What it controls</th>
+          <th>Where it lives</th>
+          <th>Client-clone rule</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Code and UI</td>
+          <td>Routes, components, invite experience, dashboards, API routes</td>
+          <td>Git repo / Vercel deployment</td>
+          <td>Duplicate per client or branch from a locked template baseline</td>
+        </tr>
+        <tr>
+          <td>Static wedding content</td>
+          <td>Names, copy, schedule, travel guide, gallery defaults, theme labels</td>
+          <td><code>config/*.json</code></td>
+          <td>Always rewrite for each client</td>
+        </tr>
+        <tr>
+          <td>Theme implementation</td>
+          <td>Color tokens, visual identity, typography direction</td>
+          <td><code>app/globals.css</code>, <code>styles/globals.css</code>, <code>themes/*</code></td>
+          <td>Check before delivery; theme switching is not fully config-only</td>
+        </tr>
+        <tr>
+          <td>Runtime data</td>
+          <td>Guests, RSVP, uploads, guestbook, family vault, predictions, vendors, polls</td>
+          <td>Supabase Postgres</td>
+          <td>Use a fresh project per client</td>
+        </tr>
+        <tr>
+          <td>Media storage</td>
+          <td>Photos, videos, private family vault assets</td>
+          <td>Supabase Storage buckets</td>
+          <td>Use a fresh storage set per client</td>
+        </tr>
+        <tr>
+          <td>Secrets and hosting</td>
+          <td>Environment variables, runtime keys, production URL</td>
+          <td>Vercel project settings</td>
+          <td>Never reuse another client's env set</td>
+        </tr>
+        <tr>
+          <td>Email and domain</td>
+          <td>Magic links, sender identity, live invite URLs</td>
+          <td>Resend + DNS + Vercel</td>
+          <td>Verify domain before go-live</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Static configuration files that must be curated</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>File</th>
+          <th>Purpose</th>
+          <th>Typical client edits</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>config/wedding.json</code></td>
+          <td>Main wedding identity and invitation copy</td>
+          <td>Names, date, times, venues, map links, story, rituals, thank-you copy, dress code</td>
+        </tr>
+        <tr>
+          <td><code>config/events.json</code></td>
+          <td>Events page schedule</td>
+          <td>Add ceremony, reception, sangeet, mehendi, brunch, after-party, etc.</td>
+        </tr>
+        <tr>
+          <td><code>config/travel.json</code></td>
+          <td>Travel page content</td>
+          <td>Airport, hotels, transfers, FAQs, local tips, essentials</td>
+        </tr>
+        <tr>
+          <td><code>config/gallery.json</code></td>
+          <td>Gallery categories and slideshow defaults</td>
+          <td>Replace demo imagery, captions, post-wedding download link</td>
+        </tr>
+        <tr>
+          <td><code>config/predictions.json</code></td>
+          <td>Prediction questions and reveal timing</td>
+          <td>Rewrite questions and set the real reveal timestamp</td>
+        </tr>
+        <tr>
+          <td><code>config/theme.json</code></td>
+          <td>Brand labels and top-level navigation labels</td>
+          <td>Site name, tagline, nav wording, stage copy</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Assets that are outside JSON</h3>
+    <ul>
+      <li><code>public/audio/wedding-theme.mp3</code> controls the invite background music.</li>
+      <li>Theme CSS is selected in <code>app/globals.css</code>; available theme folders are <code>warm</code>, <code>minimal</code>, and <code>jewel</code>.</li>
+      <li><code>next.config.js</code> already allows remote images from Unsplash and any <code>*.supabase.co</code> storage path.</li>
+    </ul>
+
+    <h2>3. Runtime Data and Auth Audit</h2>
+    <p>
+      The app does not rely only on static config. Several user and guest features require a real database.
+      The current migration runner expects the following public tables after setup:
+    </p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Table group</th>
+          <th>Tables</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Core guest experience</td>
+          <td><code>weddings</code>, <code>guests</code>, <code>rsvp</code>, <code>events</code>, <code>travel_info</code>, <code>invite_analytics</code></td>
+        </tr>
+        <tr>
+          <td>Live and media</td>
+          <td><code>guest_messages</code>, <code>photos</code>, <code>videos</code></td>
+        </tr>
+        <tr>
+          <td>Private access and family area</td>
+          <td><code>family_users</code>, <code>family_posts</code>, <code>family_magic_links</code>, <code>invite_access_codes</code></td>
+        </tr>
+        <tr>
+          <td>Lifecycle and long-term archive</td>
+          <td><code>wedding_stage_overrides</code>, <code>time_capsules</code>, <code>guest_predictions</code></td>
+        </tr>
+        <tr>
+          <td>Planning and collaboration</td>
+          <td><code>vendors</code>, <code>family_polls</code>, <code>family_poll_votes</code></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p>
+      Storage is also part of the platform contract. The current setup expects four buckets:
+      <code>couple-photos</code>, <code>guest-uploads</code>, <code>wedding-videos</code>, and
+      <code>family-vault</code>.
+    </p>
+
+    <div class="callout">
+      <strong>Auth model:</strong> family and admin access is custom. This repo stores users in
+      <code>family_users</code> with PBKDF2 password hashes and also supports magic links through
+      <code>family_magic_links</code>. Do not plan your client deployment around Supabase Auth users.
+    </div>
+
+    <h3>Environment variables by purpose</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Variable</th>
+          <th>Used for</th>
+          <th>Required when</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>NEXT_PUBLIC_SUPABASE_URL</code></td>
+          <td>Supabase URL for browser, server, scripts</td>
+          <td>Required for any real client environment</td>
+        </tr>
+        <tr>
+          <td><code>NEXT_PUBLIC_SUPABASE_ANON_KEY</code></td>
+          <td>Public browser/server Supabase client</td>
+          <td>Required for real runtime</td>
+        </tr>
+        <tr>
+          <td><code>SUPABASE_SERVICE_ROLE_KEY</code></td>
+          <td>Admin APIs, private reads, scripts, storage setup</td>
+          <td>Required for full runtime and setup</td>
+        </tr>
+        <tr>
+          <td><code>SUPABASE_ACCESS_TOKEN</code></td>
+          <td>Supabase Management API database migration runner</td>
+          <td>Required only while running <code>scripts/setup-database.ts</code></td>
+        </tr>
+        <tr>
+          <td><code>NEXT_PUBLIC_SITE_URL</code></td>
+          <td>Invite links, general invite URL, email links</td>
+          <td>Must match the final live domain</td>
+        </tr>
+        <tr>
+          <td><code>AUTH_SECRET</code></td>
+          <td>Session signing</td>
+          <td>Required in production</td>
+        </tr>
+        <tr>
+          <td><code>RESEND_API_KEY</code></td>
+          <td>Magic link and email delivery</td>
+          <td>Required if emails must send in production</td>
+        </tr>
+        <tr>
+          <td><code>EMAIL_FROM</code></td>
+          <td>Sender address for outgoing email</td>
+          <td>Required with Resend</td>
+        </tr>
+        <tr>
+          <td><code>FAMILY_LOGIN_EMAIL</code>, <code>FAMILY_LOGIN_PASSWORD</code>, <code>ADMIN_LOGIN_EMAIL</code>, <code>ADMIN_LOGIN_PASSWORD</code></td>
+          <td>Demo or fallback credentials</td>
+          <td>Useful locally, not a substitute for real user creation</td>
+        </tr>
+        <tr>
+          <td><code>NEXT_PUBLIC_LIVESTREAM_URL</code></td>
+          <td>Wedding day live stream</td>
+          <td>Optional</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2 class="section-break">4. Recommended Client Cloning Workflow</h2>
+    <h3>Phase A: create a clean client container</h3>
+    <ol>
+      <li>Create a new private GitHub repo from the template baseline. A separate repo per client is cleaner than keeping multiple clients in one repo.</li>
+      <li>Clone that new repo locally.</li>
+      <li>Create a dedicated Vercel project for the client repo.</li>
+      <li>Create a brand-new Supabase project for the client. Never point two clients to the same database or storage.</li>
+      <li>Create or assign the final client domain and decide where DNS will be managed.</li>
+    </ol>
+
+    <pre>git clone https://github.com/your-org/client-wedding-repo.git
+cd client-wedding-repo
+npm install</pre>
+
+    <h3>Phase B: provision secrets and local environment</h3>
+    <ol>
+      <li>Copy <code>.env.example</code> to <code>.env.local</code>.</li>
+      <li>Paste the new client's Supabase URL, anon key, service role key, and personal access token.</li>
+      <li>Generate a new <code>AUTH_SECRET</code>.</li>
+      <li>Set <code>NEXT_PUBLIC_SITE_URL</code> to the final production domain if known, otherwise set the preview domain temporarily and update it before go-live.</li>
+      <li>Configure Resend values if the deployment must send emails.</li>
+    </ol>
+
+    <pre>node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"</pre>
+
+    <h3>Phase C: migrate database on the blank project</h3>
+    <p>
+      The current migration runner reads every <code>.sql</code> file inside <code>database/</code> in
+      lexicographic order and sends it to the Supabase Management API.
+    </p>
+
+    <pre>node --experimental-strip-types scripts/setup-database.ts
+node --experimental-strip-types scripts/setup-storage.ts</pre>
+
+    <div class="warning">
+      <strong>Safe rule:</strong> run the full database pack once on a fresh Supabase project. Do not assume
+      it is safe to rerun the entire folder against an existing production project, because
+      <code>phase-2-supabase.sql</code> contains unguarded <code>CREATE POLICY</code> statements and the
+      folder also includes repair-style SQL such as <code>fix_family_users.sql</code>.
+    </div>
+
+    <p>For each new client project, the clean migration practice is:</p>
+    <ol>
+      <li>Start with a new empty Supabase project.</li>
+      <li>Run <code>scripts/setup-database.ts</code> once.</li>
+      <li>Run <code>scripts/setup-storage.ts</code> once as a validation and bucket repair step.</li>
+      <li>If you later need to upgrade an existing client project, review and apply only the required SQL, not the whole folder blindly.</li>
+      <li>Before any later production schema change, export a database backup or snapshot.</li>
+    </ol>
+
+    <h3>Phase D: curate the client content and theme</h3>
+    <ol>
+      <li>Rewrite all six JSON config files in <code>config/</code>.</li>
+      <li>Replace the background music in <code>public/audio/wedding-theme.mp3</code>.</li>
+      <li>Choose the visual theme in <code>app/globals.css</code>. The current build imports the <code>warm</code> theme by default.</li>
+      <li>Check <code>config/theme.json</code> for brand labels and navigation labels.</li>
+      <li>If the couple wants a strong visual departure, review theme tokens in <code>themes/warm</code>, <code>themes/minimal</code>, or <code>themes/jewel</code>.</li>
+    </ol>
+
+    <div class="callout">
+      <strong>Practical theme rule:</strong> most copy changes are JSON-only, but the actual color system is
+      still selected by CSS import. Treat theme choice as a code-level presentation setting, not a pure CMS field.
+    </div>
+
+    <h3>Phase E: create users and guest records</h3>
+    <p>
+      Create admin or family login users with the repo script, not via Supabase Auth. Import guests from CSV
+      so every guest gets a unique invite code.
+    </p>
+
+    <pre>node --experimental-strip-types scripts/create-user.ts --email admin@clientdomain.com --password StrongPassword123 --role admin
+node --experimental-strip-types scripts/create-user.ts --email family@clientdomain.com --password StrongPassword123 --role family
+node --experimental-strip-types scripts/import-guests.ts --file guests.csv --weddingId YOUR_WEDDING_ID</pre>
+
+    <p class="small">
+      The guest CSV parser expects at least a <code>guestName</code> or <code>name</code> column, and can
+      also use <code>familyName</code> and <code>phone</code>.
+    </p>
+
+    <h3>Phase F: deploy and connect the domain</h3>
+    <ol>
+      <li>Link the repo to Vercel.</li>
+      <li>Add all runtime environment variables in the Vercel project settings.</li>
+      <li>Deploy a preview and test flows before production.</li>
+      <li>Add the custom domain in Vercel and follow the DNS records Vercel provides.</li>
+      <li>After the custom domain resolves, update <code>NEXT_PUBLIC_SITE_URL</code> to that exact domain and redeploy.</li>
+    </ol>
+
+    <pre>vercel
+vercel --prod</pre>
+
+    <h2>5. How to Change Client Details, Plans, and Theme</h2>
+    <h3>Client details</h3>
+    <ul>
+      <li>Names, dates, venues, story, dress code, rituals, and thank-you copy live in <code>config/wedding.json</code>.</li>
+      <li>Program order and multi-event details live in <code>config/events.json</code>.</li>
+      <li>Travel details, FAQs, emergency info, and arrival tips live in <code>config/travel.json</code>.</li>
+      <li>Prediction questions and reveal timing live in <code>config/predictions.json</code>.</li>
+      <li>Gallery categories and hero images live in <code>config/gallery.json</code>.</li>
+    </ul>
+
+    <h3>Plans and operational modules</h3>
+    <ul>
+      <li>If by "plans" you mean the wedding platform stages, the stage copy is split between <code>config/theme.json</code> and <code>config/wedding.json</code>.</li>
+      <li>If you mean day-of planning modules such as vendors, polls, and vault content, those are database-driven and should be populated after deployment from the admin side or direct data entry.</li>
+      <li>For a clean clone, start those planning tables empty for each client. Do not copy another wedding's live data.</li>
+    </ul>
+
+    <h3>Theme</h3>
+    <ul>
+      <li>The app currently imports <code>themes/warm/theme.css</code> from <code>app/globals.css</code>.</li>
+      <li>Alternative theme folders currently available are <code>minimal</code> and <code>jewel</code>.</li>
+      <li>If you want a different default theme for a client, switch the import and verify the visual result on all pages before go-live.</li>
+      <li>The color tokens also have fallbacks in <code>styles/globals.css</code>, so theme changes should be tested instead of assumed.</li>
+    </ul>
+
+    <h2>6. Database Migration SOP</h2>
+    <p>
+      The clean database story for this template is: new client equals new Supabase project. This avoids data
+      overlap, avoids trying to surgically clean old rows, and turns the migration process into a deterministic
+      one-time setup on a blank database.
+    </p>
+
+    <h3>Clean migration checklist</h3>
+    <ol>
+      <li>Create a new Supabase project in the region closest to the client's main audience.</li>
+      <li>Set <code>NEXT_PUBLIC_SUPABASE_URL</code>, <code>NEXT_PUBLIC_SUPABASE_ANON_KEY</code>, <code>SUPABASE_SERVICE_ROLE_KEY</code>, and <code>SUPABASE_ACCESS_TOKEN</code> in <code>.env.local</code>.</li>
+      <li>Run <code>scripts/setup-database.ts</code> once.</li>
+      <li>Run <code>scripts/setup-storage.ts</code> once.</li>
+      <li>Verify the four buckets and expected tables.</li>
+      <li>Create admin/family users.</li>
+      <li>Import the guest list and distribute invite links only after QA.</li>
+    </ol>
+
+    <h3>What not to do</h3>
+    <ul>
+      <li>Do not reuse a previous client's Supabase project and manually delete rows.</li>
+      <li>Do not assume the SQL folder is a perfect idempotent migration history.</li>
+      <li>Do not store temporary one-off repair SQL in <code>database/</code> unless you intend future fresh projects to execute it.</li>
+      <li>Do not treat the old deployment doc table counts or file counts as authoritative.</li>
+    </ul>
+
+    <h2>7. QA Before Delivery</h2>
+    <p>Before the client sees the production domain, test the following on the preview deployment and then again on production:</p>
+    <ul>
+      <li>Home page and invitation page load correctly on desktop and mobile.</li>
+      <li>A personalized guest invite link resolves correctly.</li>
+      <li>The invite opens and the site navigation works across invitation, story, events, travel, guestbook, gallery, and predictions.</li>
+      <li>RSVP submit path works.</li>
+      <li>Guestbook submission works.</li>
+      <li>Predictions submit and reveal timing behave correctly.</li>
+      <li>Photo upload and gallery reads work if enabled.</li>
+      <li>Admin login works.</li>
+      <li>Family login or magic link flow works.</li>
+      <li>Email delivery works from the real sender domain.</li>
+      <li><code>NEXT_PUBLIC_SITE_URL</code> is the live domain, not a preview URL or localhost value.</li>
+    </ul>
+
+    <h2>8. Delivery and Handover Package</h2>
+    <p>For a clean client delivery, hand over or internally archive the following:</p>
+    <ul>
+      <li>GitHub repo URL for that client project</li>
+      <li>Vercel project URL and owner/team details</li>
+      <li>Supabase project reference, region, and ownership details</li>
+      <li>Domain registrar and DNS access owner</li>
+      <li>Resend account or sender domain ownership details</li>
+      <li>Final environment variable inventory stored in a password manager</li>
+      <li>Admin login email and password, or the process to rotate them</li>
+      <li>Client-facing operating notes: how to access admin, how to approve uploads, how to view messages, how to add vault content</li>
+    </ul>
+
+    <h2>9. Audit Findings and Risks in the Current Repo</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Finding</th>
+          <th>Why it matters</th>
+          <th>Operational rule for now</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>DEPLOY.md</code> is outdated</td>
+          <td>It still references old table counts, fewer SQL files, and an older setup story</td>
+          <td>Use this handbook as the cloning source of truth</td>
+        </tr>
+        <tr>
+          <td><code>scripts/create-wedding.ts</code> is hardcoded to one wedding</td>
+          <td>It ignores the promise of generic CLI scaffolding and does not currently write the <code>weddings</code> row it claims to insert</td>
+          <td>Do not rely on it as a generic client scaffold; curate config files manually unless the script is repaired later</td>
+        </tr>
+        <tr>
+          <td><code>scripts/create-wedding.ts</code> does not write every config file</td>
+          <td>The repo uses six config files, but the script does not generate <code>predictions.json</code></td>
+          <td>Always review all six config files by hand</td>
+        </tr>
+        <tr>
+          <td><code>scripts/setup-database.ts</code> comments are stale</td>
+          <td>The script actually needs <code>NEXT_PUBLIC_SUPABASE_URL</code> and <code>SUPABASE_ACCESS_TOKEN</code>; the comment still mentions <code>SUPABASE_SERVICE_ROLE_KEY</code></td>
+          <td>Trust the code path, not the header comment</td>
+        </tr>
+        <tr>
+          <td><code>scripts/setup-database.ts</code> runs every SQL file in <code>database/</code></td>
+          <td>Repair files and support SQL are mixed into the migration folder and will run for future fresh projects too</td>
+          <td>Keep the folder clean and review new SQL before using it for another client</td>
+        </tr>
+        <tr>
+          <td><code>phase-2-supabase.sql</code> is not fully rerunnable</td>
+          <td>It contains plain <code>CREATE POLICY</code> statements without guards, despite comments saying it is safe to rerun</td>
+          <td>Run the full SQL pack only on blank projects; review manually for later upgrades</td>
+        </tr>
+        <tr>
+          <td><code>verify-deploy.ps1</code> is useful but incomplete</td>
+          <td>It still verifies an older subset of tables and should not be the only sign-off criterion</td>
+          <td>Use it as one check, then do manual QA on the real flows</td>
+        </tr>
+        <tr>
+          <td>Theme selection is partly code-level</td>
+          <td>Theme changes are not controlled only by JSON; CSS imports still decide the active theme</td>
+          <td>Test visual changes on the actual pages before delivery</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>10. Recommended Internal Improvement Backlog</h2>
+    <p>
+      This section is not required to deliver the next client, but it would reduce risk and delivery time on
+      future clones:
+    </p>
+    <ul>
+      <li>Repair <code>scripts/create-wedding.ts</code> so it truly accepts CLI input, writes all config files, and optionally inserts the wedding row.</li>
+      <li>Separate baseline migrations from repair SQL and support SQL.</li>
+      <li>Make <code>phase-2-supabase.sql</code> genuinely idempotent.</li>
+      <li>Refresh <code>DEPLOY.md</code> and <code>verify-deploy.ps1</code> to match the current schema.</li>
+      <li>Make theme selection fully config-driven if rapid client branding is a core business need.</li>
+    </ul>
+
+    <h2>11. Final Recommended Delivery Sequence</h2>
+    <ol>
+      <li>Fork or duplicate the template into a client-specific private repo.</li>
+      <li>Create a fresh Supabase project and a fresh Vercel project.</li>
+      <li>Set client-specific environment variables.</li>
+      <li>Run database and storage setup on the blank Supabase project.</li>
+      <li>Rewrite all six config files and replace assets.</li>
+      <li>Create admin and family users.</li>
+      <li>Import guests.</li>
+      <li>Deploy preview and complete full QA.</li>
+      <li>Connect the production domain and update <code>NEXT_PUBLIC_SITE_URL</code>.</li>
+      <li>Deploy production, test again, then deliver.</li>
+    </ol>
+
+    <div class="success">
+      <strong>Bottom line:</strong> this template is deliverable for client work if you clone it with fresh
+      infrastructure per wedding, treat <code>config/*.json</code> as the copy source of truth, treat Supabase
+      as the per-client data layer, and avoid relying on the older deployment docs or the current hardcoded
+      wedding scaffold script.
+    </div>
+  </main>
+</body>
+</html>

@@ -22,11 +22,12 @@ login). All guest-facing public pages get the floating navbar.
 
 // Routes that render their OWN complete layout — no global chrome needed
 const SHELL_SUPPRESSED_PREFIXES = [
-  "/family",   // family vault — has its own header/footer
-  "/admin",    // admin dashboard — has its own header
-  "/vault/",   // magic-link redirect bridge — transparent redirect
-  "/squad/",   // squad proposal — private cinematic experience
-  "/login",    // login page — standalone
+  "/family",              // family vault — has its own header/footer
+  "/admin",               // admin dashboard — has its own header
+  "/vault/",              // magic-link redirect bridge — transparent redirect
+  "/squad/",              // squad proposal — private cinematic experience
+  "/login",               // login page — standalone
+  "/preview-cinematic",   // sandbox test page — full-screen, no chrome
 ];
 
 // Homepage suppressed separately — exact match only, no prefix bleed
