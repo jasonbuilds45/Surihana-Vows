@@ -928,6 +928,273 @@ function GiftTracker() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// 11. LEGAL DOCUMENT CHECKLIST
+// ─────────────────────────────────────────────────────────────────────────────
+type LegalDoc = {
+  id: string; document_name: string; category: string; responsible: string;
+  due_date: string; status: string; notes: string; created_at: string;
+};
+
+const LEGAL_CATS = [
+  { value: "identity",      label: "Identity proof" },
+  { value: "address",       label: "Address proof" },
+  { value: "ceremony",      label: "Ceremony" },
+  { value: "registration",  label: "Registration" },
+  { value: "travel",        label: "Travel / visa" },
+  { value: "financial",     label: "Financial" },
+  { value: "other",         label: "Other" },
+];
+
+const LEGAL_STATUSES = [
+  { value: "pending",     label: "Pending" },
+  { value: "in_progress", label: "In progress" },
+  { value: "collected",   label: "Collected" },
+  { value: "submitted",   label: "Submitted" },
+  { value: "done",        label: "Done ✓" },
+];
+
+const LEGAL_STATUS_COLOR: Record<string, string> = {
+  pending: "gray", in_progress: "amber", collected: "blue",
+  submitted: "purple", done: "green",
+};
+
+const LEGAL_SEED: Array<Omit<LegalDoc, "id" | "created_at">> = [
+  { document_name: "Bride — Aadhaar card (original + copy)",               category: "identity",     responsible: weddingConfig.brideName.split(" ")[0]!, due_date: "", status: "pending", notes: "" },
+  { document_name: "Groom — Aadhaar card (original + copy)",               category: "identity",     responsible: weddingConfig.groomName.split(" ")[0]!, due_date: "", status: "pending", notes: "" },
+  { document_name: "Bride — PAN card",                                      category: "identity",     responsible: weddingConfig.brideName.split(" ")[0]!, due_date: "", status: "pending", notes: "" },
+  { document_name: "Groom — PAN card",                                      category: "identity",     responsible: weddingConfig.groomName.split(" ")[0]!, due_date: "", status: "pending", notes: "" },
+  { document_name: "Bride — Passport (if applicable)",                      category: "identity",     responsible: weddingConfig.brideName.split(" ")[0]!, due_date: "", status: "pending", notes: "" },
+  { document_name: "Groom — Passport (if applicable)",                      category: "identity",     responsible: weddingConfig.groomName.split(" ")[0]!, due_date: "", status: "pending", notes: "" },
+  { document_name: "Bride — Address proof (utility bill / bank statement)", category: "address",      responsible: weddingConfig.brideName.split(" ")[0]!, due_date: "", status: "pending", notes: "" },
+  { document_name: "Groom — Address proof (utility bill / bank statement)", category: "address",      responsible: weddingConfig.groomName.split(" ")[0]!, due_date: "", status: "pending", notes: "" },
+  { document_name: "Church / pastor confirmation letter",                    category: "ceremony",     responsible: "Family", due_date: "", status: "pending", notes: "Confirm booking in writing" },
+  { document_name: "Priest booking receipt",                                 category: "ceremony",     responsible: "Family", due_date: "", status: "pending", notes: "" },
+  { document_name: "Venue booking receipt — Church",                         category: "ceremony",     responsible: "Family", due_date: "", status: "pending", notes: "" },
+  { document_name: "Venue booking receipt — Beach resort",                   category: "ceremony",     responsible: "Family", due_date: "", status: "pending", notes: "" },
+  { document_name: "Marriage registration appointment booked",               category: "registration", responsible: "Family", due_date: "", status: "pending", notes: "Tamil Nadu sub-registrar office" },
+  { document_name: "Marriage registration form filled (Form 1)",             category: "registration", responsible: weddingConfig.groomName.split(" ")[0]!, due_date: "", status: "pending", notes: "" },
+  { document_name: "2 witnesses — ID proof ready",                           category: "registration", responsible: "Family", due_date: "", status: "pending", notes: "Both witnesses must be present" },
+  { document_name: "2 passport-size photos — Bride",                         category: "registration", responsible: weddingConfig.brideName.split(" ")[0]!, due_date: "", status: "pending", notes: "" },
+  { document_name: "2 passport-size photos — Groom",                         category: "registration", responsible: weddingConfig.groomName.split(" ")[0]!, due_date: "", status: "pending", notes: "" },
+  { document_name: "Marriage certificate — certified copy collected",         category: "registration", responsible: "Family", due_date: "", status: "pending", notes: "Keep multiple certified copies" },
+  { document_name: "Joint bank account opening documents",                   category: "financial",    responsible: "Both",   due_date: "", status: "pending", notes: "" },
+  { document_name: "Bride — name change application (if applicable)",        category: "financial",    responsible: weddingConfig.brideName.split(" ")[0]!, due_date: "", status: "pending", notes: "Bank, Aadhaar, PAN" },
+];
+
+const SEEDED_KEY = `surihana_legal_seeded_${weddingConfig.id}`;
+
+function LegalDocChecklist() {
+  const { rows, loading, saving, error, setError, create, update, remove } = usePlanning<LegalDoc>("legal_documents");
+  const [seeding,   setSeeding]   = useState(false);
+  const [filterCat, setFilterCat] = useState<string>("all");
+
+  const done       = rows.filter(r => r.status === "done").length;
+  const pending    = rows.filter(r => r.status === "pending").length;
+  const inProgress = rows.filter(r => r.status === "in_progress" || r.status === "collected" || r.status === "submitted").length;
+  const filtered   = filterCat === "all" ? rows : rows.filter(r => r.category === filterCat);
+
+  async function seedDefaults() {
+    if (typeof window !== "undefined") sessionStorage.setItem(SEEDED_KEY, "1");
+    setSeeding(true);
+    for (const doc of LEGAL_SEED) { await create(doc as never); }
+    setSeeding(false);
+  }
+
+  const cols: ColDef<LegalDoc>[] = [
+    { key: "document_name", label: "Document",    type: "text",   width: "30%" },
+    { key: "category",      label: "Category",    type: "select", options: LEGAL_CATS,
+      render: r => <Badge label={LEGAL_CATS.find(c => c.value === r.category)?.label ?? r.category} color="blue" /> },
+    { key: "responsible",   label: "Responsible", type: "text" },
+    { key: "due_date",      label: "Due date",    type: "date" },
+    { key: "status",        label: "Status",      type: "select", options: LEGAL_STATUSES,
+      render: r => <Badge label={LEGAL_STATUSES.find(s => s.value === r.status)?.label ?? r.status} color={LEGAL_STATUS_COLOR[r.status] ?? "gray"} /> },
+    { key: "notes",         label: "Notes",       type: "text" },
+  ];
+
+  return (
+    <div>
+      <SectionHeader
+        eyebrow="Legal"
+        title="Legal document checklist"
+        subtitle="Every document you need — from identity proofs to marriage registration. Track status in one place."
+      />
+
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(140px,1fr))", gap: "1rem", marginBottom: "1.5rem" }}>
+        <StatCard label="Total documents" value={String(rows.length)} />
+        <StatCard label="Done ✓"          value={String(done)} />
+        <StatCard label="In progress"     value={String(inProgress)} />
+        <StatCard label="Pending"         value={String(pending)} />
+      </div>
+
+      {rows.length > 0 && (
+        <div style={{ marginBottom: "1.5rem" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: ".375rem" }}>
+            <p style={{ fontFamily: BF, fontSize: ".72rem", color: INK3 }}>Overall completion</p>
+            <p style={{ fontFamily: BF, fontSize: ".72rem", fontWeight: 700, color: done === rows.length ? "#166534" : ROSE }}>
+              {Math.round((done / rows.length) * 100)}%
+            </p>
+          </div>
+          <div style={{ height: 6, borderRadius: 999, background: BDR, overflow: "hidden" }}>
+            <div style={{
+              height: "100%", borderRadius: 999,
+              width: `${Math.round((done / rows.length) * 100)}%`,
+              background: done === rows.length ? "#16a34a" : ROSE,
+              transition: "width .4s ease",
+            }} />
+          </div>
+        </div>
+      )}
+
+      {rows.length === 0 && !loading && (
+        <div style={{ padding: "1.5rem", marginBottom: "1.5rem", background: "rgba(192,54,74,.04)", border: "1px solid rgba(192,54,74,.14)", borderRadius: 14, textAlign: "center" }}>
+          <p style={{ fontFamily: DF, fontSize: "1rem", color: INK, marginBottom: ".625rem" }}>
+            Start with the standard Indian wedding document checklist?
+          </p>
+          <p style={{ fontFamily: BF, fontSize: ".82rem", color: INK3, marginBottom: "1rem" }}>
+            20 pre-filled documents covering identity, ceremony, registration, and more.
+          </p>
+          <button type="button" onClick={seedDefaults} disabled={seeding} style={{
+            display: "inline-flex", alignItems: "center", gap: 8, padding: "9px 20px",
+            borderRadius: 999, cursor: seeding ? "not-allowed" : "pointer",
+            background: ROSE, color: W, border: "none",
+            fontFamily: BF, fontSize: ".72rem", fontWeight: 700, letterSpacing: ".12em",
+          }}>
+            {seeding ? <Loader2 size={13} className="animate-spin" /> : <Plus size={13} />}
+            {seeding ? "Loading…" : "Load standard checklist"}
+          </button>
+        </div>
+      )}
+
+      {rows.length > 0 && (
+        <div style={{ display: "flex", flexWrap: "wrap", gap: ".375rem", marginBottom: "1.25rem" }}>
+          {[{ value: "all", label: "All" }, ...LEGAL_CATS].map(c => (
+            <button key={c.value} type="button" onClick={() => setFilterCat(c.value)} style={{
+              padding: "5px 12px", borderRadius: 999, cursor: "pointer",
+              fontFamily: BF, fontSize: ".65rem", fontWeight: filterCat === c.value ? 700 : 500,
+              background: filterCat === c.value ? ROSE : W,
+              color: filterCat === c.value ? W : INK3,
+              border: filterCat === c.value ? `1px solid ${ROSE}` : `1px solid ${BDR}`,
+              transition: "all .14s",
+            }}>{c.label}</button>
+          ))}
+        </div>
+      )}
+
+      <AddForm label="Add document" saving={saving} onSubmit={async d => { await create(d as never); }} fields={[
+        { key: "document_name", label: "Document name",  type: "text",   required: true },
+        { key: "category",      label: "Category",        type: "select", options: LEGAL_CATS },
+        { key: "responsible",   label: "Responsible",     type: "text",   placeholder: "Bride / Groom / Family" },
+        { key: "due_date",      label: "Due date",        type: "date" },
+        { key: "status",        label: "Status",          type: "select", options: LEGAL_STATUSES },
+        { key: "notes",         label: "Notes",           type: "textarea" },
+      ]} />
+
+      {loading
+        ? <Loader2 size={20} className="animate-spin" style={{ color: ROSE }} />
+        : <PlanTable
+            rows={filtered} cols={cols} saving={saving} error={error} setError={setError}
+            onUpdate={update} onDelete={remove}
+            emptyLabel={filterCat !== "all" ? "No documents in this category." : "No documents yet. Use the loader above to get started."}
+          />
+      }
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 12. HONEYMOON ITINERARY
+// ─────────────────────────────────────────────────────────────────────────────
+type HoneymoonDay = {
+  id: string; day_number: string; date: string; destination: string;
+  accommodation: string; morning: string; afternoon: string; evening: string;
+  transport: string; booking_status: string; notes: string; created_at: string;
+};
+
+const BOOKING_STATUSES = [
+  { value: "not_booked",  label: "Not booked" },
+  { value: "researching", label: "Researching" },
+  { value: "booked",      label: "Booked ✓" },
+  { value: "confirmed",   label: "Confirmed ✓✓" },
+];
+
+const BOOKING_COLOR: Record<string, string> = {
+  not_booked: "gray", researching: "amber", booked: "blue", confirmed: "green",
+};
+
+function HoneymoonPlanner() {
+  const { rows, loading, saving, error, setError, create, update, remove } = usePlanning<HoneymoonDay>("honeymoon_itinerary");
+
+  const sorted = [...rows].sort((a, b) => {
+    const na = parseInt(a.day_number) || 0;
+    const nb = parseInt(b.day_number) || 0;
+    return na - nb || a.date.localeCompare(b.date);
+  });
+
+  const confirmed    = rows.filter(r => r.booking_status === "confirmed" || r.booking_status === "booked").length;
+  const destinations = [...new Set(rows.map(r => r.destination).filter(Boolean))];
+  const routeStr     = destinations.join(" → ") || "—";
+
+  const cols: ColDef<HoneymoonDay>[] = [
+    { key: "day_number",     label: "Day",          type: "text",   width: "60px" },
+    { key: "date",           label: "Date",         type: "date" },
+    { key: "destination",    label: "Destination",  type: "text" },
+    { key: "accommodation",  label: "Hotel / stay", type: "text" },
+    { key: "morning",        label: "Morning",      type: "text" },
+    { key: "afternoon",      label: "Afternoon",    type: "text" },
+    { key: "evening",        label: "Evening",      type: "text" },
+    { key: "transport",      label: "Transport",    type: "text" },
+    { key: "booking_status", label: "Booking",      type: "select", options: BOOKING_STATUSES,
+      render: r => <Badge label={BOOKING_STATUSES.find(s => s.value === r.booking_status)?.label ?? r.booking_status} color={BOOKING_COLOR[r.booking_status] ?? "gray"} /> },
+    { key: "notes",          label: "Notes",        type: "text" },
+  ];
+
+  return (
+    <div>
+      <SectionHeader
+        eyebrow="Couple"
+        title="Honeymoon itinerary"
+        subtitle="Plan every day — destination, stays, morning to evening activities, and booking status all in one place."
+      />
+
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(150px,1fr))", gap: "1rem", marginBottom: "1.5rem" }}>
+        <StatCard label="Days planned"  value={String(rows.length)} />
+        <StatCard label="Days booked"   value={String(confirmed)} />
+        <StatCard label="Destinations"  value={String(destinations.length)} />
+      </div>
+
+      {routeStr !== "—" && (
+        <div style={{ padding: "1rem 1.25rem", marginBottom: "1.5rem", background: W, border: `1px solid ${BDR}`, borderRadius: 14, display: "flex", alignItems: "center", gap: ".75rem", flexWrap: "wrap" }}>
+          <MapPin size={14} style={{ color: ROSE, flexShrink: 0 }} />
+          <p style={{ fontFamily: DF, fontStyle: "italic", fontSize: "1rem", color: INK }}>{routeStr}</p>
+        </div>
+      )}
+
+      <AddForm label="Add day" saving={saving} onSubmit={async d => { await create(d as never); }} fields={[
+        { key: "day_number",     label: "Day number",    type: "text",   required: true, placeholder: "1" },
+        { key: "date",           label: "Date",          type: "date" },
+        { key: "destination",    label: "Destination",   type: "text",   required: true, placeholder: "Paris, France" },
+        { key: "accommodation",  label: "Hotel / stay",  type: "text",   placeholder: "Le Bristol Paris" },
+        { key: "morning",        label: "Morning plans", type: "text",   placeholder: "Eiffel Tower" },
+        { key: "afternoon",      label: "Afternoon",     type: "text",   placeholder: "Louvre Museum" },
+        { key: "evening",        label: "Evening",       type: "text",   placeholder: "Dinner at Épicure" },
+        { key: "transport",      label: "Transport",     type: "text",   placeholder: "Flight AI 101 / Taxi" },
+        { key: "booking_status", label: "Booking status", type: "select", options: BOOKING_STATUSES },
+        { key: "notes",          label: "Notes",         type: "textarea" },
+      ]} />
+
+      {loading
+        ? <Loader2 size={20} className="animate-spin" style={{ color: ROSE }} />
+        : <PlanTable
+            rows={sorted} cols={cols} saving={saving} error={error} setError={setError}
+            onUpdate={update} onDelete={remove}
+            emptyLabel="No days planned yet. Add your first honeymoon day above."
+          />
+      }
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // PlanningDashboard — root export
 // ─────────────────────────────────────────────────────────────────────────────
 export function PlanningDashboard() {
@@ -957,6 +1224,8 @@ export function PlanningDashboard() {
     decor:         <DecorMoodBoard />,
     tasks:         <WeddingTaskManager />,
     gifts:         <GiftTracker />,
+    legal:         <LegalDocChecklist />,
+    honeymoon:     <HoneymoonPlanner />,
   };
 
   return (
