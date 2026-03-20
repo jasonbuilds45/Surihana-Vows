@@ -585,7 +585,7 @@ export default function PreviewCinematic() {
                 color: `rgba(190,45,69,.22)`, lineHeight: 1,
                 marginBottom: "-1rem",
               }}>
-                "
+                &ldquo;
               </div>
 
               {/* The quote */}
