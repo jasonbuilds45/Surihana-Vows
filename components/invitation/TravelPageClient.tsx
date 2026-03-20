@@ -125,13 +125,11 @@ function Divider() {
 }
 
 // ════════════════════════════════════════════════════════════════════════════
-// HERO
-// Two-zone layout: left = editorial headline block, right = venue + nav panel
-// Light parchment background with warm radial blooms. No dark sections.
+// HERO — unified maroon LuxuryPageHero, matches all other pages
 // ════════════════════════════════════════════════════════════════════════════
 function Hero() {
   if (weddingConfig.mapLink) {
-    return <TravelHeroContent />;
+    return <LuxuryHeroTravel />;
   }
 
   return (
@@ -397,6 +395,64 @@ function Hero() {
 }
 
 // ════════════════════════════════════════════════════════════════════════════
+function LuxuryHeroTravel() {
+  return (
+    <LuxuryPageHero
+      eyebrow="Travel guide · 20 May 2026"
+      letter="T"
+      title={
+        <>
+          Getting<br />
+          <em style={{ color: "rgba(255,255,255,.88)" }}>there.</em>
+        </>
+      }
+      subtitle="Two beautiful venues. One coastal road between them. Everything you need to arrive rested and ready for the celebration."
+      below={
+        <div style={{ display: "flex", flexWrap: "wrap", gap: ".625rem" }}>
+          {[
+            { time: "3 PM", label: "Divine Mercy Church",  sub: "Kelambakkam",    href: weddingConfig.mapLink },
+            { time: "6 PM", label: "Blue Bay Beach Resort", sub: "Mahabalipuram",  href: weddingConfig.receptionMapLink },
+          ].map(({ time, label, sub, href }) => (
+            <a key={label} href={href} target="_blank" rel="noreferrer" style={{
+              display: "inline-flex", alignItems: "center", gap: 10,
+              padding: "7px 16px", borderRadius: 999,
+              background: "rgba(255,255,255,.13)",
+              border: "1px solid rgba(255,255,255,.26)",
+              backdropFilter: "blur(8px)", textDecoration: "none",
+            }}>
+              <span style={{ fontFamily: BF, fontSize: ".50rem", fontWeight: 800,
+                letterSpacing: ".12em", color: "rgba(255,255,255,.60)" }}>{time}</span>
+              <div>
+                <p style={{ fontFamily: DF, fontSize: ".88rem", fontWeight: 600,
+                  color: "#fff", lineHeight: 1 }}>{label}</p>
+                <p style={{ fontFamily: BF, fontSize: ".58rem",
+                  color: "rgba(255,255,255,.52)", lineHeight: 1, marginTop: 2 }}>{sub}</p>
+              </div>
+            </a>
+          ))}
+          {[
+            { val: "15 km",   label: "between venues" },
+            { val: "50–60 km", label: "from airport"  },
+          ].map(({ val, label }) => (
+            <div key={label} style={{
+              display: "inline-flex", alignItems: "baseline", gap: 6,
+              padding: "7px 14px", borderRadius: 999,
+              background: "rgba(255,255,255,.09)",
+              border: "1px solid rgba(255,255,255,.18)",
+            }}>
+              <span style={{ fontFamily: DF, fontSize: ".95rem", fontWeight: 600,
+                color: "#fff" }}>{val}</span>
+              <span style={{ fontFamily: BF, fontSize: ".52rem", letterSpacing: ".10em",
+                textTransform: "uppercase", color: "rgba(255,255,255,.50)" }}>{label}</span>
+            </div>
+          ))}
+        </div>
+      }
+    />
+  );
+}
+
+// (kept for no-mapLink fallback only)
 function TravelHeroContent() {
   const stops = [
     {

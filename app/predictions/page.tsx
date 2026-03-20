@@ -36,7 +36,7 @@ export default function PredictionsPage() {
         title={
           <>
             What will<br />
-            <em style={{ color: "rgba(201,150,10,.85)" }}>happen?</em>
+            <em style={{ color: "rgba(255,255,255,.88)" }}>happen?</em>
           </>
         }
         subtitle={`Before ${bf} & ${gf} said their vows, guests made their predictions. Results revealed after the reception.`}
@@ -44,32 +44,32 @@ export default function PredictionsPage() {
           /* Reveal date card */
           <div style={{
             borderRadius: 18, overflow: "hidden",
-            border: "1px solid rgba(190,45,69,.20)",
+            border: "1px solid rgba(255,255,255,.22)",
             boxShadow: "0 8px 32px rgba(0,0,0,.22)",
             minWidth: 210, flexShrink: 0,
           }}>
-            <div style={{ height: 2, background: "linear-gradient(90deg,transparent,rgba(190,45,69,.55) 30%,rgba(201,150,10,.70) 50%,rgba(190,45,69,.55) 70%,transparent)" }} />
+            <div style={{ height: 1, background: "linear-gradient(90deg,transparent,rgba(255,255,255,.40) 30%,rgba(255,255,255,.70) 50%,rgba(255,255,255,.40) 70%,transparent)" }} />
             <div style={{
-              background: "rgba(255,255,255,.06)",
+              background: "rgba(255,255,255,.14)",
               backdropFilter: "blur(20px)",
               WebkitBackdropFilter: "blur(20px)",
               padding: "1.25rem 1.5rem",
             }}>
               <p style={{
                 fontFamily: BF, fontSize: ".44rem", letterSpacing: ".36em",
-                textTransform: "uppercase", color: "rgba(190,45,69,.72)",
+                textTransform: "uppercase", color: "rgba(255,255,255,.60)",
                 fontWeight: 700, marginBottom: ".625rem",
               }}>
                 Results reveal
               </p>
               <p style={{
                 fontFamily: DF, fontSize: "clamp(1.1rem,2.5vw,1.35rem)",
-                fontWeight: 600, color: "rgba(255,252,248,.92)", lineHeight: 1.15,
+                fontWeight: 600, color: "#fff", lineHeight: 1.15,
                 marginBottom: ".25rem",
               }}>
                 {revealDate.toLocaleDateString("en-US", { day: "numeric", month: "long", year: "numeric" })}
               </p>
-              <p style={{ fontFamily: BF, fontSize: ".72rem", color: "rgba(255,255,255,.40)" }}>
+              <p style={{ fontFamily: BF, fontSize: ".72rem", color: "rgba(255,255,255,.50)" }}>
                 {revealDate.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })}
               </p>
             </div>

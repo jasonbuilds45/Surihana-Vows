@@ -35,7 +35,7 @@ export default async function EventsPage() {
         title={
           <>
             The wedding<br />
-            <em style={{ color: "rgba(201,150,10,.85)" }}>itinerary.</em>
+            <em style={{ color: "rgba(255,255,255,.88)" }}>itinerary.</em>
           </>
         }
         subtitle="Two sacred venues. One coastal road between them. From a church ceremony in the afternoon to a shoreline reception at sunset."
@@ -46,40 +46,40 @@ export default async function EventsPage() {
             alignItems: "stretch", gap: 0,
             maxWidth: "clamp(340px,80vw,580px)",
             borderRadius: 14, overflow: "hidden",
-            border: "1px solid rgba(255,255,255,.08)",
-            boxShadow: "0 8px 32px rgba(0,0,0,.24)",
+            border: "1px solid rgba(255,255,255,.22)",
+            boxShadow: "0 8px 32px rgba(0,0,0,.20)",
           }}>
             <div style={{ flex: 1, minWidth: 130, padding: "1rem 1.25rem",
-              background: "rgba(190,45,69,.12)", borderRight: "1px solid rgba(255,255,255,.06)" }}>
+              background: "rgba(255,255,255,.12)", borderRight: "1px solid rgba(255,255,255,.14)" }}>
               <p style={{ fontFamily: BF, fontSize: ".42rem", letterSpacing: ".28em",
-                textTransform: "uppercase", color: "rgba(190,45,69,.75)",
+                textTransform: "uppercase", color: "rgba(255,255,255,.60)",
                 fontWeight: 700, marginBottom: ".3rem" }}>Ceremony</p>
               <p style={{ fontFamily: DF, fontSize: "clamp(1rem,2.5vw,1.3rem)",
-                fontWeight: 600, color: "rgba(255,252,248,.92)", lineHeight: 1.1,
+                fontWeight: 600, color: "#fff", lineHeight: 1.1,
                 marginBottom: ".2rem" }}>3:00 PM</p>
-              <p style={{ fontFamily: BF, fontSize: ".66rem", color: "rgba(255,255,255,.36)" }}>Kelambakkam</p>
+              <p style={{ fontFamily: BF, fontSize: ".66rem", color: "rgba(255,255,255,.48)" }}>Kelambakkam</p>
             </div>
             <div style={{ width: "clamp(48px,9vw,72px)", flexShrink: 0,
-              background: "rgba(255,255,255,.04)",
+              background: "rgba(255,255,255,.06)",
               display: "flex", flexDirection: "column",
               alignItems: "center", justifyContent: "center", gap: 3, padding: ".5rem" }}>
-              <span style={{ fontFamily: BF, fontSize: ".42rem", color: "rgba(255,255,255,.20)", letterSpacing: ".10em" }}>15 km</span>
+              <span style={{ fontFamily: BF, fontSize: ".42rem", color: "rgba(255,255,255,.45)", letterSpacing: ".10em" }}>15 km</span>
               <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
                 {[0,1,2,3].map(i => (
                   <div key={i} style={{ width: 3, height: 3, borderRadius: "50%",
-                    background: i === 1 || i === 2 ? "rgba(201,150,10,.60)" : "rgba(255,255,255,.14)" }} />
+                    background: i === 1 || i === 2 ? "rgba(255,255,255,.80)" : "rgba(255,255,255,.25)" }} />
                 ))}
               </div>
             </div>
             <div style={{ flex: 1, minWidth: 130, padding: "1rem 1.25rem",
-              background: "rgba(168,120,8,.10)" }}>
+              background: "rgba(255,255,255,.08)" }}>
               <p style={{ fontFamily: BF, fontSize: ".42rem", letterSpacing: ".28em",
-                textTransform: "uppercase", color: "rgba(201,150,10,.75)",
+                textTransform: "uppercase", color: "rgba(255,255,255,.60)",
                 fontWeight: 700, marginBottom: ".3rem" }}>Reception</p>
               <p style={{ fontFamily: DF, fontSize: "clamp(1rem,2.5vw,1.3rem)",
-                fontWeight: 600, color: "rgba(255,252,248,.92)", lineHeight: 1.1,
+                fontWeight: 600, color: "#fff", lineHeight: 1.1,
                 marginBottom: ".2rem" }}>6:00 PM</p>
-              <p style={{ fontFamily: BF, fontSize: ".66rem", color: "rgba(255,255,255,.36)" }}>Mahabalipuram</p>
+              <p style={{ fontFamily: BF, fontSize: ".66rem", color: "rgba(255,255,255,.48)" }}>Mahabalipuram</p>
             </div>
           </div>
         }

@@ -32,7 +32,7 @@ export default async function GuestbookPage() {
         title={
           <>
             Leave your<br />
-            <em style={{ color: "rgba(190,45,69,.82)", fontStyle: "italic" }}>blessing.</em>
+            <em style={{ color: "rgba(255,255,255,.88)", fontStyle: "italic" }}>blessing.</em>
           </>
         }
         subtitle={`A word, a wish, a memory — it will stay with ${bf} and ${gf} long after the day is over.`}
@@ -46,12 +46,12 @@ export default async function GuestbookPage() {
               <div key={label} style={{
                 display: "inline-flex", alignItems: "baseline", gap: 7,
                 padding: "6px 14px", borderRadius: 999,
-                background: "rgba(190,45,69,.12)",
-                border: "1px solid rgba(190,45,69,.24)",
+                background: "rgba(255,255,255,.14)",
+                border: "1px solid rgba(255,255,255,.28)",
                 backdropFilter: "blur(8px)",
               }}>
-                <span style={{ fontFamily: DF, fontSize: ".95rem", fontWeight: 600, color: "rgba(255,252,248,.90)" }}>{val}</span>
-                <span style={{ fontFamily: BF, fontSize: ".56rem", letterSpacing: ".12em", textTransform: "uppercase", color: "rgba(255,255,255,.42)" }}>{label}</span>
+                <span style={{ fontFamily: DF, fontSize: ".95rem", fontWeight: 600, color: "#fff" }}>{val}</span>
+                <span style={{ fontFamily: BF, fontSize: ".56rem", letterSpacing: ".12em", textTransform: "uppercase", color: "rgba(255,255,255,.58)" }}>{label}</span>
               </div>
             ))}
           </div>

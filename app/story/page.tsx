@@ -26,7 +26,7 @@ export default async function StoryPage() {
         letter="S"
         title={
           <>
-            {bf} <em style={{ color: "rgba(190,45,69,.80)" }}>&amp;</em> {gf}
+            {bf} <em style={{ color: "rgba(255,255,255,.80)" }}>&amp;</em> {gf}
           </>
         }
         subtitle={`"${weddingConfig.introQuote}"`}

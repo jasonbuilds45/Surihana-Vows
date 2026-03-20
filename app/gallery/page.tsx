@@ -31,7 +31,7 @@ export default async function GalleryPage() {
         title={
           <>
             Every frame,<br />
-            <em style={{ color: "rgba(201,150,10,.85)" }}>preserved.</em>
+            <em style={{ color: "rgba(255,255,255,.88)" }}>preserved.</em>
           </>
         }
         subtitle="Professional photography and candid moments — curated, downloadable, and kept forever."
@@ -44,12 +44,12 @@ export default async function GalleryPage() {
               <div key={label} style={{
                 display: "inline-flex", alignItems: "baseline", gap: 7,
                 padding: "6px 14px", borderRadius: 999,
-                background: "rgba(168,120,8,.12)",
-                border: "1px solid rgba(168,120,8,.28)",
+                background: "rgba(255,255,255,.14)",
+                border: "1px solid rgba(255,255,255,.28)",
                 backdropFilter: "blur(8px)",
               }}>
-                <span style={{ fontFamily: DF, fontSize: ".95rem", fontWeight: 600, color: "rgba(255,252,248,.90)" }}>{val}</span>
-                <span style={{ fontFamily: BF, fontSize: ".56rem", letterSpacing: ".12em", textTransform: "uppercase", color: "rgba(255,255,255,.42)" }}>{label}</span>
+                <span style={{ fontFamily: DF, fontSize: ".95rem", fontWeight: 600, color: "#fff" }}>{val}</span>
+                <span style={{ fontFamily: BF, fontSize: ".56rem", letterSpacing: ".12em", textTransform: "uppercase", color: "rgba(255,255,255,.58)" }}>{label}</span>
               </div>
             ))}
           </div>
