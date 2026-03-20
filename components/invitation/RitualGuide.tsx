@@ -1,3 +1,5 @@
+"use client";
+
 import type { RitualItem } from "@/lib/types";
 
 interface RitualGuideProps {
