@@ -12,6 +12,7 @@ import { authFetch } from "@/lib/client/token";
 import {
   DollarSign, ShoppingBag, BedDouble, Car, Users,
   UtensilsCrossed, Music, Palette, CheckSquare, Gift,
+  FileText, MapPin,
   Plus, Trash2, Edit2, Check, X, Loader2, ChevronDown, ChevronUp,
 } from "lucide-react";
 import { weddingConfig } from "@/lib/config";
@@ -40,19 +41,22 @@ const inp: React.CSSProperties = {
 // ─────────────────────────────────────────────────────────────────────────────
 type PlanTab =
   | "budget" | "shopping" | "accommodation" | "travel"
-  | "party" | "catering" | "music" | "decor" | "tasks" | "gifts";
+  | "party" | "catering" | "music" | "decor" | "tasks" | "gifts"
+  | "legal" | "honeymoon";
 
 const PLAN_TABS: Array<{ id: PlanTab; label: string; icon: React.ElementType; module: string }> = [
-  { id: "budget",        label: "Budget",        icon: DollarSign,    module: "budget_items" },
-  { id: "shopping",      label: "Shopping",      icon: ShoppingBag,   module: "shopping_items" },
-  { id: "accommodation", label: "Accommodation", icon: BedDouble,     module: "guest_accommodations" },
-  { id: "travel",        label: "Travel",        icon: Car,           module: "guest_travel" },
-  { id: "party",         label: "Wedding party", icon: Users,         module: "wedding_party_members" },
+  { id: "budget",        label: "Budget",        icon: DollarSign,      module: "budget_items" },
+  { id: "shopping",      label: "Shopping",      icon: ShoppingBag,     module: "shopping_items" },
+  { id: "accommodation", label: "Accommodation", icon: BedDouble,       module: "guest_accommodations" },
+  { id: "travel",        label: "Travel",        icon: Car,             module: "guest_travel" },
+  { id: "party",         label: "Wedding party", icon: Users,           module: "wedding_party_members" },
   { id: "catering",      label: "Catering",      icon: UtensilsCrossed, module: "catering_menu" },
-  { id: "music",         label: "Music",         icon: Music,         module: "wedding_music" },
-  { id: "decor",         label: "Decor board",   icon: Palette,       module: "decor_ideas" },
-  { id: "tasks",         label: "Tasks",         icon: CheckSquare,   module: "planning_tasks" },
-  { id: "gifts",         label: "Gifts",         icon: Gift,          module: "gifts" },
+  { id: "music",         label: "Music",         icon: Music,           module: "wedding_music" },
+  { id: "decor",         label: "Decor board",   icon: Palette,         module: "decor_ideas" },
+  { id: "tasks",         label: "Tasks",         icon: CheckSquare,     module: "planning_tasks" },
+  { id: "gifts",         label: "Gifts",         icon: Gift,            module: "gifts" },
+  { id: "legal",         label: "Legal docs",    icon: FileText,        module: "legal_documents" },
+  { id: "honeymoon",     label: "Honeymoon",     icon: MapPin,          module: "honeymoon_itinerary" },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
