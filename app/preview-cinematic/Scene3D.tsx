@@ -12,7 +12,7 @@
  */
 
 import {
-  useCallback, useEffect, useMemo,
+  Suspense, useCallback, useEffect, useMemo,
   useRef, useState,
 } from "react";
 import { Canvas, useFrame, useThree, extend } from "@react-three/fiber";
