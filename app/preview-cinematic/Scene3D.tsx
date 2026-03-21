@@ -32,10 +32,9 @@ import {
 } from "@react-three/postprocessing";
 import { BlendFunction } from "postprocessing";
 import * as THREE from "three";
-
 // ── Types ─────────────────────────────────────────────────────────────────────
 interface SceneProps {
-  bf: string; gf: string; initials: string;
+  bf: string; gf: string; bfFull: string; gfFull: string; initials: string;
   dateParts: readonly string[]; dayStr: string;
   quote: string; venue1: string; venue1Sub: string;
   venue2: string; venue2Sub: string;
@@ -1020,7 +1019,7 @@ function SceneContent(props: SceneProps & {
       {chapter === "bride" && (
         <NameChapter
           name={props.bf}
-          fullName={weddingConfig.brideName}
+          fullName={props.bfFull}
           side="left"
           color="#FFFFFF"
         />
@@ -1029,7 +1028,7 @@ function SceneContent(props: SceneProps & {
       {chapter === "groom" && (
         <NameChapter
           name={props.gf}
-          fullName={weddingConfig.groomName}
+          fullName={props.gfFull}
           side="right"
           color="rgba(232,188,20,0.90)"
         />

@@ -73,6 +73,8 @@ export default function PreviewCinematic() {
         <Scene3D
           bf={BF_FIRST}
           gf={GF_FIRST}
+          bfFull={weddingConfig.brideName}
+          gfFull={weddingConfig.groomName}
           initials={INITIALS}
           dateParts={DATE_PARTS}
           dayStr={DAY_STR}
