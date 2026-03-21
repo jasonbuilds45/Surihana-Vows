@@ -1174,7 +1174,7 @@ function Overlay({
           pointerEvents: "none",
           animation: "fadeUpHint .9s 1.8s ease both",
         }}>
-          Scroll · Swipe · Space to advance
+          Auto-playing · Scroll · Swipe · Space to skip
         </div>
       )}
 
@@ -1278,13 +1278,35 @@ function Overlay({
 // ══════════════════════════════════════════════════════════════════════════════
 // ROOT EXPORT
 // ══════════════════════════════════════════════════════════════════════════════
+// Auto-advance duration per chapter (ms) — seal chapter never auto-advances
+const CHAPTER_DURATIONS: Record<Chapter, number> = {
+  monogram: 4800,
+  bride:    4200,
+  groom:    4200,
+  date:     4500,
+  venues:   5500,
+  quote:    7000,
+  seal:     0,     // manual only
+};
+
 export default function Scene3D(props: SceneProps) {
   const [chapter,    setChapter]    = useState<Chapter>("monogram");
   const [fading,     setFading]     = useState(false);
   const [sealOpened, setSealOpened] = useState(false);
   const [unlocked,   setUnlocked]   = useState(false);
   const [daysAway,   setDaysAway]   = useState(0);
-  const transTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Refs that always hold latest values — avoids stale closure problem
+  const chapterRef  = useRef<Chapter>("monogram");
+  const fadingRef   = useRef(false);
+  const unlockedRef = useRef(false);
+  const transTimer  = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const autoTimer   = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Keep refs in sync with state
+  useEffect(() => { chapterRef.current  = chapter;  }, [chapter]);
+  useEffect(() => { fadingRef.current   = fading;   }, [fading]);
+  useEffect(() => { unlockedRef.current = unlocked; }, [unlocked]);
 
   // Countdown
   useEffect(() => {
@@ -1294,60 +1316,81 @@ export default function Scene3D(props: SceneProps) {
 
   const chapterIdx = CHAPTERS.indexOf(chapter);
 
-  const advance = useCallback(() => {
-    if (unlocked || fading) return;
-    const next = CHAPTERS[chapterIdx + 1];
+  // ── Core navigate function (reads from refs, never stale) ────────────────
+  const navigate = useCallback((direction: 1 | -1) => {
+    if (unlockedRef.current || fadingRef.current) return;
+    const cur  = chapterRef.current;
+    const idx  = CHAPTERS.indexOf(cur);
+    const next = CHAPTERS[idx + direction];
     if (!next) return;
+
+    // Cancel any pending auto-advance
+    if (autoTimer.current)  { clearTimeout(autoTimer.current);  autoTimer.current  = null; }
+    if (transTimer.current) { clearTimeout(transTimer.current); transTimer.current = null; }
+
+    fadingRef.current = true;
     setFading(true);
     transTimer.current = setTimeout(() => {
+      chapterRef.current = next;
       setChapter(next);
+      fadingRef.current = false;
       setFading(false);
     }, 420);
-  }, [chapterIdx, unlocked, fading]);
+  }, []);
 
-  const back = useCallback(() => {
-    if (unlocked || fading) return;
-    const prev = CHAPTERS[chapterIdx - 1];
-    if (!prev) return;
-    setFading(true);
-    transTimer.current = setTimeout(() => {
-      setChapter(prev);
-      setFading(false);
-    }, 420);
-  }, [chapterIdx, unlocked, fading]);
+  const advance = useCallback(() => navigate(1),  [navigate]);
+  const back    = useCallback(() => navigate(-1), [navigate]);
 
-  // Keyboard
+  // ── Auto-advance timer ───────────────────────────────────────────────────
+  useEffect(() => {
+    if (unlocked) return;
+    const dur = CHAPTER_DURATIONS[chapter];
+    if (!dur) return; // seal chapter — no auto-advance
+
+    autoTimer.current = setTimeout(() => { advance(); }, dur);
+    return () => { if (autoTimer.current) clearTimeout(autoTimer.current); };
+  }, [chapter, unlocked, advance]);
+
+  // ── Keyboard & scroll — registered ONCE, read state via refs ────────────
   useEffect(() => {
     let lastWheel = 0;
+
     function onKey(e: KeyboardEvent) {
-      if (["ArrowRight","ArrowDown"," "].includes(e.key)) { e.preventDefault(); advance(); }
-      if (["ArrowLeft","ArrowUp"].includes(e.key))        { e.preventDefault(); back();    }
+      if (["ArrowRight", "ArrowDown", " "].includes(e.key)) {
+        e.preventDefault();
+        navigate(1);
+      }
+      if (["ArrowLeft", "ArrowUp"].includes(e.key)) {
+        e.preventDefault();
+        navigate(-1);
+      }
     }
+
     function onWheel(e: WheelEvent) {
       const now = Date.now();
       if (now - lastWheel < 750) return;
       lastWheel = now;
-      if (e.deltaY > 30)  advance();
-      if (e.deltaY < -30) back();
+      if (e.deltaY > 30)  navigate(1);
+      if (e.deltaY < -30) navigate(-1);
     }
+
     window.addEventListener("keydown", onKey);
-    window.addEventListener("wheel", onWheel, { passive: true });
+    window.addEventListener("wheel",   onWheel, { passive: true });
     return () => {
       window.removeEventListener("keydown", onKey);
-      window.removeEventListener("wheel", onWheel);
-      if (transTimer.current) clearTimeout(transTimer.current);
+      window.removeEventListener("wheel",   onWheel);
     };
-  }, [advance, back]);
+  }, [navigate]); // navigate is stable (useCallback with no deps)
 
-  // Touch
+  // ── Touch ────────────────────────────────────────────────────────────────
   const touchY = useRef<number | null>(null);
   function onTouchStart(e: React.TouchEvent) { touchY.current = e.touches[0]!.clientY; }
   function onTouchEnd(e: React.TouchEvent) {
     if (touchY.current === null) return;
     const dy = touchY.current - e.changedTouches[0]!.clientY;
     touchY.current = null;
-    if (dy > 55) advance();
-    if (dy < -55) back();
+    if (dy > 55)  navigate(1);
+    if (dy < -55) navigate(-1);
   }
 
   function handleSealOpen() {
