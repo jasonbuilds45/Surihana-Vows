@@ -295,6 +295,119 @@ function buildScene(canvas: HTMLCanvasElement) {
     return m;
   });
 
+  // ── Custom Models: Beautiful Christian Bride & Groom ───────────────────────
+  function createBrideModel() {
+    const group = new THREE.Group();
+    const skinMat = new THREE.MeshStandardMaterial({ color: 0xFFD8B4, roughness: 0.4 });
+    const dressMat = new THREE.MeshStandardMaterial({ color: 0xFFFFFF, roughness: 0.7, metalness: 0.1, emissive: 0x111111 });
+    const veilMat = new THREE.MeshStandardMaterial({ color: 0xFFFFFF, transparent: true, opacity: 0.45, side: THREE.DoubleSide });
+
+    // Head
+    const head = new THREE.Mesh(new THREE.SphereGeometry(0.28, 32, 32), skinMat);
+    head.position.y = 1.9;
+    group.add(head);
+
+    // Bodice
+    const bodice = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.20, 0.6, 32), dressMat);
+    bodice.position.y = 1.35;
+    group.add(bodice);
+
+    // Skirt
+    const skirt = new THREE.Mesh(new THREE.ConeGeometry(0.85, 1.6, 32), dressMat);
+    skirt.position.y = 0.25;
+    group.add(skirt);
+
+    // Veil - slightly floating down back
+    const veil = new THREE.Mesh(new THREE.ConeGeometry(0.4, 2.0, 32, 1, true, 0, Math.PI * 1.5), veilMat);
+    veil.position.set(0, 1.1, -0.15);
+    veil.rotation.x = -0.1;
+    group.add(veil);
+
+    // Arms inviting
+    const armGeo = new THREE.CylinderGeometry(0.05, 0.04, 0.7, 16);
+    const armL = new THREE.Mesh(armGeo, skinMat);
+    armL.position.set(-0.35, 1.2, 0.1);
+    armL.rotation.z = Math.PI / 6;
+    armL.rotation.x = -Math.PI / 8;
+
+    const armR = new THREE.Mesh(armGeo, skinMat);
+    armR.position.set(0.35, 1.2, 0.2);
+    armR.rotation.z = -Math.PI / 6;
+    armR.rotation.x = -Math.PI / 4; // Reaching out
+    group.add(armL, armR);
+
+    // Bouquet
+    const bouquet = new THREE.Group();
+    for (let i = 0; i < 7; i++) {
+        const flower = new THREE.Mesh(new THREE.SphereGeometry(0.06, 8, 8), new THREE.MeshStandardMaterial({ color: 0xE85070 }));
+        flower.position.set((Math.random()-0.5)*0.1, (Math.random()-0.5)*0.1, (Math.random()-0.5)*0.1);
+        bouquet.add(flower);
+    }
+    bouquet.position.set(-0.5, 0.9, 0.25);
+    group.add(bouquet);
+
+    return group;
+  }
+
+  function createGroomModel() {
+    const group = new THREE.Group();
+    const skinMat = new THREE.MeshStandardMaterial({ color: 0xFFD8B4, roughness: 0.4 });
+    const suitMat = new THREE.MeshStandardMaterial({ color: 0x1A1A1A, roughness: 0.8 });
+    const shirtMat = new THREE.MeshStandardMaterial({ color: 0xFFFFFF, roughness: 0.9 });
+
+    // Head
+    const head = new THREE.Mesh(new THREE.SphereGeometry(0.30, 32, 32), skinMat);
+    head.position.y = 2.0;
+    group.add(head);
+
+    // Torso Frame
+    const torso = new THREE.Mesh(new THREE.CylinderGeometry(0.32, 0.28, 0.9, 32), suitMat);
+    torso.position.y = 1.25;
+    group.add(torso);
+    
+    // Shirt Accent
+    const shirt = new THREE.Mesh(new THREE.PlaneGeometry(0.16, 0.5), shirtMat);
+    shirt.position.set(0, 1.45, 0.29);
+    group.add(shirt);
+
+    // Tie
+    const tie = new THREE.Mesh(new THREE.PlaneGeometry(0.04, 0.3), new THREE.MeshStandardMaterial({ color: 0x000000 }));
+    tie.position.set(0, 1.40, 0.30);
+    group.add(tie);
+
+    // Legs
+    const legGeo = new THREE.CylinderGeometry(0.12, 0.1, 1.1, 16);
+    const legL = new THREE.Mesh(legGeo, suitMat);
+    legL.position.set(-0.15, 0.25, 0);
+    const legR = new THREE.Mesh(legGeo, suitMat);
+    legR.position.set(0.15, 0.25, 0);
+    group.add(legL, legR);
+
+    // Arms
+    const armGeo = new THREE.CylinderGeometry(0.08, 0.07, 0.8, 16);
+    const armL = new THREE.Mesh(armGeo, suitMat);
+    armL.position.set(-0.42, 1.2, 0);
+    armL.rotation.z = Math.PI / 12;
+
+    const armR = new THREE.Mesh(armGeo, suitMat);
+    armR.position.set(0.42, 1.2, 0.2);
+    armR.rotation.z = -Math.PI / 8;
+    armR.rotation.x = -Math.PI / 3; // Reaching out invitingly
+    group.add(armL, armR);
+
+    return group;
+  }
+
+  const brideModel = createBrideModel();
+  const groomModel = createGroomModel();
+  
+  // Set scale
+  brideModel.scale.set(1.4, 1.4, 1.4);
+  groomModel.scale.set(1.4, 1.4, 1.4);
+
+  scene.add(brideModel);
+  scene.add(groomModel);
+
   // ══════════════════════════════════════════════════════════════════════════
   // TEXT PLANES PER CHAPTER
   // Each chapter group contains the text planes for that chapter.
@@ -416,6 +529,35 @@ function buildScene(canvas: HTMLCanvasElement) {
     ring1.visible   = ch === "monogram";
     ring2.visible   = ch === "monogram";
     diamond.visible = ch === "monogram";
+
+    // Show Bride and Groom during Monogram, Bride, Groom and Seal chapters
+    brideModel.visible = ch === "monogram" || ch === "bride" || ch === "seal" || ch === "venues";
+    groomModel.visible = ch === "monogram" || ch === "groom" || ch === "seal" || ch === "venues";
+
+    if (ch === "monogram") {
+        brideModel.position.set(-2.2, -3.8, 4);
+        groomModel.position.set(2.2, -3.8, 4);
+        brideModel.rotation.set(0, 0.4, 0);
+        groomModel.rotation.set(0, -0.4, 0);
+    } else if (ch === "bride") {
+        brideModel.position.set(-2.0, -3.5, 6);
+        brideModel.rotation.set(0, 0.5, 0);
+    } else if (ch === "groom") {
+        groomModel.position.set(2.0, -3.5, 6);
+        groomModel.rotation.set(0, -0.5, 0);
+    } else if (ch === "seal") {
+        brideModel.position.set(-2.8, -3.8, 3);
+        groomModel.position.set(2.8, -3.8, 3);
+        brideModel.rotation.set(0, 0.3, 0);
+        groomModel.rotation.set(0, -0.3, 0);
+    } else if (ch === "venues") {
+        brideModel.position.set(-3.0, -3.5, 4);
+        groomModel.position.set(3.0, -3.5, 4);
+        brideModel.rotation.set(0, 0.6, 0);
+        groomModel.rotation.set(0, -0.6, 0);
+    }
+    brideModel.userData.baseY = brideModel.position.y;
+    groomModel.userData.baseY = groomModel.position.y;
 
     // seal only on seal chapter
     sealGroup.visible = ch === "seal" && !sealOpened;
@@ -552,6 +694,10 @@ function buildScene(canvas: HTMLCanvasElement) {
       d.position.y = 3.2 + Math.sin(t*0.6 + i*1.4)*0.22;
       d.position.x = [-4,-2,2,4][i]! + Math.sin(t*0.4 + i)*0.12;
     });
+
+    // ── Bride & Groom floating animation ───────────────────────────────────
+    if (brideModel.visible) brideModel.position.y = brideModel.userData.baseY + Math.sin(t * 1.5) * 0.08;
+    if (groomModel.visible) groomModel.position.y = groomModel.userData.baseY + Math.sin(t * 1.5 + 0.5) * 0.08;
 
     // ── Chapter group gentle float ─────────────────────────────────────────
     const cg = chGroups[currentCh];
