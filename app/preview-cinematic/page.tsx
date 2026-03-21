@@ -29,6 +29,7 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import { weddingConfig } from "@/lib/config";
+import type * as THREE from "three"; // types only — zero runtime bundle, Webpack never sees the CDN URL
 
 // ── Wedding data ──────────────────────────────────────────────────────────────
 const BF     = weddingConfig.brideName.split(" ")[0]!;          // Marion
