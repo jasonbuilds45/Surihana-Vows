@@ -72,8 +72,8 @@ const PAL = {
 type EngineHandle = { destroy: () => void; setChapter: (c: Ch) => void };
 
 async function buildEngine(canvas: HTMLCanvasElement, onReady: () => void): Promise<EngineHandle> {
-  // Load Three.js from CDN
-  const THREE = await import("https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js" as any) as typeof import("three");
+  // Load Three.js from CDN via indirect dynamic import (avoids Webpack static analysis)
+  const THREE = await new Function('return import("https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js")')() as typeof import("three");
 
   const W = () => canvas.clientWidth;
   const H = () => canvas.clientHeight;
