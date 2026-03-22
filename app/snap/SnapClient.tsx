@@ -31,10 +31,13 @@ const DF    = "'Cormorant Garamond',Georgia,serif";
 const BF    = "'Manrope',system-ui,sans-serif";
 const ROSE  = "#BE2D45";
 const ROSEL = "#D44860";
-const GOLD  = "#9A6C06";
 const INK   = "#1A0D0A";
 const CREAM = "#F0E4D4";
 const WARM  = "#FAF6F0";
+
+// Name colours
+const BRIDE_COLOR = "#FFFFFF";                                    // Marion — pure white
+const GROOM_COLOR = "#D4B896";                                    // Livingston — soft warm gold
 
 export function SnapClient({ weddingId, brideName, groomName, weddingDate }: SnapClientProps) {
   const bf   = brideName.split(" ")[0]!;
@@ -184,22 +187,35 @@ export function SnapClient({ weddingId, brideName, groomName, weddingDate }: Sna
             transform: entered ? "none" : "translateY(24px)",
             transition:"opacity .88s .14s ease,transform .88s .14s cubic-bezier(.16,1,.3,1)",
           }}>
+            {/* Bride name — white */}
             <h1 style={{
               fontFamily:DF,fontWeight:300,margin:0,
               fontSize:"clamp(3.2rem,13vw,7rem)",
               lineHeight:.86,letterSpacing:"-.03em",
-              color:"#FFFFFF",
+              color: BRIDE_COLOR,
             }}>{bf}</h1>
+
+            {/* Ampersand */}
             <h1 style={{
-              fontFamily:DF,fontWeight:300,fontStyle:"italic",margin:"0 0 1.25rem",
+              fontFamily:DF,fontWeight:300,fontStyle:"italic",margin:0,
               fontSize:"clamp(3.2rem,13vw,7rem)",
               lineHeight:.86,letterSpacing:"-.03em",
-              color:"rgba(255,255,255,.75)",
-            }}>&amp; {gf}.</h1>
+              color:"rgba(255,255,255,.50)",
+              display:"inline",
+            }}>&amp; </h1>
+
+            {/* Groom name — soft gold */}
+            <h1 style={{
+              fontFamily:DF,fontWeight:300,margin:"0 0 1.25rem",
+              fontSize:"clamp(3.2rem,13vw,7rem)",
+              lineHeight:.86,letterSpacing:"-.03em",
+              color: GROOM_COLOR,
+              display:"inline",
+            }}>{gf}.</h1>
 
             {/* Gold hairline under names */}
             <div style={{
-              width:"min(72px,18%)",height:1,
+              width:"min(72px,18%)",height:1,marginTop:"1.25rem",
               background:`linear-gradient(to right,rgba(212,172,50,.75),transparent)`,
             }}/>
           </div>
@@ -251,62 +267,185 @@ export function SnapClient({ weddingId, brideName, groomName, weddingDate }: Sna
         display:"flex",flexDirection:"column",gap:"1.25rem",
       }}>
 
-        {/* ── NAME CARD ── */}
+        {/* ── NAME CARD — modern floating label input ── */}
         <div style={{
-          background:"#fff",borderRadius:20,
-          border:`1px solid ${CREAM}`,
-          overflow:"hidden",
-          boxShadow:"0 2px 18px rgba(26,13,10,.06)",
           opacity: entered ? 1 : 0,
           transform: entered ? "none" : "translateY(16px)",
-          transition:"opacity .7s .36s ease,transform .7s .36s cubic-bezier(.16,1,.3,1)",
+          transition: "opacity .7s .36s ease, transform .7s .36s cubic-bezier(.16,1,.3,1)",
         }}>
-          <div style={{height:2,background:`linear-gradient(90deg,${ROSE},${ROSEL},transparent)`}}/>
-          <div style={{padding:"1rem 1.25rem",display:"flex",alignItems:"center",gap:".875rem"}}>
+          <div style={{
+            position: "relative",
+            background: "#FFFFFF",
+            borderRadius: 20,
+            border: `1.5px solid ${editing ? ROSE : name ? "rgba(190,45,69,.30)" : CREAM}`,
+            boxShadow: editing
+              ? `0 0 0 4px rgba(190,45,69,.08), 0 4px 24px rgba(26,13,10,.07)`
+              : `0 2px 18px rgba(26,13,10,.06)`,
+            transition: "border-color .22s ease, box-shadow .22s ease",
+            overflow: "hidden",
+          }}>
+
+            {/* Rose-to-warm gradient top stripe */}
             <div style={{
-              width:40,height:40,borderRadius:12,flexShrink:0,
-              background:"rgba(190,45,69,.08)",border:"1px solid rgba(190,45,69,.16)",
-              display:"flex",alignItems:"center",justifyContent:"center",
-            }}>
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none"
-                stroke={ROSE} strokeWidth="1.8" strokeLinecap="round">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                <circle cx="12" cy="7" r="4"/>
-              </svg>
-            </div>
-            <div style={{flex:1,minWidth:0}}>
-              <p style={{fontFamily:BF,fontSize:".50rem",letterSpacing:".28em",
-                textTransform:"uppercase",color:"rgba(26,13,10,.38)",
-                fontWeight:600,marginBottom:".2rem"}}>Your name</p>
-              {editing ? (
-                <input ref={inputRef} type="text" value={name} maxLength={40} autoFocus
-                  placeholder="How should we credit your photo?"
-                  onChange={e => setName(e.target.value)}
-                  onBlur={() => { setEditing(false); saveName(name); }}
-                  onKeyDown={e => { if (e.key === "Enter") { setEditing(false); saveName(name); } }}
-                  style={{width:"100%",border:"none",outline:"none",padding:0,
-                    fontFamily:BF,fontSize:"1rem",color:INK,
-                    background:"transparent",caretColor:ROSE}}/>
-              ) : (
-                <button type="button" onClick={() => setEditing(true)} style={{
-                  background:"none",border:"none",cursor:"text",
-                  textAlign:"left",padding:0,width:"100%",
-                  fontFamily:BF,fontSize:"1rem",
-                  color: name ? INK : "rgba(26,13,10,.30)"}}>
-                  {name || "Optional — tap to add your name"}
+              height: 2,
+              background: editing
+                ? `linear-gradient(90deg, ${ROSE}, ${ROSEL}, #E8956A, transparent)`
+                : name
+                ? `linear-gradient(90deg, rgba(190,45,69,.50), rgba(212,172,50,.55), transparent)`
+                : `linear-gradient(90deg, rgba(190,45,69,.25), rgba(212,172,50,.20), transparent)`,
+              transition: "background .3s ease",
+            }} />
+
+            <div style={{ padding: "1.125rem 1.375rem 1.25rem", display: "flex", alignItems: "center", gap: "1rem" }}>
+
+              {/* Icon container — animates colour on focus */}
+              <div style={{
+                width: 44, height: 44, borderRadius: 14, flexShrink: 0,
+                background: editing ? "rgba(190,45,69,.10)" : "rgba(26,13,10,.04)",
+                border: `1.5px solid ${editing ? "rgba(190,45,69,.25)" : "rgba(26,13,10,.08)"}`,
+                display: "flex", alignItems: "center", justifyContent: "center",
+                transition: "background .22s ease, border-color .22s ease",
+              }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                  stroke={editing ? ROSE : "rgba(26,13,10,.35)"}
+                  strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"
+                  style={{ transition: "stroke .22s ease" }}>
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                  <circle cx="12" cy="7" r="4"/>
+                </svg>
+              </div>
+
+              {/* Floating label + input stack */}
+              <div style={{ flex: 1, minWidth: 0, position: "relative" }}>
+
+                {/* Floating label */}
+                <p style={{
+                  fontFamily: BF,
+                  fontSize: editing || name ? ".44rem" : ".50rem",
+                  letterSpacing: ".28em",
+                  textTransform: "uppercase",
+                  fontWeight: 700,
+                  color: editing ? ROSE : name ? "rgba(190,45,69,.55)" : "rgba(26,13,10,.32)",
+                  marginBottom: ".28rem",
+                  transition: "color .22s ease, font-size .18s ease",
+                  userSelect: "none",
+                }}>
+                  Your name
+                </p>
+
+                {/* Input / display */}
+                {editing ? (
+                  <input
+                    ref={inputRef}
+                    type="text"
+                    value={name}
+                    maxLength={40}
+                    autoFocus
+                    placeholder="How should we credit your photo?"
+                    onChange={e => setName(e.target.value)}
+                    onBlur={() => { setEditing(false); saveName(name); }}
+                    onKeyDown={e => { if (e.key === "Enter") { setEditing(false); saveName(name); } }}
+                    style={{
+                      width: "100%",
+                      border: "none", outline: "none", padding: 0,
+                      fontFamily: DF,
+                      fontSize: "clamp(1.05rem, 2.8vw, 1.2rem)",
+                      fontStyle: "italic",
+                      color: INK,
+                      background: "transparent",
+                      caretColor: ROSE,
+                      letterSpacing: "-.01em",
+                    }}
+                  />
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setEditing(true)}
+                    style={{
+                      background: "none", border: "none", cursor: "text",
+                      textAlign: "left", padding: 0, width: "100%",
+                      fontFamily: name ? DF : BF,
+                      fontStyle: name ? "italic" : "normal",
+                      fontSize: name
+                        ? "clamp(1.05rem, 2.8vw, 1.2rem)"
+                        : ".875rem",
+                      letterSpacing: name ? "-.01em" : "0",
+                      color: name ? INK : "rgba(26,13,10,.28)",
+                      lineHeight: 1.3,
+                    }}
+                  >
+                    {name || "Optional — tap to add your name"}
+                  </button>
+                )}
+              </div>
+
+              {/* Clear button — appears only when name is set */}
+              {name && !editing && (
+                <button
+                  type="button"
+                  onClick={() => { saveName(""); setEditing(false); }}
+                  style={{
+                    width: 30, height: 30, borderRadius: "50%", flexShrink: 0,
+                    background: "rgba(26,13,10,.05)",
+                    border: "1px solid rgba(26,13,10,.10)",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    cursor: "pointer",
+                    transition: "background .18s ease, border-color .18s ease",
+                  }}
+                  onMouseEnter={e => {
+                    (e.currentTarget as HTMLElement).style.background = "rgba(190,45,69,.08)";
+                    (e.currentTarget as HTMLElement).style.borderColor = "rgba(190,45,69,.25)";
+                  }}
+                  onMouseLeave={e => {
+                    (e.currentTarget as HTMLElement).style.background = "rgba(26,13,10,.05)";
+                    (e.currentTarget as HTMLElement).style.borderColor = "rgba(26,13,10,.10)";
+                  }}
+                >
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none"
+                    stroke="rgba(26,13,10,.45)" strokeWidth="2.2" strokeLinecap="round">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                  </svg>
                 </button>
               )}
             </div>
-            {name && !editing && (
-              <button type="button" onClick={() => { saveName(""); setEditing(false); }}
-                style={{background:"none",border:"none",cursor:"pointer",
-                  padding:4,flexShrink:0,color:"rgba(26,13,10,.28)"}}>
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
-                  stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                  <line x1="18" y1="6" x2="6" y2="18"/>
-                  <line x1="6" y1="6" x2="18" y2="18"/>
+
+            {/* Bottom hint row — visible when not editing and no name */}
+            {!editing && !name && (
+              <div style={{
+                padding: "0 1.375rem .875rem",
+                paddingLeft: "calc(1.375rem + 44px + 1rem)",
+                display: "flex", alignItems: "center", gap: ".5rem",
+              }}>
+                <div style={{ width: 16, height: 1, background: "rgba(26,13,10,.12)", flexShrink: 0 }} />
+                <p style={{
+                  fontFamily: BF, fontSize: ".62rem", color: "rgba(26,13,10,.28)",
+                  lineHeight: 1, letterSpacing: ".02em",
+                }}>
+                  Your credit appears on the photo in their album
+                </p>
+              </div>
+            )}
+
+            {/* Name set confirmation row */}
+            {!editing && name && (
+              <div style={{
+                padding: "0 1.375rem .875rem",
+                paddingLeft: "calc(1.375rem + 44px + 1rem)",
+                display: "flex", alignItems: "center", gap: ".5rem",
+              }}>
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none"
+                  stroke="rgba(190,45,69,.55)" strokeWidth="2.5" strokeLinecap="round">
+                  <path d="M20 6L9 17l-5-5"/>
                 </svg>
-              </button>
+                <p style={{
+                  fontFamily: BF, fontSize: ".62rem",
+                  color: "rgba(190,45,69,.65)",
+                  letterSpacing: ".02em",
+                }}>
+                  Photos will be credited to you
+                </p>
+              </div>
             )}
           </div>
         </div>
