@@ -89,10 +89,11 @@ export function Footer() {
             fontWeight: 700,
             lineHeight: 0.87,
             letterSpacing: "-0.035em",
-            color: "#FDFAF7",
             marginBottom: "2.25rem",
           }}>
-            {bf}&ensp;<span style={{ color: "rgba(190,45,69,0.60)", fontStyle: "italic", fontWeight: 300, fontSize: "0.7em" }}>&amp;</span>&ensp;{gf}
+            <span style={{ color: "var(--name-bride)" }}>{bf}</span>
+            &ensp;<span style={{ color: "rgba(190,45,69,0.55)", fontStyle: "italic", fontWeight: 300, fontSize: "0.7em" }}>&amp;</span>&ensp;
+            <span style={{ color: "var(--name-groom)" }}>{gf}</span>
           </h2>
 
           {/* Detail chips */}

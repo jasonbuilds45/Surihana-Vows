@@ -451,32 +451,32 @@ export function CinematicInvite({
 
             {/* Bride name — slides from left */}
             <h1 className="ov-2 ov-name" style={{
-              fontFamily: DF, fontWeight: 300,
-              fontSize: "clamp(4rem,12vw,10.5rem)",
-              lineHeight: .86, letterSpacing: "-.04em",
-              color: INK, margin: 0,
+            fontFamily: DF, fontWeight: 300,
+            fontSize: "clamp(4rem,12vw,10.5rem)",
+            lineHeight: .86, letterSpacing: "-.04em",
+            color: "var(--name-bride-light)", margin: 0,
             }}>
-              {brideName}
+            {brideName}
             </h1>
 
             {/* Ampersand */}
             <p className="ov-3" style={{
-              fontFamily: DF, fontStyle: "italic", fontWeight: 300,
-              fontSize: "clamp(1.1rem,3vw,2.4rem)",
-              color: ROSE, letterSpacing: ".12em", lineHeight: 1.1,
-              margin: "clamp(.25rem,.8vh,.75rem) 0",
+            fontFamily: DF, fontStyle: "italic", fontWeight: 300,
+            fontSize: "clamp(1.1rem,3vw,2.4rem)",
+            color: ROSE, letterSpacing: ".12em", lineHeight: 1.1,
+            margin: "clamp(.25rem,.8vh,.75rem) 0",
             }}>
-              &amp;
+            &amp;
             </p>
 
             {/* Groom name — slides from right */}
             <h1 className="ov-4 ov-name" style={{
-              fontFamily: DF, fontWeight: 300,
-              fontSize: "clamp(4rem,12vw,10.5rem)",
-              lineHeight: .86, letterSpacing: "-.04em",
-              color: INK_2, margin: 0,
+            fontFamily: DF, fontWeight: 300,
+            fontSize: "clamp(4rem,12vw,10.5rem)",
+            lineHeight: .86, letterSpacing: "-.04em",
+            color: "var(--name-groom-light)", margin: 0,
             }}>
-              {groomName}
+            {groomName}
             </h1>
 
             {/* Subtitle */}
@@ -630,12 +630,12 @@ export function CinematicInvite({
                 <div style={{ flex: 1, maxWidth: 52, height: 1, background: "linear-gradient(to left,transparent,rgba(190,45,69,.40))" }} />
               </div>
 
-              {/* Bride — dark ink on light */}
+              {/* Bride */}
               <h1 className="h1 h-name" style={{
                 fontFamily: DF, fontWeight: 300,
                 fontSize: "clamp(3.5rem,14vw,11.5rem)",
                 lineHeight: .84, letterSpacing: "-.04em",
-                color: INK, marginBottom: ".04em",
+                color: "var(--name-bride-light)", marginBottom: ".04em",
               }}>
                 {brideFirst}
               </h1>
@@ -648,12 +648,12 @@ export function CinematicInvite({
                 &amp;
               </p>
 
-              {/* Groom — slightly muted */}
+              {/* Groom — soft warm gold */}
               <h1 className="h3 h-name" style={{
                 fontFamily: DF, fontWeight: 300,
                 fontSize: "clamp(3.5rem,14vw,11.5rem)",
                 lineHeight: .84, letterSpacing: "-.04em",
-                color: INK_2, marginBottom: "clamp(1rem,2.5vh,2.5rem)",
+                color: "var(--name-groom-light)", marginBottom: "clamp(1rem,2.5vh,2.5rem)",
               }}>
                 {groomFirst}
               </h1>

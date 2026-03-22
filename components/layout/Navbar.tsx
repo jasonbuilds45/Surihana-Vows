@@ -277,10 +277,16 @@ export function Navbar() {
                   className="hidden sm:flex">
                   <span style={{
                     fontFamily: DF, fontSize:".92rem", fontWeight:700,
-                    color: logoCol, letterSpacing:"-.01em",
+                    letterSpacing:"-.01em",
                     transition:"color .35s ease", whiteSpace:"nowrap",
                   }}>
-                    {weddingConfig.brideName.split(" ")[0]} &amp; {weddingConfig.groomName.split(" ")[0]}
+                    <span style={{ color: ghost ? "var(--name-bride)" : "var(--name-bride-light)" }}>
+                      {weddingConfig.brideName.split(" ")[0]}
+                    </span>
+                    {" "}&amp;{" "}
+                    <span style={{ color: ghost ? "var(--name-groom)" : "var(--name-groom-light)" }}>
+                      {weddingConfig.groomName.split(" ")[0]}
+                    </span>
                   </span>
                   <span style={{
                     fontFamily: BF, fontSize:".42rem", letterSpacing:".26em",

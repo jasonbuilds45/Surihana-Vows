@@ -302,7 +302,7 @@ export default function HomePage() {
               fontWeight: 700,
               lineHeight: 0.88,
               letterSpacing: "-0.035em",
-              color: "#0F0608",
+              color: "var(--name-bride-light)",
               marginBottom: "0.06em",
             }}>
               {bf}
@@ -329,7 +329,7 @@ export default function HomePage() {
               fontWeight: 700,
               lineHeight: 0.88,
               letterSpacing: "-0.035em",
-              color: "#A82C3E",
+              color: "var(--name-groom-light)",
               marginBottom: "1.5rem",
             }}>
               {gf}

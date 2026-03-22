@@ -58,6 +58,14 @@
   --ink-4:        #A88888;
   --ink-inv:      #FDFAF7;
 
+  /* ── Couple name colours — from the snap page ── */
+  /* Used on dark hero/footer backgrounds */
+  --name-bride:   #FFFFFF;     /* Marion  — pure white           */
+  --name-groom:   #D4B896;     /* Livingston — soft warm gold    */
+  /* Used on light/white backgrounds */
+  --name-bride-light: #1A0C0E; /* same as --ink, deep charcoal   */
+  --name-groom-light: #8B6240; /* warm brown-gold on light bg    */
+
   /* ── Borders — luminous ultra-thin ── */
   --bdr:          rgba(190, 45, 69, 0.10);
   --bdr-warm:     rgba(180, 120, 80, 0.15);
