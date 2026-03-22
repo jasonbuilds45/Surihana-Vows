@@ -1,6 +1,12 @@
 {
   "featuredCategories": [
     {
+      "title": "Guest Snaps",
+      "category": "snap",
+      "coverImage": "https://images.unsplash.com/photo-1529634806980-85c3dd6d34ac?auto=format&fit=crop&w=1200&q=80",
+      "description": "Candid moments captured by guests — the real, unguarded in-between frames that no photographer was there to catch."
+    },
+    {
       "title": "The Ceremony",
       "category": "ceremony",
       "coverImage": "https://images.unsplash.com/photo-1523438885200-e635ba2c371e?auto=format&fit=crop&w=1200&q=80",

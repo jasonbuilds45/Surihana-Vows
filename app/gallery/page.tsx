@@ -6,6 +6,9 @@ import { LuxuryPageHero } from "@/components/layout/LuxuryPageHero";
 import { weddingConfig } from "@/lib/config";
 import { getGalleryPhotos, getSlideshowPhotos } from "@/modules/premium/photo-gallery";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export const metadata: Metadata = {
   title: `Gallery — ${weddingConfig.celebrationTitle}`,
   description: "Every frame from Marion & Livingston's wedding — curated and downloadable.",
@@ -18,7 +21,7 @@ const INK  = "var(--ink,#120B0E)";
 
 export default async function GalleryPage() {
   const [photos, slides] = await Promise.all([
-    getGalleryPhotos(),
+    getGalleryPhotos(weddingConfig.id),
     Promise.resolve(getSlideshowPhotos()),
   ]);
 

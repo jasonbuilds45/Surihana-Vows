@@ -15,7 +15,9 @@ export async function getGalleryPhotos(
   category?: string,
   includeUnapproved = false
 ): Promise<PhotoRow[]> {
-  const client = getConfiguredSupabaseClient();
+  // Use service-role client so RLS never blocks reading approved photos.
+  // The is_approved filter itself enforces what guests can see.
+  const client = getConfiguredSupabaseClient(true);
 
   // Demo photos are always treated as approved — no is_approved field in demo data.
   let photos = demoPhotos.filter((photo) => photo.wedding_id === weddingId);
