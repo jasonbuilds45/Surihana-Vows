@@ -29,7 +29,30 @@ export function PhotoGrid({ photos }: PhotoGridProps) {
     [photos, selectedCategory]
   );
 
-  if (!photos.length) return null;
+  if (!photos.length) return (
+    <div style={{
+      padding: "clamp(3rem,8vh,5rem) 1rem",
+      textAlign: "center",
+      border: "1px dashed var(--bdr,rgba(190,45,69,.18))",
+      borderRadius: 20,
+    }}>
+      <p style={{
+        fontFamily: "'Cormorant Garamond',Georgia,serif",
+        fontStyle: "italic", fontWeight: 300,
+        fontSize: "clamp(1.1rem,2.5vw,1.5rem)",
+        color: "var(--ink-3,#72504A)",
+        marginBottom: ".75rem",
+      }}>
+        The album is being curated.
+      </p>
+      <p style={{
+        fontFamily: "'Manrope',system-ui,sans-serif",
+        fontSize: ".78rem", color: "var(--ink-4,#A88888)",
+      }}>
+        Photos will appear here once approved by the admin.
+      </p>
+    </div>
+  );
 
   return (
     <section className="space-y-8">
@@ -74,6 +97,7 @@ export function PhotoGrid({ photos }: PhotoGridProps) {
             <button
               type="button"
               onClick={() => {
+                // Use filtered index — lightbox also receives filtered array
                 setActiveIndex(index);
                 setOpen(true);
               }}

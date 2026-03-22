@@ -8,19 +8,22 @@ import type { PhotoRow } from "@/lib/types";
 // Public-facing gallery query. Only returns approved photos (is_approved = true).
 // Guest uploads start as unapproved (Phase 3.4); admin approves via UploadManager.
 //
-// Pass includeUnapproved = true from server-side admin routes to see all photos.
+// Strategy:
+//   - Always try to load from DB first (service-role client bypasses RLS)
+//   - Merge real DB photos with seed/demo photos so gallery is never empty
+//   - Seed photos with image_urls already in DB are deduplicated
+//   - Pass includeUnapproved = true from admin routes to see pending photos
 // ─────────────────────────────────────────────────────────────────────────────
 export async function getGalleryPhotos(
   weddingId = DEMO_WEDDING_ID,
   category?: string,
   includeUnapproved = false
 ): Promise<PhotoRow[]> {
-  // Use service-role client so RLS never blocks reading approved photos.
-  // The is_approved filter itself enforces what guests can see.
+  // Service-role client bypasses RLS so approved photos always read correctly.
   const client = getConfiguredSupabaseClient(true);
 
-  // Demo photos are always treated as approved — no is_approved field in demo data.
-  let photos = demoPhotos.filter((photo) => photo.wedding_id === weddingId);
+  // Seed photos — used as a baseline so the gallery is never completely empty.
+  const seedPhotos = demoPhotos.filter((p) => p.wedding_id === weddingId);
 
   if (client) {
     let query = client
@@ -33,25 +36,36 @@ export async function getGalleryPhotos(
       query = query.eq("category", category);
     }
 
-    // Filter to approved photos only for public queries.
-    // Admin routes pass includeUnapproved = true to see pending photos.
     if (!includeUnapproved) {
       query = query.eq("is_approved", true);
     }
 
     const { data, error } = await query;
+
     if (error) {
       if (shouldFallbackToDemoData(error)) {
-        return category ? photos.filter((photo) => photo.category === category) : photos;
+        // Table missing / schema error — fall back to seed photos only
+        return category ? seedPhotos.filter((p) => p.category === category) : seedPhotos;
       }
-
       throw new Error(error.message);
     }
 
-    photos = (data as PhotoRow[] | null) ?? photos;
+    const dbPhotos = (data as PhotoRow[] | null) ?? [];
+
+    // Merge: real DB photos first, then seed photos whose image_url doesn't
+    // already appear in the DB set. This avoids duplicates while ensuring
+    // the gallery has content from day one.
+    const dbUrls = new Set(dbPhotos.map((p) => p.image_url));
+    const merged = [
+      ...dbPhotos,
+      ...seedPhotos.filter((p) => !dbUrls.has(p.image_url)),
+    ];
+
+    return category ? merged.filter((p) => p.category === category) : merged;
   }
 
-  return category ? photos.filter((photo) => photo.category === category) : photos;
+  // No Supabase client configured — demo/dev mode, return seed photos only
+  return category ? seedPhotos.filter((p) => p.category === category) : seedPhotos;
 }
 
 export function getGalleryCategories() {

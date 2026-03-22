@@ -2,7 +2,10 @@
 
 import type { FormEvent } from "react";
 import { useCallback, useEffect, useState } from "react";
-import { CheckCircle, Loader2, UploadCloud, XCircle, Images, Eye } from "lucide-react";
+import {
+  CheckCircle, Loader2, UploadCloud, XCircle,
+  Images, Eye, Trash2, ArrowLeftCircle, RefreshCw, Tag,
+} from "lucide-react";
 import { Card, SectionLabel, Btn, EmptyState } from "@/components/ui";
 import { authFetch } from "@/lib/client/token";
 
@@ -18,48 +21,73 @@ interface PhotoRow {
 }
 type ActiveTab = "upload" | "pending" | "approved";
 
-const TAB_CATEGORIES: Record<string, string> = {
-  ceremony:  "Ceremony",
-  reception: "Reception",
-  family:    "Family",
-  candid:    "Candid",
-  snap:      "Guest Snaps",
-  live:      "Live Feed",
-};
+const CATEGORIES = [
+  { value: "ceremony",  label: "Ceremony" },
+  { value: "reception", label: "Reception" },
+  { value: "family",    label: "Family & Friends" },
+  { value: "candid",    label: "Candid moments" },
+  { value: "snap",      label: "Guest snaps" },
+  { value: "live",      label: "Live feed" },
+] as const;
+
+const CAT_LABELS: Record<string, string> = Object.fromEntries(
+  CATEGORIES.map(c => [c.value, c.label])
+);
+
+const ROSE = "#BE2D45";
+const SAGE = "#2E7A5A";
 
 const tabStyle = (active: boolean): React.CSSProperties => ({
-  flex: 1, padding: "0.875rem 1rem",
-  fontSize: "0.58rem", fontWeight: 600, letterSpacing: "0.18em", textTransform: "uppercase",
+  flex: 1, padding: "0.875rem 0.75rem",
+  fontSize: "0.58rem", fontWeight: 600, letterSpacing: "0.18em",
+  textTransform: "uppercase",
   color: active ? "var(--color-accent)" : "var(--color-text-muted)",
   borderBottom: active ? `2px solid var(--color-accent)` : "2px solid transparent",
-  background: "transparent", cursor: "pointer", transition: "all 0.2s",
+  background: "transparent", cursor: "pointer", transition: "color 0.15s",
   whiteSpace: "nowrap",
 });
 
 const inputStyle: React.CSSProperties = {
-  display: "block", width: "100%", background: "var(--color-surface-soft)",
-  border: "1.5px solid var(--color-border-medium)", borderRadius: "12px",
-  padding: "0.75rem 1rem", color: "var(--color-text-primary)", fontSize: "0.9375rem",
+  display: "block", width: "100%",
+  background: "var(--color-surface-soft)",
+  border: "1.5px solid var(--color-border-medium)",
+  borderRadius: "12px", padding: "0.75rem 1rem",
+  color: "var(--color-text-primary)", fontSize: "0.9375rem",
   outline: "none", fontFamily: "var(--font-body), sans-serif",
 };
 
+const selectSmStyle: React.CSSProperties = {
+  padding: "4px 8px", borderRadius: 8, fontSize: ".72rem",
+  background: "var(--color-surface-soft)",
+  border: "1px solid var(--color-border-medium)",
+  color: "var(--color-text-secondary)",
+  outline: "none", cursor: "pointer",
+};
+
 export function UploadManager({ weddingId }: UploadManagerProps) {
-  const [activeTab,     setActiveTab]     = useState<ActiveTab>("upload");
-  const [file,          setFile]          = useState<File | null>(null);
-  const [uploadedBy,    setUploadedBy]    = useState("Event Team");
-  const [category,      setCategory]      = useState("ceremony");
-  const [uploadStatus,  setUploadStatus]  = useState<UploadResponse | null>(null);
-  const [isSubmitting,  setIsSubmitting]  = useState(false);
+  const [activeTab,        setActiveTab]        = useState<ActiveTab>("upload");
+  const [file,             setFile]             = useState<File | null>(null);
+  const [uploadedBy,       setUploadedBy]       = useState("Event Team");
+  const [category,         setCategory]         = useState("ceremony");
+  const [uploadStatus,     setUploadStatus]     = useState<UploadResponse | null>(null);
+  const [isSubmitting,     setIsSubmitting]     = useState(false);
 
-  const [pending,       setPending]       = useState<PhotoRow[]>([]);
-  const [approved,      setApproved]      = useState<PhotoRow[]>([]);
-  const [pendingLoading, setPendingLoading] = useState(false);
-  const [approvedLoading, setApprovedLoading] = useState(false);
-  const [pendingError,  setPendingError]  = useState<string | null>(null);
-  const [approvedError, setApprovedError] = useState<string | null>(null);
-  const [actionId,      setActionId]      = useState<string | null>(null);
+  const [pending,          setPending]          = useState<PhotoRow[]>([]);
+  const [approved,         setApproved]         = useState<PhotoRow[]>([]);
+  const [pendingLoading,   setPendingLoading]   = useState(false);
+  const [approvedLoading,  setApprovedLoading]  = useState(false);
+  const [pendingError,     setPendingError]     = useState<string | null>(null);
+  const [approvedError,    setApprovedError]    = useState<string | null>(null);
+  const [actionId,         setActionId]         = useState<string | null>(null);
+  const [toast,            setToast]            = useState<{ msg: string; ok: boolean } | null>(null);
+  const [editCatId,        setEditCatId]        = useState<string | null>(null);
 
-  /* ── Fetch pending ── */
+  function showToast(msg: string, ok = true) {
+    setToast({ msg, ok });
+    setTimeout(() => setToast(null), 3200);
+  }
+
+  /* ── Fetch helpers ── */
   const fetchPending = useCallback(async () => {
     setPendingLoading(true); setPendingError(null);
     try {
@@ -68,13 +96,10 @@ export function UploadManager({ weddingId }: UploadManagerProps) {
       const json = (await res.json()) as { data: PhotoRow[] };
       setPending(json.data ?? []);
     } catch (err) {
-      setPendingError(err instanceof Error ? err.message : "Error loading photos.");
-    } finally {
-      setPendingLoading(false);
-    }
+      setPendingError(err instanceof Error ? err.message : "Error.");
+    } finally { setPendingLoading(false); }
   }, [weddingId]);
 
-  /* ── Fetch approved ── */
   const fetchApproved = useCallback(async () => {
     setApprovedLoading(true); setApprovedError(null);
     try {
@@ -83,10 +108,8 @@ export function UploadManager({ weddingId }: UploadManagerProps) {
       const json = (await res.json()) as { data: PhotoRow[] };
       setApproved(json.data ?? []);
     } catch (err) {
-      setApprovedError(err instanceof Error ? err.message : "Error loading photos.");
-    } finally {
-      setApprovedLoading(false);
-    }
+      setApprovedError(err instanceof Error ? err.message : "Error.");
+    } finally { setApprovedLoading(false); }
   }, [weddingId]);
 
   useEffect(() => {
@@ -94,28 +117,78 @@ export function UploadManager({ weddingId }: UploadManagerProps) {
     if (activeTab === "approved") void fetchApproved();
   }, [activeTab, fetchPending, fetchApproved]);
 
-  /* ── Moderate (approve / reject) ── */
-  async function moderate(photoId: string, approve: boolean) {
+  /* ── Approve (pending → gallery) ── */
+  async function approve(photoId: string) {
     setActionId(photoId);
     try {
       const res = await authFetch("/api/admin/photos", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ photoId, isApproved: approve }),
+        body: JSON.stringify({ photoId, isApproved: true }),
       });
-      if (!res.ok) throw new Error("Action failed.");
-      // Remove from pending list; refresh approved count
+      if (!res.ok) throw new Error("Approval failed.");
+      const photo = pending.find(p => p.id === photoId);
       setPending(cur => cur.filter(p => p.id !== photoId));
-      if (approve) {
-        // Optimistically add to approved list
-        const photo = pending.find(p => p.id === photoId);
-        if (photo) setApproved(cur => [{ ...photo, is_approved: true }, ...cur]);
-      }
+      if (photo) setApproved(cur => [{ ...photo, is_approved: true }, ...cur]);
+      showToast("✓ Photo approved — live in gallery.");
     } catch (err) {
-      setPendingError(err instanceof Error ? err.message : "Action failed.");
-    } finally {
-      setActionId(null);
-    }
+      setPendingError(err instanceof Error ? err.message : "Error.");
+    } finally { setActionId(null); }
+  }
+
+  /* ── Move approved → pending ── */
+  async function unpublish(photoId: string) {
+    setActionId(photoId);
+    try {
+      const res = await authFetch("/api/admin/photos", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ photoId, isApproved: false }),
+      });
+      if (!res.ok) throw new Error("Failed.");
+      const photo = approved.find(p => p.id === photoId);
+      setApproved(cur => cur.filter(p => p.id !== photoId));
+      if (photo) setPending(cur => [{ ...photo, is_approved: false }, ...cur]);
+      showToast("Photo moved back to pending.");
+    } catch (err) {
+      setApprovedError(err instanceof Error ? err.message : "Error.");
+    } finally { setActionId(null); }
+  }
+
+  /* ── Update category on approved photo ── */
+  async function changeCategory(photoId: string, newCat: string) {
+    setActionId(photoId);
+    try {
+      const res = await authFetch("/api/admin/photos", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ photoId, isApproved: true, category: newCat }),
+      });
+      if (!res.ok) throw new Error("Failed to update category.");
+      setApproved(cur => cur.map(p => p.id === photoId ? { ...p, category: newCat } : p));
+      setEditCatId(null);
+      showToast(`Category updated to "${CAT_LABELS[newCat] ?? newCat}".`);
+    } catch (err) {
+      setApprovedError(err instanceof Error ? err.message : "Error.");
+    } finally { setActionId(null); }
+  }
+
+  /* ── Delete permanently ── */
+  async function deletePhoto(photoId: string, from: "pending" | "approved") {
+    if (!window.confirm("Permanently delete this photo? This cannot be undone.")) return;
+    setActionId(photoId);
+    try {
+      const res = await authFetch(`/api/admin/photos?photoId=${encodeURIComponent(photoId)}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) throw new Error("Delete failed.");
+      if (from === "pending")  setPending(cur => cur.filter(p => p.id !== photoId));
+      if (from === "approved") setApproved(cur => cur.filter(p => p.id !== photoId));
+      showToast("Photo deleted permanently.", false);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Delete failed.";
+      from === "pending" ? setPendingError(msg) : setApprovedError(msg);
+    } finally { setActionId(null); }
   }
 
   /* ── Admin upload ── */
@@ -125,7 +198,7 @@ export function UploadManager({ weddingId }: UploadManagerProps) {
     setIsSubmitting(true); setUploadStatus(null);
     try {
       const fd = new FormData();
-      fd.append("file",       file);
+      fd.append("file", file);
       fd.append("uploadedBy", uploadedBy);
       fd.append("category",   category);
       fd.append("weddingId",  weddingId);
@@ -133,127 +206,123 @@ export function UploadManager({ weddingId }: UploadManagerProps) {
       if (!res.ok && res.headers.get("content-type")?.includes("text/")) throw new Error(await res.text());
       const data = (await res.json()) as UploadResponse;
       setUploadStatus(data);
-      if (data.success) {
-        setFile(null);
-        // Refresh approved list so newly uploaded photo appears immediately
-        void fetchApproved();
-      }
+      if (data.success) { setFile(null); void fetchApproved(); }
     } catch (err) {
       setUploadStatus({ success: false, message: err instanceof Error ? err.message : "Upload failed." });
-    } finally {
-      setIsSubmitting(false);
-    }
+    } finally { setIsSubmitting(false); }
   }
 
-  /* ── Category label helper ── */
-  const catLabel = (cat: string) => TAB_CATEGORIES[cat] ?? cat;
+  const catLabel = (cat: string) => CAT_LABELS[cat] ?? cat;
 
-  /* ── Counts for badge display ── */
-  const pendingCount  = pending.length;
-  const approvedCount = approved.length;
+  function CatBreakdown({ photos }: { photos: PhotoRow[] }) {
+    const byCat = photos.reduce<Record<string, number>>((acc, p) => {
+      acc[p.category] = (acc[p.category] ?? 0) + 1;
+      return acc;
+    }, {});
+    return (
+      <div style={{ display: "flex", flexWrap: "wrap", gap: ".375rem" }}>
+        {Object.entries(byCat).map(([cat, count]) => (
+          <span key={cat} style={{
+            display: "inline-flex", alignItems: "center", gap: 5,
+            padding: "3px 10px", borderRadius: 999,
+            background: "var(--color-surface-soft)",
+            border: "1px solid var(--color-border)",
+            fontSize: ".58rem", fontWeight: 600,
+            letterSpacing: ".10em", textTransform: "uppercase",
+            color: "var(--color-text-muted)",
+          }}>
+            {catLabel(cat)}
+            <span style={{ color: "var(--color-accent)", fontWeight: 700 }}>{count}</span>
+          </span>
+        ))}
+      </div>
+    );
+  }
 
   return (
     <Card noPad>
+      <style>{`@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}`}</style>
 
-      {/* ── Tabs ── */}
+      {/* Toast */}
+      {toast && (
+        <div style={{
+          position: "fixed", bottom: 24, left: "50%", transform: "translateX(-50%)",
+          zIndex: 9999, padding: "10px 22px", borderRadius: 12,
+          background: toast.ok ? "#1C1214" : "#7f1d1d",
+          color: "#fff", fontSize: ".85rem", fontWeight: 500,
+          boxShadow: "0 8px 32px rgba(0,0,0,.28)",
+          whiteSpace: "nowrap", animation: "fadeUp .22s ease",
+          pointerEvents: "none",
+        }}>
+          {toast.msg}
+        </div>
+      )}
+
+      {/* Tabs */}
       <div style={{ display: "flex", borderBottom: "1px solid var(--color-border)", overflowX: "auto" }}>
         <button type="button" style={tabStyle(activeTab === "upload")}   onClick={() => setActiveTab("upload")}>
           Upload
         </button>
         <button type="button" style={tabStyle(activeTab === "pending")}  onClick={() => setActiveTab("pending")}>
           Pending
-          {pendingCount > 0 && (
-            <span style={{
-              marginLeft: 6, display: "inline-flex", alignItems: "center", justifyContent: "center",
-              minWidth: 18, height: 18, borderRadius: 999, padding: "0 4px",
-              background: "var(--color-accent)", color: "#fff", fontSize: "0.58rem", fontWeight: 700,
-            }}>
-              {pendingCount}
+          {pending.length > 0 && (
+            <span style={{ marginLeft: 5, display: "inline-flex", alignItems: "center", justifyContent: "center", minWidth: 17, height: 17, borderRadius: 999, padding: "0 4px", background: ROSE, color: "#fff", fontSize: ".55rem", fontWeight: 700 }}>
+              {pending.length}
             </span>
           )}
         </button>
         <button type="button" style={tabStyle(activeTab === "approved")} onClick={() => setActiveTab("approved")}>
           Approved
-          {approvedCount > 0 && (
-            <span style={{
-              marginLeft: 6, display: "inline-flex", alignItems: "center", justifyContent: "center",
-              minWidth: 18, height: 18, borderRadius: 999, padding: "0 4px",
-              background: "var(--color-sage,#2E7A5A)", color: "#fff", fontSize: "0.58rem", fontWeight: 700,
-            }}>
-              {approvedCount}
+          {approved.length > 0 && (
+            <span style={{ marginLeft: 5, display: "inline-flex", alignItems: "center", justifyContent: "center", minWidth: 17, height: 17, borderRadius: 999, padding: "0 4px", background: SAGE, color: "#fff", fontSize: ".55rem", fontWeight: 700 }}>
+              {approved.length}
             </span>
           )}
         </button>
       </div>
 
-      {/* ════════════════════════
-          UPLOAD TAB
-      ════════════════════════ */}
+      {/* ═══════════ UPLOAD ═══════════ */}
       {activeTab === "upload" && (
         <form className="p-6 space-y-5" onSubmit={handleUpload}>
           <div className="space-y-1">
             <SectionLabel>Photo upload</SectionLabel>
-            <h3 className="font-display text-2xl" style={{ color: "var(--color-text-primary)" }}>
-              Add to the archive
-            </h3>
+            <h3 className="font-display text-2xl" style={{ color: "var(--color-text-primary)" }}>Add to the archive</h3>
             <p className="text-sm" style={{ color: "var(--color-text-muted)" }}>
-              Admin uploads are automatically approved and visible immediately in the gallery.
+              Admin uploads are auto-approved and appear in the public gallery immediately.
             </p>
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-1.5">
-              <label className="block text-xs font-semibold uppercase"
-                style={{ letterSpacing: "0.15em", color: "var(--color-text-secondary)" }}>
-                Uploaded by
-              </label>
+              <label className="block text-xs font-semibold uppercase" style={{ letterSpacing: "0.15em", color: "var(--color-text-secondary)" }}>Uploaded by</label>
               <input style={inputStyle} value={uploadedBy} onChange={e => setUploadedBy(e.target.value)} />
             </div>
             <div className="space-y-1.5">
-              <label className="block text-xs font-semibold uppercase"
-                style={{ letterSpacing: "0.15em", color: "var(--color-text-secondary)" }}>
-                Category
-              </label>
+              <label className="block text-xs font-semibold uppercase" style={{ letterSpacing: "0.15em", color: "var(--color-text-secondary)" }}>Category</label>
               <select style={inputStyle} value={category} onChange={e => setCategory(e.target.value)}>
-                <option value="ceremony">Ceremony</option>
-                <option value="reception">Reception</option>
-                <option value="family">Family &amp; Friends</option>
-                <option value="candid">Candid moments</option>
-                <option value="snap">Guest snaps</option>
-                <option value="live">Live feed</option>
+                {CATEGORIES.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
               </select>
             </div>
           </div>
 
           <div className="space-y-1.5">
-            <label className="block text-xs font-semibold uppercase"
-              style={{ letterSpacing: "0.15em", color: "var(--color-text-secondary)" }}>
-              Photo file
-            </label>
-            <input
-              type="file" accept="image/*"
+            <label className="block text-xs font-semibold uppercase" style={{ letterSpacing: "0.15em", color: "var(--color-text-secondary)" }}>Photo file</label>
+            <input type="file" accept="image/*"
               onChange={e => setFile(e.target.files?.[0] ?? null)}
               className="w-full rounded-xl px-4 py-4 text-sm"
-              style={{
-                background: "var(--color-surface-soft)",
-                border: "1.5px dashed var(--color-border-medium)",
-                color: "var(--color-text-secondary)",
-              }}
+              style={{ background: "var(--color-surface-soft)", border: "1.5px dashed var(--color-border-medium)", color: "var(--color-text-secondary)" }}
             />
+            {file && <p className="text-xs" style={{ color: "var(--color-text-muted)" }}>{file.name} — {(file.size / 1024 / 1024).toFixed(2)} MB</p>}
           </div>
 
           {uploadStatus && (
             <p className="rounded-xl px-4 py-3 text-sm" style={{
-              background: uploadStatus.success ? "rgba(46,122,90,0.08)" : "#fef2f2",
-              color:      uploadStatus.success ? "var(--color-sage,#2E7A5A)" : "#b91c1c",
-              border:     `1px solid ${uploadStatus.success ? "rgba(46,122,90,0.18)" : "#fca5a5"}`,
+              background: uploadStatus.success ? "rgba(46,122,90,.08)" : "#fef2f2",
+              color:      uploadStatus.success ? SAGE : "#b91c1c",
+              border:     `1px solid ${uploadStatus.success ? "rgba(46,122,90,.18)" : "#fca5a5"}`,
             }}>
               {uploadStatus.message}
-              {uploadStatus.url && (
-                <a href={uploadStatus.url} target="_blank" rel="noreferrer" className="ml-2 underline text-xs">
-                  View photo
-                </a>
-              )}
+              {uploadStatus.url && <a href={uploadStatus.url} target="_blank" rel="noreferrer" className="ml-2 underline text-xs">View photo</a>}
             </p>
           )}
 
@@ -264,79 +333,59 @@ export function UploadManager({ weddingId }: UploadManagerProps) {
         </form>
       )}
 
-      {/* ════════════════════════
-          PENDING TAB
-      ════════════════════════ */}
+      {/* ═══════════ PENDING ═══════════ */}
       {activeTab === "pending" && (
         <div className="p-6 space-y-5">
-          <div className="space-y-1">
-            <SectionLabel>Photo moderation</SectionLabel>
-            <h3 className="font-display text-2xl" style={{ color: "var(--color-text-primary)" }}>
-              Guest uploads awaiting review
-            </h3>
-            <p className="text-sm" style={{ color: "var(--color-text-muted)" }}>
-              Hidden from the public gallery until approved. Approving moves them to the gallery immediately.
-            </p>
+          <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "1rem", flexWrap: "wrap" }}>
+            <div className="space-y-1">
+              <SectionLabel>Photo moderation</SectionLabel>
+              <h3 className="font-display text-2xl" style={{ color: "var(--color-text-primary)" }}>Awaiting review</h3>
+              <p className="text-sm" style={{ color: "var(--color-text-muted)" }}>
+                Hidden from guests. Approve to publish, or delete to remove permanently.
+              </p>
+            </div>
+            <button type="button" onClick={() => void fetchPending()} style={{ display: "flex", alignItems: "center", gap: 6, padding: "7px 14px", borderRadius: 999, background: "var(--color-surface-soft)", border: "1px solid var(--color-border)", fontSize: ".72rem", color: "var(--color-text-muted)", cursor: "pointer" }}>
+              <RefreshCw size={13} /> Refresh
+            </button>
           </div>
 
+          {pending.length > 0 && <CatBreakdown photos={pending} />}
+
           {pendingError && (
-            <p className="rounded-xl px-4 py-3 text-sm"
-              style={{ background: "#fef2f2", color: "#b91c1c", border: "1px solid #fca5a5" }}>
-              {pendingError}{" "}
-              <button className="ml-2 underline" onClick={() => void fetchPending()} type="button">Retry</button>
+            <p className="rounded-xl px-4 py-3 text-sm" style={{ background: "#fef2f2", color: "#b91c1c", border: "1px solid #fca5a5" }}>
+              {pendingError} <button className="ml-2 underline" onClick={() => void fetchPending()} type="button">Retry</button>
             </p>
           )}
 
           {pendingLoading ? (
-            <div className="flex items-center justify-center py-12">
-              <Loader2 className="h-6 w-6 animate-spin" style={{ color: "var(--color-accent-soft)" }} />
-            </div>
+            <div className="flex items-center justify-center py-12"><Loader2 className="h-6 w-6 animate-spin" style={{ color: "var(--color-accent-soft)" }} /></div>
           ) : pending.length === 0 ? (
-            <EmptyState
-              icon={<CheckCircle className="h-9 w-9" />}
-              title="No photos awaiting approval"
-              description="Guest uploads will appear here for review. Once approved they appear in the gallery."
-            />
+            <EmptyState icon={<CheckCircle className="h-9 w-9" />} title="No photos awaiting approval" description="Guest uploads from the snap page appear here for review." />
           ) : (
             <div className="grid gap-4 sm:grid-cols-2">
               {pending.map(photo => (
-                <div key={photo.id} className="overflow-hidden rounded-2xl"
-                  style={{ border: "1px solid var(--color-border)", boxShadow: "var(--shadow-sm)" }}>
+                <div key={photo.id} className="overflow-hidden rounded-2xl" style={{ border: "1px solid var(--color-border)", boxShadow: "var(--shadow-sm)", background: "#fff" }}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    alt={`Uploaded by ${photo.uploaded_by}`}
-                    className="aspect-video w-full object-cover"
-                    src={photo.image_url}
-                  />
+                  <img alt={`By ${photo.uploaded_by}`} className="aspect-video w-full object-cover" src={photo.image_url} />
                   <div className="p-4 space-y-3">
-                    <div>
-                      <p className="text-sm font-semibold" style={{ color: "var(--color-text-primary)" }}>
-                        {photo.uploaded_by}
-                      </p>
-                      <p className="text-xs mt-0.5" style={{ color: "var(--color-text-muted)" }}>
-                        {catLabel(photo.category)} · {new Date(photo.created_at).toLocaleDateString()}
-                      </p>
+                    <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: ".5rem" }}>
+                      <div>
+                        <p className="text-sm font-semibold" style={{ color: "var(--color-text-primary)" }}>{photo.uploaded_by}</p>
+                        <p className="text-xs mt-0.5" style={{ color: "var(--color-text-muted)" }}>{catLabel(photo.category)} · {new Date(photo.created_at).toLocaleDateString()}</p>
+                      </div>
+                      <button type="button" disabled={actionId === photo.id} onClick={() => void deletePhoto(photo.id, "pending")} title="Delete permanently" style={{ width: 30, height: 30, borderRadius: "50%", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", background: "#fef2f2", border: "1px solid #fca5a5", color: "#b91c1c", cursor: "pointer" }}>
+                        <Trash2 size={13} />
+                      </button>
                     </div>
                     <div className="flex gap-2">
-                      <Btn
-                        type="button" variant="primary" size="sm"
-                        loading={actionId === photo.id} className="flex-1"
-                        onClick={() => void moderate(photo.id, true)}
-                        style={{ background: "linear-gradient(135deg,#2E7A5A,#4d7a50)" }}
-                      >
+                      <Btn type="button" variant="primary" size="sm" loading={actionId === photo.id} className="flex-1" onClick={() => void approve(photo.id)} style={{ background: `linear-gradient(135deg,${SAGE},#4d7a50)` }}>
                         <CheckCircle className="h-3.5 w-3.5" /> Approve
                       </Btn>
-                      <button
-                        type="button"
-                        disabled={actionId === photo.id}
-                        onClick={() => void moderate(photo.id, false)}
+                      <button type="button" disabled={actionId === photo.id} onClick={() => void deletePhoto(photo.id, "pending")}
                         className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-full py-2 text-xs uppercase font-semibold transition"
-                        style={{ letterSpacing: "0.15em", background: "#fef2f2", border: "1.5px solid #fca5a5", color: "#b91c1c" }}
-                      >
-                        {actionId === photo.id
-                          ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                          : <XCircle className="h-3.5 w-3.5" />}
-                        Reject
+                        style={{ letterSpacing: "0.15em", background: "#fef2f2", border: "1.5px solid #fca5a5", color: "#b91c1c" }}>
+                        {actionId === photo.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <XCircle className="h-3.5 w-3.5" />}
+                        Delete
                       </button>
                     </div>
                   </div>
@@ -347,105 +396,111 @@ export function UploadManager({ weddingId }: UploadManagerProps) {
         </div>
       )}
 
-      {/* ════════════════════════
-          APPROVED TAB
-      ════════════════════════ */}
+      {/* ═══════════ APPROVED / MANAGE ALBUM ═══════════ */}
       {activeTab === "approved" && (
         <div className="p-6 space-y-5">
-          <div className="space-y-1">
-            <SectionLabel>Live in gallery</SectionLabel>
-            <h3 className="font-display text-2xl" style={{ color: "var(--color-text-primary)" }}>
-              Approved photos
-            </h3>
-            <p className="text-sm" style={{ color: "var(--color-text-muted)" }}>
-              These are publicly visible at <strong>/gallery</strong>. {approvedCount > 0 && `${approvedCount} photo${approvedCount !== 1 ? "s" : ""} live.`}
-            </p>
+          <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "1rem", flexWrap: "wrap" }}>
+            <div className="space-y-1">
+              <SectionLabel>Manage album</SectionLabel>
+              <h3 className="font-display text-2xl" style={{ color: "var(--color-text-primary)" }}>
+                Live in gallery
+                {approved.length > 0 && (
+                  <span style={{ fontFamily: "var(--font-body)", fontSize: ".65rem", fontWeight: 600, letterSpacing: ".1em", color: "var(--color-text-muted)", marginLeft: "0.75rem" }}>
+                    {approved.length} photo{approved.length !== 1 ? "s" : ""}
+                  </span>
+                )}
+              </h3>
+              <p className="text-sm" style={{ color: "var(--color-text-muted)" }}>
+                Visible at <strong style={{ color: "var(--color-text-primary)" }}>/gallery</strong>.
+                Re-categorise, unpublish, or permanently delete any photo.
+              </p>
+            </div>
+            <div style={{ display: "flex", gap: ".5rem", flexShrink: 0 }}>
+              <button type="button" onClick={() => void fetchApproved()} style={{ display: "flex", alignItems: "center", gap: 6, padding: "7px 14px", borderRadius: 999, background: "var(--color-surface-soft)", border: "1px solid var(--color-border)", fontSize: ".72rem", color: "var(--color-text-muted)", cursor: "pointer" }}>
+                <RefreshCw size={13} /> Refresh
+              </button>
+              <a href="/gallery" target="_blank" rel="noreferrer" style={{ display: "flex", alignItems: "center", gap: 6, padding: "7px 14px", borderRadius: 999, background: "var(--color-accent)", color: "#fff", fontSize: ".72rem", fontWeight: 600, textDecoration: "none" }}>
+                <Eye size={13} /> View gallery
+              </a>
+            </div>
           </div>
 
+          {approved.length > 0 && <CatBreakdown photos={approved} />}
+
           {approvedError && (
-            <p className="rounded-xl px-4 py-3 text-sm"
-              style={{ background: "#fef2f2", color: "#b91c1c", border: "1px solid #fca5a5" }}>
-              {approvedError}{" "}
-              <button className="ml-2 underline" onClick={() => void fetchApproved()} type="button">Retry</button>
+            <p className="rounded-xl px-4 py-3 text-sm" style={{ background: "#fef2f2", color: "#b91c1c", border: "1px solid #fca5a5" }}>
+              {approvedError} <button className="ml-2 underline" onClick={() => void fetchApproved()} type="button">Retry</button>
             </p>
           )}
 
           {approvedLoading ? (
-            <div className="flex items-center justify-center py-12">
-              <Loader2 className="h-6 w-6 animate-spin" style={{ color: "var(--color-accent-soft)" }} />
-            </div>
+            <div className="flex items-center justify-center py-12"><Loader2 className="h-6 w-6 animate-spin" style={{ color: "var(--color-accent-soft)" }} /></div>
           ) : approved.length === 0 ? (
-            <EmptyState
-              icon={<Images className="h-9 w-9" />}
-              title="No approved photos yet"
-              description="Approve guest uploads from the Pending tab, or upload photos directly using the Upload tab."
-            />
+            <EmptyState icon={<Images className="h-9 w-9" />} title="No approved photos yet" description="Approve guest uploads from the Pending tab, or upload directly. Photos appear in the gallery immediately after approval." />
           ) : (
-            <>
-              {/* Category breakdown */}
-              {(() => {
-                const byCat = approved.reduce<Record<string, number>>((acc, p) => {
-                  acc[p.category] = (acc[p.category] ?? 0) + 1;
-                  return acc;
-                }, {});
-                return (
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: ".5rem", marginBottom: ".25rem" }}>
-                    {Object.entries(byCat).map(([cat, count]) => (
-                      <span key={cat} style={{
-                        display: "inline-flex", alignItems: "center", gap: 6,
-                        padding: "4px 12px", borderRadius: 999,
-                        background: "var(--color-surface-soft)",
-                        border: "1px solid var(--color-border)",
-                        fontSize: ".6rem", fontWeight: 600,
-                        letterSpacing: ".12em", textTransform: "uppercase",
-                        color: "var(--color-text-secondary)",
-                      }}>
-                        {catLabel(cat)} <span style={{ color: "var(--color-accent)", fontWeight: 700 }}>{count}</span>
-                      </span>
-                    ))}
-                  </div>
-                );
-              })()}
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {approved.map(photo => (
+                <div key={photo.id} style={{ borderRadius: 16, overflow: "hidden", border: "1px solid var(--color-border)", boxShadow: "var(--shadow-xs)", background: "#fff" }}>
 
-              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                {approved.map(photo => (
-                  <div key={photo.id} className="overflow-hidden rounded-2xl group relative"
-                    style={{ border: "1px solid var(--color-border)", boxShadow: "var(--shadow-xs)" }}>
+                  {/* Photo with hover controls */}
+                  <div style={{ position: "relative", aspectRatio: "1/1" }}>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      alt={`${photo.category} by ${photo.uploaded_by}`}
-                      className="aspect-square w-full object-cover"
-                      src={photo.image_url}
-                    />
-                    <div style={{
-                      position: "absolute", bottom: 0, left: 0, right: 0,
-                      padding: "10px 12px",
-                      background: "linear-gradient(to top,rgba(12,6,8,.75),transparent)",
-                    }}>
-                      <p style={{ fontSize: ".55rem", letterSpacing: ".18em", textTransform: "uppercase", color: "rgba(255,240,220,.80)" }}>
-                        {catLabel(photo.category)}
-                      </p>
-                      <p style={{ fontSize: ".72rem", color: "rgba(255,255,255,.85)", fontWeight: 500, marginTop: 1 }}>
-                        {photo.uploaded_by}
-                      </p>
+                    <img alt={`${catLabel(photo.category)} by ${photo.uploaded_by}`} src={photo.image_url} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                    {/* Dark overlay + action buttons */}
+                    <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top,rgba(12,6,8,.75) 0%,rgba(12,6,8,.10) 55%,transparent 100%)", display: "flex", flexDirection: "column", justifyContent: "space-between", padding: 10 }}>
+                      {/* Top-right buttons */}
+                      <div style={{ display: "flex", justifyContent: "flex-end", gap: ".375rem" }}>
+                        {/* Unpublish → pending */}
+                        <button type="button" disabled={actionId === photo.id} onClick={() => void unpublish(photo.id)} title="Move back to pending (unpublish)" style={{ width: 30, height: 30, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(255,255,255,.90)", border: "none", color: "#6B4A30", cursor: "pointer", boxShadow: "0 2px 8px rgba(0,0,0,.20)" }}>
+                          {actionId === photo.id ? <Loader2 size={13} className="animate-spin" /> : <ArrowLeftCircle size={14} />}
+                        </button>
+                        {/* Delete permanently */}
+                        <button type="button" disabled={actionId === photo.id} onClick={() => void deletePhoto(photo.id, "approved")} title="Delete permanently" style={{ width: 30, height: 30, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(254,242,242,.92)", border: "none", color: "#b91c1c", cursor: "pointer", boxShadow: "0 2px 8px rgba(0,0,0,.20)" }}>
+                          <Trash2 size={13} />
+                        </button>
+                      </div>
+                      {/* Bottom info */}
+                      <div>
+                        <p style={{ fontSize: ".50rem", letterSpacing: ".18em", textTransform: "uppercase", color: "rgba(255,240,220,.70)", marginBottom: 2 }}>{catLabel(photo.category)}</p>
+                        <p style={{ fontSize: ".78rem", color: "rgba(255,255,255,.90)", fontWeight: 500, lineHeight: 1.2 }}>{photo.uploaded_by}</p>
+                        <p style={{ fontSize: ".58rem", color: "rgba(255,255,255,.42)", marginTop: 2 }}>{new Date(photo.created_at).toLocaleDateString()}</p>
+                      </div>
                     </div>
                   </div>
-                ))}
-              </div>
 
-              <a
-                href="/gallery" target="_blank" rel="noreferrer"
-                className="inline-flex items-center gap-2 text-sm font-medium"
-                style={{ color: "var(--color-accent)", textDecoration: "none" }}
-              >
-                <Eye className="h-4 w-4" />
-                View public gallery →
-              </a>
-            </>
+                  {/* Controls row below photo */}
+                  <div style={{ padding: "10px 12px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: ".5rem", background: "var(--color-surface-soft)", borderTop: "1px solid var(--color-border)" }}>
+                    {/* Category editor */}
+                    {editCatId === photo.id ? (
+                      <div style={{ display: "flex", alignItems: "center", gap: ".375rem", flex: 1 }}>
+                        <Tag size={11} style={{ color: "var(--color-text-muted)", flexShrink: 0 }} />
+                        <select
+                          defaultValue={photo.category}
+                          style={selectSmStyle}
+                          disabled={actionId === photo.id}
+                          onChange={e => void changeCategory(photo.id, e.target.value)}
+                        >
+                          {CATEGORIES.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
+                        </select>
+                        <button type="button" onClick={() => setEditCatId(null)} style={{ fontSize: ".65rem", color: "var(--color-text-muted)", background: "none", border: "none", cursor: "pointer" }}>
+                          Cancel
+                        </button>
+                      </div>
+                    ) : (
+                      <button type="button" onClick={() => setEditCatId(photo.id)} style={{ display: "flex", alignItems: "center", gap: 5, fontSize: ".62rem", color: "var(--color-text-muted)", background: "none", border: "none", cursor: "pointer", fontFamily: "var(--font-body)" }}>
+                        <Tag size={11} /> {catLabel(photo.category)}
+                      </button>
+                    )}
+                    <span style={{ fontSize: ".58rem", color: "var(--color-text-muted)", opacity: .6, flexShrink: 0 }}>
+                      {new Date(photo.created_at).toLocaleDateString()}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
           )}
         </div>
       )}
-
     </Card>
   );
 }

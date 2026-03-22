@@ -25,6 +25,17 @@ const nextConfig = {
       {
         protocol: "https",
         hostname: "mfiysoiwlrmpipqmpnde.supabase.co"
+      },
+      // Supabase image transform API (render endpoint used by ImageTransforms helpers)
+      {
+        protocol: "https",
+        hostname: "*.supabase.co",
+        pathname: "/storage/v1/render/**"
+      },
+      {
+        protocol: "https",
+        hostname: "mfiysoiwlrmpipqmpnde.supabase.co",
+        pathname: "/storage/v1/render/**"
       }
 
       // NOTE: dummyimage.com has been intentionally removed.

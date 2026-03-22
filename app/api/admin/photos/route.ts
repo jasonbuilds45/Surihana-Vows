@@ -72,6 +72,40 @@ export async function GET(request: NextRequest) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// DELETE /api/admin/photos?photoId=...
+// Permanently deletes any photo (approved or pending) by ID.
+// Requires admin session.
+// ─────────────────────────────────────────────────────────────────────────────
+export async function DELETE(request: NextRequest) {
+  const session = await getSessionFromRequest(request);
+  if (!session || session.role !== "admin") {
+    return NextResponse.json({ success: false, message: "Admin access required." }, { status: 401 });
+  }
+
+  const photoId = request.nextUrl.searchParams.get("photoId");
+  if (!photoId) {
+    return NextResponse.json({ success: false, message: "photoId is required." }, { status: 400 });
+  }
+
+  const client = getConfiguredSupabaseClient(true);
+  if (!client) return NextResponse.json({ success: true, demoMode: true });
+
+  try {
+    const { error } = await client.from("photos").delete().eq("id", photoId);
+    if (error) {
+      if (shouldFallbackToDemoData(error)) return NextResponse.json({ success: true, demoMode: true });
+      throw new Error(error.message);
+    }
+    return NextResponse.json({ success: true, message: "Photo deleted." });
+  } catch (error) {
+    return NextResponse.json(
+      { success: false, message: error instanceof Error ? error.message : "Delete failed." },
+      { status: 500 }
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // PATCH /api/admin/photos
 // Body: { photoId: string, isApproved: boolean }
 // Approves or rejects a guest-uploaded photo.
@@ -90,10 +124,13 @@ export async function PATCH(request: NextRequest) {
   let photoId: string;
   let isApproved: boolean;
 
+  let category: string | undefined;
+
   try {
     const body = (await request.json()) as Record<string, unknown>;
-    photoId = String(body.photoId ?? "").trim();
+    photoId   = String(body.photoId ?? "").trim();
     isApproved = Boolean(body.isApproved);
+    category  = body.category ? String(body.category) : undefined;
 
     if (!photoId) {
       return NextResponse.json(
@@ -115,40 +152,25 @@ export async function PATCH(request: NextRequest) {
   }
 
   try {
-    if (isApproved) {
-      // Approve: set is_approved = true
-      const { error } = await client
-        .from("photos")
-        .update({ is_approved: true })
-        .eq("id", photoId);
+    // Build the update payload — always set is_approved, optionally update category
+    const updatePayload: Record<string, unknown> = { is_approved: isApproved };
+    if (category) updatePayload.category = category;
 
-      if (error) {
-        if (shouldFallbackToDemoData(error)) {
-          return NextResponse.json({ success: true, demoMode: true });
-        }
+    const { error } = await client
+      .from("photos")
+      .update(updatePayload)
+      .eq("id", photoId);
 
-        throw new Error(error.message);
+    if (error) {
+      if (shouldFallbackToDemoData(error)) {
+        return NextResponse.json({ success: true, demoMode: true });
       }
-
-      return NextResponse.json({ success: true, message: "Photo approved." });
-    } else {
-      // Reject: delete the photo row (and the storage object can be cleaned up
-      // separately via a scheduled job — Phase 5+).
-      const { error } = await client
-        .from("photos")
-        .delete()
-        .eq("id", photoId);
-
-      if (error) {
-        if (shouldFallbackToDemoData(error)) {
-          return NextResponse.json({ success: true, demoMode: true });
-        }
-
-        throw new Error(error.message);
-      }
-
-      return NextResponse.json({ success: true, message: "Photo rejected and removed." });
+      throw new Error(error.message);
     }
+
+    const msg = isApproved ? "Photo approved." : "Photo moved back to pending.";
+    return NextResponse.json({ success: true, message: msg });
+
   } catch (error) {
     return NextResponse.json(
       {
