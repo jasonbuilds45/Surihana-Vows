@@ -28,6 +28,7 @@ const SHELL_SUPPRESSED_PREFIXES = [
   "/squad/",              // squad proposal — private cinematic experience
   "/login",               // login page — standalone
   "/preview-cinematic",   // sandbox test page — full-screen, no chrome
+  "/snap",                 // QR photo upload — standalone, no nav needed
 ];
 
 // Homepage suppressed separately — exact match only, no prefix bleed

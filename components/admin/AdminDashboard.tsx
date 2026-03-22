@@ -23,6 +23,7 @@ import { SquadManager } from "@/components/admin/SquadManager";
 import type { SquadProposal } from "@/modules/squad/squad-system";
 import { GoldStripe, SectionLabel, BtnLink } from "@/components/ui";
 import { Download, LayoutDashboard, Users, Image, Clock, Grid3X3, BarChart3, Zap, ClipboardList, Heart } from "lucide-react";
+import { SnapQR } from "@/components/admin/SnapQR";
 import { getStoredToken } from "@/lib/client/token";
 import { weddingConfig } from "@/lib/config";
 
@@ -221,6 +222,7 @@ export function AdminDashboard({
                 </div>
               </a>
             </div>
+            <SnapQR />
           </>
         )}
 
