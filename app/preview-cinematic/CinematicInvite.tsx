@@ -300,12 +300,12 @@ export default function CinematicInvite() {
               {/* Bottom Data Grid */}
               <div style={{ display: "flex", justifyContent: "space-between", width: "100%", borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: "30px" }}>
                   <div ref={detailOneRef} style={{ display: "flex", flexDirection: "column", gap: "4px", opacity: 0 }}>
-                      <span style={{ fontSize: "0.6rem", letterSpacing: "0.2em", color: "#D4AF37" }}>// STATUS: DATE_SYNC</span>
+                      <span style={{ fontSize: "0.6rem", letterSpacing: "0.2em", color: "#D4AF37" }}>STATUS: DATE_SYNC</span>
                       <span style={{ fontSize: "clamp(1rem, 1.5vw, 1.5rem)", fontWeight: 300, letterSpacing: "0.1em" }}>{dateText}</span>
                   </div>
                   
                   <div ref={detailTwoRef} style={{ display: "flex", flexDirection: "column", gap: "4px", alignItems: "flex-end", textAlign: "right", opacity: 0 }}>
-                      <span style={{ fontSize: "0.6rem", letterSpacing: "0.2em", color: "#D4AF37" }}>// STATUS: LOCATION_LOCK</span>
+                      <span style={{ fontSize: "0.6rem", letterSpacing: "0.2em", color: "#D4AF37" }}>STATUS: LOCATION_LOCK</span>
                       <span style={{ fontSize: "clamp(1rem, 1.5vw, 1.5rem)", fontWeight: 300, letterSpacing: "0.1em" }}>{venueText}</span>
                   </div>
               </div>
