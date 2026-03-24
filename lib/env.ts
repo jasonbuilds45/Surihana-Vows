@@ -19,9 +19,9 @@ export const env = {
   NEXT_PUBLIC_SITE_URL:        readEnv("NEXT_PUBLIC_SITE_URL") || "http://localhost:3000",
   NEXT_PUBLIC_LIVESTREAM_URL:  readEnv("NEXT_PUBLIC_LIVESTREAM_URL"),
   AUTH_SECRET:                 readEnv("AUTH_SECRET"),
-  FAMILY_LOGIN_EMAIL:          readEnv("FAMILY_LOGIN_EMAIL") || "family@surihana.vows",
+  FAMILY_LOGIN_EMAIL:          readEnv("FAMILY_LOGIN_EMAIL"),
   FAMILY_LOGIN_PASSWORD:       readEnv("FAMILY_LOGIN_PASSWORD"),
-  ADMIN_LOGIN_EMAIL:           readEnv("ADMIN_LOGIN_EMAIL")  || "admin@surihana.vows",
+  ADMIN_LOGIN_EMAIL:           readEnv("ADMIN_LOGIN_EMAIL"),
   ADMIN_LOGIN_PASSWORD:        readEnv("ADMIN_LOGIN_PASSWORD"),
 } as const;
 

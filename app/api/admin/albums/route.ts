@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { extractToken, verifyAuthToken } from "@/lib/auth";
 import { getConfiguredSupabaseClient, shouldFallbackToDemoData } from "@/lib/supabaseClient";
-import { DEMO_WEDDING_ID } from "@/lib/demo-data";
+import { weddingConfig } from "@/lib/config";
+const DEMO_WEDDING_ID = weddingConfig.id;
 
 export const runtime = "nodejs";
 

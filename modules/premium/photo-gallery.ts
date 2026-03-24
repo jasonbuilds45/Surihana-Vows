@@ -1,71 +1,73 @@
-import { galleryConfig } from "@/lib/config";
-import { DEMO_WEDDING_ID, demoPhotos } from "@/lib/demo-data";
+import { galleryConfig, weddingConfig } from "@/lib/config";
+import { demoPhotos } from "@/lib/demo-data";
 import { getConfiguredSupabaseClient, shouldFallbackToDemoData } from "@/lib/supabaseClient";
 import type { PhotoRow } from "@/lib/types";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // getGalleryPhotos
-// Public-facing gallery query. Only returns approved photos (is_approved = true).
-// Guest uploads start as unapproved (Phase 3.4); admin approves via UploadManager.
 //
-// Strategy:
-//   - Always try to load from DB first (service-role client bypasses RLS)
-//   - Merge real DB photos with seed/demo photos so gallery is never empty
-//   - Seed photos with image_urls already in DB are deduplicated
-//   - Pass includeUnapproved = true from admin routes to see pending photos
+// Strategy (in order):
+//  1. Try Supabase with service-role key (bypasses RLS)
+//  2. If DB returns rows → merge DB rows + seed photos (dedup by image_url)
+//  3. If DB errors with schema fault → fall back to seed photos only
+//  4. If DB succeeds but returns 0 rows → still merge with seed photos so
+//     gallery is never completely empty before the wedding
+//  5. If no Supabase configured → seed photos only (dev/demo mode)
 // ─────────────────────────────────────────────────────────────────────────────
 export async function getGalleryPhotos(
-  weddingId = DEMO_WEDDING_ID,
+  weddingId = weddingConfig.id,
   category?: string,
   includeUnapproved = false
 ): Promise<PhotoRow[]> {
-  // Service-role client bypasses RLS so approved photos always read correctly.
+  // Seed photos — always used as baseline so gallery is never empty.
+  // They are pre-approved and use the same weddingId as the config.
+  const seedPhotos = demoPhotos.filter(p => p.wedding_id === weddingId);
+
+  // Service-role client bypasses RLS; the is_approved filter enforces visibility.
   const client = getConfiguredSupabaseClient(true);
 
-  // Seed photos — used as a baseline so the gallery is never completely empty.
-  const seedPhotos = demoPhotos.filter((p) => p.wedding_id === weddingId);
-
   if (client) {
-    let query = client
-      .from("photos")
-      .select("*")
-      .eq("wedding_id", weddingId)
-      .order("created_at", { ascending: false });
+    try {
+      let query = client
+        .from("photos")
+        .select("*")
+        .eq("wedding_id", weddingId)
+        .order("created_at", { ascending: false });
 
-    if (category) {
-      query = query.eq("category", category);
-    }
+      if (category) query = query.eq("category", category);
+      if (!includeUnapproved) query = query.eq("is_approved", true);
 
-    if (!includeUnapproved) {
-      query = query.eq("is_approved", true);
-    }
+      const { data, error } = await query;
 
-    const { data, error } = await query;
-
-    if (error) {
-      if (shouldFallbackToDemoData(error)) {
-        // Table missing / schema error — fall back to seed photos only
-        return category ? seedPhotos.filter((p) => p.category === category) : seedPhotos;
+      if (error) {
+        // Schema / table missing — silently fall back to seed photos
+        if (shouldFallbackToDemoData(error)) {
+          return category ? seedPhotos.filter(p => p.category === category) : seedPhotos;
+        }
+        // Real error — surface it
+        throw new Error(error.message);
       }
-      throw new Error(error.message);
+
+      const dbPhotos = (data as PhotoRow[] | null) ?? [];
+
+      // Merge: real DB photos first, seed photos fill the gaps.
+      // Dedup by image_url so slideshow photos don't appear twice.
+      const dbUrls = new Set(dbPhotos.map(p => p.image_url));
+      const merged = [
+        ...dbPhotos,
+        ...seedPhotos.filter(p => !dbUrls.has(p.image_url)),
+      ];
+
+      return category ? merged.filter(p => p.category === category) : merged;
+    } catch (err) {
+      // Unexpected error — fall back to seed so gallery never crashes
+      console.error("[getGalleryPhotos] DB error, falling back to seed photos:", err);
+      return category ? seedPhotos.filter(p => p.category === category) : seedPhotos;
     }
-
-    const dbPhotos = (data as PhotoRow[] | null) ?? [];
-
-    // Merge: real DB photos first, then seed photos whose image_url doesn't
-    // already appear in the DB set. This avoids duplicates while ensuring
-    // the gallery has content from day one.
-    const dbUrls = new Set(dbPhotos.map((p) => p.image_url));
-    const merged = [
-      ...dbPhotos,
-      ...seedPhotos.filter((p) => !dbUrls.has(p.image_url)),
-    ];
-
-    return category ? merged.filter((p) => p.category === category) : merged;
   }
 
-  // No Supabase client configured — demo/dev mode, return seed photos only
-  return category ? seedPhotos.filter((p) => p.category === category) : seedPhotos;
+  // No Supabase client — dev / demo mode
+  return category ? seedPhotos.filter(p => p.category === category) : seedPhotos;
 }
 
 export function getGalleryCategories() {

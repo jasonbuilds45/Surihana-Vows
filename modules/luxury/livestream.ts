@@ -1,5 +1,6 @@
 import { env } from "@/lib/env";
 import { DEMO_WEDDING_ID } from "@/lib/demo-data";
+import { weddingConfig } from "@/lib/config";
 import type { LiveTimelineItem, LivestreamBundle } from "@/lib/types";
 import { getWeddingEvents } from "@/modules/elegant/event-display";
 import { getAnalyticsSnapshot, getRecentInviteActivity } from "@/modules/premium/analytics";
@@ -44,11 +45,11 @@ export async function getLivestreamBundle(weddingId = DEMO_WEDDING_ID): Promise<
 
   return {
     weddingId,
-    embedUrl: env.NEXT_PUBLIC_LIVESTREAM_URL || "https://www.youtube.com/embed/ysz5S6PUM-U",
-    headline: "Wedding Day Live Hub",
+    embedUrl: env.NEXT_PUBLIC_LIVESTREAM_URL || "",
+    headline: `${weddingConfig.brideName.split(" ")[0]} & ${weddingConfig.groomName.split(" ")[0]} — Live`,
     description:
-      "Follow the ceremony in real time, browse new moments from the venue, and leave a note for the couple as the day unfolds.",
-    countdownTarget: `${ceremony?.date ?? "2026-12-18"}T${ceremony?.time ?? "18:30"}:00`,
+      `Follow the ceremony in real time, leave a note for the couple, and share in the celebration as ${weddingConfig.brideName.split(" ")[0]} and ${weddingConfig.groomName.split(" ")[0]} say their vows.`,
+    countdownTarget: `${ceremony?.date ?? weddingConfig.weddingDate}T${ceremony?.time ?? weddingConfig.weddingTime}:00`,
     timeline,
     livePhotos: photos.slice(0, 6),
     guestMessages,
