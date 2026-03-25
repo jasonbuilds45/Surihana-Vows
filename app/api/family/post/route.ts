@@ -9,6 +9,7 @@ interface PostBody {
   content?: string;
   postType?: "memory" | "blessing" | "milestone" | "anniversary";
   postedBy?: string;
+  mediaUrl?: string | null;
 }
 
 const VALID_POST_TYPES = new Set(["memory", "blessing", "milestone", "anniversary"]);
@@ -45,7 +46,7 @@ export async function POST(request: NextRequest) {
     wedding_id: weddingId,
     title: title.trim(),
     content: content.trim(),
-    media_url: null,
+    media_url: mediaUrl ?? null,
     posted_by: postedBy?.trim() || session.email,
     post_type: postType,
     created_at: new Date().toISOString()

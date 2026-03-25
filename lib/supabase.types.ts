@@ -643,6 +643,31 @@ export interface Database {
           }
         ];
       };
+      family_post_reactions: {
+        Row: {
+          id:         string;
+          post_id:    string;
+          emoji:      string;
+          reacted_by: string;
+          created_at: string;
+        };
+        Insert: {
+          id?:        string;
+          post_id:    string;
+          emoji:      string;
+          reacted_by: string;
+          created_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["family_post_reactions"]["Insert"]>;
+        Relationships: [
+          {
+            foreignKeyName: "fk_family_post_reactions_post";
+            columns: ["post_id"];
+            referencedRelation: "family_posts";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;
