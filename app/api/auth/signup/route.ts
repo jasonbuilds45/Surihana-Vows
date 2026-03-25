@@ -3,83 +3,70 @@ import {
   AUTH_COOKIE_NAME,
   SESSION_MAX_AGE,
   createAuthToken,
-  hashPassword,
 } from "@/lib/auth";
-import { getConfiguredSupabaseClient, shouldFallbackToDemoData } from "@/lib/supabaseClient";
+import { completeFamilySignupInvite } from "@/lib/family-signup";
 
 export const runtime = "nodejs";
 
+function buildInviteRedirect(request: NextRequest, token: string, reason: string) {
+  return NextResponse.redirect(
+    new URL(`/family/signup/${encodeURIComponent(token)}?error=${encodeURIComponent(reason)}`, request.url),
+    303
+  );
+}
+
+function buildLoginRedirect(request: NextRequest, reason: string) {
+  return NextResponse.redirect(
+    new URL(`/login?error=${encodeURIComponent(reason)}`, request.url),
+    303
+  );
+}
+
 // POST /api/auth/signup
-// Creates a new family_users row with a hashed password, then immediately
-// signs the user in (sets the session cookie) and redirects to /family.
+// Invite-only account activation for family access.
 export async function POST(request: NextRequest) {
+  let token = "";
+
   try {
-    const formData  = await request.formData();
-    const email     = String(formData.get("email")     ?? "").trim().toLowerCase();
-    const password  = String(formData.get("password")  ?? "").trim();
+    const formData = await request.formData();
+    token = String(formData.get("token") ?? "").trim();
+    const password = String(formData.get("password") ?? "").trim();
     const password2 = String(formData.get("password2") ?? "").trim();
-    const redirect  = String(formData.get("redirect")  ?? "/family");
 
-    const fail = (reason: string) =>
-      NextResponse.redirect(
-        new URL(`/login?tab=signup&error=${encodeURIComponent(reason)}`, request.url),
-        303
-      );
+    if (!token) return buildLoginRedirect(request, "invite-only");
+    if (password.length < 8) return buildInviteRedirect(request, token, "weak-password");
+    if (password !== password2) return buildInviteRedirect(request, token, "password-mismatch");
 
-    if (!email || !email.includes("@")) return fail("invalid-email");
-    if (password.length < 8)            return fail("weak-password");
-    if (password !== password2)         return fail("password-mismatch");
+    const result = await completeFamilySignupInvite(token, password);
 
-    const client = getConfiguredSupabaseClient(true);
+    if (result.status !== "ready" || !result.session) {
+      const reason =
+        result.status === "claimed"
+          ? "invite-claimed"
+          : result.status === "expired"
+            ? "invite-expired"
+            : "invite-invalid";
 
-    // Demo mode — no Supabase configured
-    if (!client) return fail("no-supabase");
-
-    // Check for existing user
-    const { data: existing } = await client
-      .from("family_users")
-      .select("id")
-      .eq("email", email)
-      .maybeSingle();
-
-    if (existing) return fail("email-taken");
-
-    const passwordHash = await hashPassword(password);
-    const userId       = crypto.randomUUID();
-
-    const { error } = await client.from("family_users").insert({
-      id:            userId,
-      email,
-      role:          "family",
-      password_hash: passwordHash,
-      created_at:    new Date().toISOString(),
-    });
-
-    if (error) {
-      if (shouldFallbackToDemoData(error)) return fail("no-supabase");
-      console.error("[auth/signup]", error.message);
-      return fail("server-error");
+      return buildInviteRedirect(request, token, reason);
     }
 
-    // Auto-sign-in after successful registration
-    const token = await createAuthToken({ userId, email, role: "family" });
+    const sessionToken = await createAuthToken(result.session);
+    const destination = new URL(result.destination ?? "/family", request.url);
+    destination.searchParams.set("_t", sessionToken);
 
-    const dest = new URL(redirect.startsWith("/") ? redirect : "/family", request.url);
-    dest.searchParams.set("_t", token);
-    const response = NextResponse.redirect(dest, 303);
-    response.cookies.set(AUTH_COOKIE_NAME, token, {
+    const response = NextResponse.redirect(destination, 303);
+    response.cookies.set(AUTH_COOKIE_NAME, sessionToken, {
       httpOnly: false,
-      maxAge:   SESSION_MAX_AGE,
-      path:     "/",
+      maxAge: SESSION_MAX_AGE,
+      path: "/",
       sameSite: "lax",
-      secure:   process.env.NODE_ENV === "production",
+      secure: process.env.NODE_ENV === "production",
     });
     return response;
-  } catch (err) {
-    console.error("[auth/signup] Unexpected error:", err);
-    return NextResponse.redirect(
-      new URL("/login?tab=signup&error=server-error", request.url),
-      303
-    );
+  } catch (error) {
+    console.error("[auth/signup] Unexpected error:", error);
+    return token
+      ? buildInviteRedirect(request, token, "server-error")
+      : buildLoginRedirect(request, "server-error");
   }
 }
