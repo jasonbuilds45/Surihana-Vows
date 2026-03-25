@@ -222,7 +222,7 @@ export default async function FamilyPage() {
 
         {/* ── Stories strip ── */}
         <div style={{ borderBottom: "1px solid rgba(190,45,69,.07)", background: "rgba(255,253,251,.96)", backdropFilter: "blur(10px)", position: "sticky", top: "calc(var(--vault-header-height,57px))", zIndex: 30 }}>
-          <Container style={{ paddingTop: 0, paddingBottom: 0 }}>
+          <Container className="py-0">
             <div className="vault-stories">
               <div className="vault-add-story">
                 <div className="vault-add-ring">
