@@ -1,9 +1,6 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import {
-  getDefaultPathForRole,
-  getSessionFromCookieStore,
-} from "@/lib/auth";
+import { getDefaultPathForRole, getSessionFromCookieStore } from "@/lib/auth";
 import type { Metadata } from "next";
 import { weddingConfig } from "@/lib/config";
 
@@ -14,232 +11,494 @@ export const metadata: Metadata = {
 
 interface LoginPageProps {
   searchParams?: {
-    error?: string | string[];
-    magic?: string | string[];
-    hint?:  string | string[];
+    error?:    string | string[];
+    tab?:      string | string[];
+    redirect?: string | string[];
+    hint?:     string | string[];
   };
 }
 
-function readParam(v?: string | string[]) {
-  return typeof v === "string" ? v : v?.[0];
+function param(v?: string | string[]) {
+  return typeof v === "string" ? v : (v?.[0] ?? "");
 }
 
-const DF     = "var(--font-display), Georgia, serif";
-const BF     = "var(--font-body), system-ui, sans-serif";
-const STRIPE = "linear-gradient(90deg,#D94F62 0%,#C0364A 30%,#B8820A 55%,#C0364A 80%,#D94F62 100%)";
+const DF = "var(--font-display),'Cormorant Garamond',Georgia,serif";
+const BF = "var(--font-body),'Manrope',system-ui,sans-serif";
+
+const ROSE     = "#BE2D45";
+const ROSE_D   = "#A82C3E";
+const ROSE_L   = "#D44860";
+const GOLD     = "#B8860A";
+const INK      = "#1A0C0E";
+const INK_3    = "#7A5460";
+const INK_4    = "#A88888";
+const CREAM    = "#FAF6F1";
+const LINEN    = "#F1E9E0";
 
 export default async function LoginPage({ searchParams }: LoginPageProps) {
-  // Already logged in → skip straight to their home
-  const existing = await getSessionFromCookieStore(cookies());
-  if (existing) redirect(getDefaultPathForRole(existing.role));
+  const session = await getSessionFromCookieStore(cookies());
+  if (session) redirect(getDefaultPathForRole(session.role));
 
-  const hint       = readParam(searchParams?.hint) ?? "";
-  const errorVal   = readParam(searchParams?.error);
-  const magicStatus = readParam(searchParams?.magic);
-  const isCouple   = hint === "couple";
-  const accentColor = isCouple ? "#C0364A" : "#8A5A44";
+  const activeTab  = param(searchParams?.tab) === "signup" ? "signup" : "login";
+  const errorCode  = param(searchParams?.error);
+  const hint       = param(searchParams?.hint);
+  const redirectTo = param(searchParams?.redirect) || (hint === "couple" ? "/admin" : "/family");
 
-  const errorMsg =
-    errorVal === "access-code" ? "That access code is invalid or has expired." :
-    errorVal === "magic-link"  ? "That magic link is invalid or has expired." :
-    errorVal                   ? "Invalid email or password. Please try again." :
-    null;
-
-  const inp: React.CSSProperties = {
-    display: "block", width: "100%",
-    background: "#F9F5F2",
-    border: "1.5px solid #E4D8D0",
-    borderRadius: 12,
-    padding: "13px 16px",
-    color: "#1A1012",
-    fontSize: "0.9375rem",
-    outline: "none",
-    fontFamily: BF,
+  const errorMessages: Record<string, string> = {
+    "invalid":          "Incorrect email or password. Please try again.",
+    "invalid-email":    "Please enter a valid email address.",
+    "weak-password":    "Password must be at least 8 characters.",
+    "password-mismatch":"Passwords don't match.",
+    "email-taken":      "An account with that email already exists. Sign in instead.",
+    "no-supabase":      "Account registration is not available in demo mode.",
+    "server-error":     "Something went wrong. Please try again.",
   };
+  const errorMsg = errorCode ? (errorMessages[errorCode] ?? "Something went wrong.") : null;
+
+  const brideInitial = weddingConfig.brideName[0] ?? "M";
+  const groomInitial = weddingConfig.groomName[0] ?? "L";
+  const brideFirst   = weddingConfig.brideName.split(" ")[0];
+  const groomFirst   = weddingConfig.groomName.split(" ")[0];
 
   return (
     <>
       <style>{`
-        html,body { margin:0; padding:0; }
-        @keyframes fadeIn { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
-        .lf { animation: fadeIn .55s ease both; }
-        .lf2 { animation: fadeIn .55s .12s ease both; }
-        .btn-submit { transition: all .18s ease; cursor:pointer; border:none; }
-        .btn-submit:hover { opacity:.90; transform:translateY(-1px); }
-        .btn-sm { transition: all .18s ease; cursor:pointer; border:none; }
-        .btn-sm:hover { opacity:.88; }
-        .back { transition: color .18s; text-decoration:none; }
-        .back:hover { color:rgba(255,255,255,.80) !important; }
-        @media(max-width:700px){
-          .login-wrap { flex-direction:column !important; }
-          .login-left { width:100% !important; min-height:auto !important; padding:2rem !important; }
-          .login-right { padding:2rem !important; }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { height: 100%; }
+
+        @keyframes fadeUp {
+          from { opacity: 0; transform: translateY(16px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes shimmer {
+          0%   { background-position: -200% center; }
+          100% { background-position:  200% center; }
+        }
+        @keyframes float {
+          0%, 100% { transform: translateY(0); }
+          50%       { transform: translateY(-6px); }
+        }
+
+        .lp-panel-l { animation: fadeUp .65s ease both; }
+        .lp-panel-r { animation: fadeUp .65s .10s ease both; }
+
+        /* ── Inputs ── */
+        .lp-inp {
+          display: block; width: 100%;
+          background: #FFFFFF;
+          border: 1.5px solid #DDD0CC;
+          border-radius: 14px;
+          padding: 13px 16px;
+          color: ${INK};
+          font-size: .9375rem;
+          font-family: ${BF};
+          outline: none;
+          transition: border-color .2s ease, box-shadow .2s ease;
+        }
+        .lp-inp:focus {
+          border-color: ${ROSE};
+          box-shadow: 0 0 0 3px rgba(190,45,69,.12);
+        }
+        .lp-inp::placeholder { color: #B8A8A8; }
+
+        /* ── Submit button ── */
+        .lp-btn {
+          width: 100%; padding: 14px;
+          border: none; border-radius: 999px; cursor: pointer;
+          background: linear-gradient(135deg, ${ROSE_L}, ${ROSE}, ${ROSE_D});
+          color: #fff;
+          font-family: ${BF}; font-size: .875rem; font-weight: 700;
+          letter-spacing: .12em; text-transform: uppercase;
+          box-shadow: 0 6px 24px rgba(190,45,69,.30);
+          transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
+        }
+        .lp-btn:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 10px 32px rgba(190,45,69,.38);
+          filter: brightness(1.04);
+        }
+        .lp-btn:active { transform: translateY(0); filter: brightness(.96); }
+
+        /* ── Tab ── */
+        .lp-tab {
+          flex: 1; padding: 12px;
+          background: transparent; border: none; cursor: pointer;
+          font-family: ${BF}; font-size: .62rem; font-weight: 600;
+          letter-spacing: .20em; text-transform: uppercase;
+          color: ${INK_4}; border-bottom: 2px solid transparent;
+          transition: color .18s, border-color .18s;
+        }
+        .lp-tab.active { color: ${ROSE}; border-bottom-color: ${ROSE}; }
+        .lp-tab:hover:not(.active) { color: ${INK_3}; }
+
+        /* ── Back link ── */
+        .lp-back {
+          font-family: ${BF}; font-size: .58rem;
+          letter-spacing: .22em; text-transform: uppercase;
+          color: rgba(255,255,255,.28); text-decoration: none;
+          transition: color .18s;
+        }
+        .lp-back:hover { color: rgba(255,255,255,.70); }
+
+        /* ── Floating monogram ── */
+        .lp-seal {
+          animation: float 6s ease-in-out infinite;
+        }
+
+        /* ── Mobile ── */
+        @media (max-width: 700px) {
+          .lp-wrap { flex-direction: column !important; }
+          .lp-left { width: 100% !important; min-height: 220px !important; padding: 2rem 1.75rem !important; }
+          .lp-right { padding: 2rem 1.5rem !important; }
         }
       `}</style>
 
-      {/* Gold stripe top */}
-      <div style={{ position:"fixed", top:0, left:0, right:0, height:3, background:STRIPE, zIndex:20 }} />
+      {/* Rose-gold top stripe */}
+      <div aria-hidden style={{
+        position: "fixed", top: 0, left: 0, right: 0, height: 3, zIndex: 50,
+        background: `linear-gradient(90deg, transparent 0%, ${ROSE_L} 20%, ${GOLD} 50%, ${ROSE_L} 80%, transparent 100%)`,
+      }} />
 
-      <div className="login-wrap" style={{ minHeight:"100dvh", display:"flex", background:"#0E0809" }}>
+      <div className="lp-wrap" style={{
+        minHeight: "100dvh", display: "flex",
+        background: INK,
+      }}>
 
-        {/* ── Left dark panel ── */}
-        <div
-          className="login-left lf"
-          style={{
-            width:"38%", minWidth:280,
-            background:"linear-gradient(160deg,#1A0C10 0%,#2A1218 60%,#1A0C10 100%)",
-            borderRight:"1px solid rgba(255,255,255,.07)",
-            padding:"clamp(2.5rem,6vh,5rem) clamp(2rem,4vw,3.5rem)",
-            display:"flex", flexDirection:"column", justifyContent:"space-between",
-          }}
-        >
-          <div>
-            {/* Monogram */}
-            <div style={{ width:46, height:46, borderRadius:"50%", border:`1.5px solid ${accentColor}`, display:"grid", placeItems:"center", marginBottom:"2rem", background:"rgba(255,255,255,.06)" }}>
-              <span style={{ fontFamily:DF, fontSize:"1rem", fontWeight:700, color: isCouple ? "#F5C5CB" : "#D4B39B" }}>
-                {weddingConfig.brideName[0]}{weddingConfig.groomName[0]}
+        {/* ══════════════════════════════════════════════
+            LEFT — dark branded panel
+        ══════════════════════════════════════════════ */}
+        <div className="lp-left lp-panel-l" style={{
+          width: "42%", minWidth: 300,
+          background: `linear-gradient(160deg, #1A0C0E 0%, #2A1218 55%, #1C0E12 100%)`,
+          borderRight: "1px solid rgba(255,255,255,.06)",
+          padding: "clamp(2.5rem,6vh,5rem) clamp(2rem,4vw,3.5rem)",
+          display: "flex", flexDirection: "column",
+          justifyContent: "space-between",
+          position: "relative", overflow: "hidden",
+        }}>
+          {/* Atmospheric bloom */}
+          <div aria-hidden style={{
+            position: "absolute", top: "-20%", right: "-10%",
+            width: "70%", height: "60%", borderRadius: "50%",
+            background: "radial-gradient(circle, rgba(190,45,69,.10) 0%, transparent 65%)",
+            pointerEvents: "none",
+          }} />
+          <div aria-hidden style={{
+            position: "absolute", bottom: "-15%", left: "-8%",
+            width: "55%", height: "50%", borderRadius: "50%",
+            background: "radial-gradient(circle, rgba(184,134,10,.07) 0%, transparent 65%)",
+            pointerEvents: "none",
+          }} />
+
+          <div style={{ position: "relative", zIndex: 1 }}>
+            {/* Floating wax seal */}
+            <div className="lp-seal" style={{
+              width: 58, height: 58, borderRadius: "50%",
+              background: `linear-gradient(135deg, #F5D47A 0%, #C9960A 40%, #9E7205 75%, #5C3D01 100%)`,
+              display: "grid", placeItems: "center",
+              marginBottom: "2.25rem",
+              boxShadow: "0 8px 28px rgba(0,0,0,.40), 0 2px 6px rgba(0,0,0,.22)",
+              border: "1px solid rgba(255,220,100,.25)",
+            }}>
+              <span style={{
+                fontFamily: DF, fontSize: "1.2rem", fontWeight: 600,
+                color: "rgba(28,14,0,.82)", letterSpacing: ".12em",
+                textShadow: "0 1px 0 rgba(255,240,160,.40)",
+              }}>
+                {brideInitial}{groomInitial}
               </span>
             </div>
 
-            <p style={{ fontSize:".56rem", letterSpacing:".30em", textTransform:"uppercase", color:"rgba(255,255,255,.28)", fontFamily:BF, marginBottom:".625rem" }}>
+            {/* Label */}
+            <p style={{
+              fontFamily: BF, fontSize: ".50rem", letterSpacing: ".42em",
+              textTransform: "uppercase", color: `rgba(190,45,69,.65)`,
+              fontWeight: 700, marginBottom: ".75rem",
+            }}>
               {weddingConfig.celebrationTitle}
             </p>
-            <h1 style={{ fontFamily:DF, fontSize:"clamp(1.6rem,3.5vw,2.6rem)", fontWeight:700, color:"#fff", lineHeight:1.1, marginBottom:"1.25rem" }}>
-              {isCouple ? <>Welcome back,<br/>lovely couple 💍</> : <>Welcome,<br/>dear family 🫂</>}
+
+            {/* Couple names */}
+            <h1 style={{
+              fontFamily: DF, fontWeight: 300,
+              fontSize: "clamp(2rem,4.5vw,3.25rem)",
+              lineHeight: .88, letterSpacing: "-.02em",
+              color: "#FFFFFF", marginBottom: "2rem",
+            }}>
+              <span style={{ color: "var(--name-bride, #FFFFFF)" }}>{brideFirst}</span>
+              <span style={{ color: "rgba(190,45,69,.55)", fontStyle: "italic", margin: "0 .35em", fontSize: ".7em" }}>&amp;</span>
+              <span style={{ color: "var(--name-groom, #D4B896)" }}>{groomFirst}</span>
             </h1>
-            <p style={{ fontSize:".875rem", color:"rgba(255,255,255,.40)", fontFamily:BF, lineHeight:1.78, maxWidth:270 }}>
-              {isCouple
-                ? "Sign in to manage your guest list, send invitations, and track RSVPs."
-                : "Sign in to access private photos, family memories, and time capsules."}
-            </p>
-
-            {magicStatus === "sent" && (
-              <div style={{ marginTop:"2rem", background:"rgba(255,255,255,.06)", border:"1px solid rgba(255,255,255,.10)", borderRadius:14, padding:"1rem 1.25rem" }}>
-                <p style={{ fontSize:".875rem", fontWeight:600, color:"#fff", marginBottom:3 }}>Magic link sent ✓</p>
-                <p style={{ fontSize:".82rem", color:"rgba(255,255,255,.42)", fontFamily:BF }}>Check your inbox and click the link to sign in instantly.</p>
-              </div>
-            )}
-          </div>
-
-          <a href="/" className="back" style={{ fontSize:".68rem", letterSpacing:".22em", textTransform:"uppercase", color:"rgba(255,255,255,.22)", fontFamily:BF }}>
-            ← Back to wedding
-          </a>
-        </div>
-
-        {/* ── Right form panel ── */}
-        <div
-          className="login-right lf2"
-          style={{
-            flex:1, display:"flex", alignItems:"center", justifyContent:"center",
-            padding:"clamp(2rem,5vh,5rem) clamp(2rem,5vw,5rem)",
-            background:"#fff",
-          }}
-        >
-          <div style={{ width:"100%", maxWidth:420 }}>
-
-            <p style={{ fontSize:".56rem", letterSpacing:".26em", textTransform:"uppercase", color:accentColor, fontFamily:BF, fontWeight:700, marginBottom:".5rem" }}>
-              Sign in
-            </p>
-            <h2 style={{ fontFamily:DF, fontSize:"clamp(1.4rem,2.8vw,1.875rem)", fontWeight:700, color:"#1A1012", marginBottom:"1.75rem", lineHeight:1.2 }}>
-              Continue with password
-            </h2>
-
-            {/* ── Password form — posts to API route so cookie+redirect are atomic ── */}
-            <form method="POST" action="/api/auth/login" style={{ marginBottom:"1.75rem" }}>
-              <input type="hidden" name="hint" value={hint} />
-
-              <div style={{ display:"flex", flexDirection:"column", gap:"1rem", marginBottom:"1.125rem" }}>
-                <div>
-                  <label style={{ display:"block", fontSize:".58rem", fontWeight:700, letterSpacing:".16em", textTransform:"uppercase", color:"#7A5460", marginBottom:6, fontFamily:BF }}>
-                    Email address
-                  </label>
-                  <input name="email" type="email" required autoComplete="email" placeholder="your@email.com" style={inp} />
-                </div>
-                <div>
-                  <label style={{ display:"block", fontSize:".58rem", fontWeight:700, letterSpacing:".16em", textTransform:"uppercase", color:"#7A5460", marginBottom:6, fontFamily:BF }}>
-                    Password
-                  </label>
-                  <input name="password" type="password" required autoComplete="current-password" placeholder="Your password" style={inp} />
-                </div>
-              </div>
-
-              {errorMsg && (
-                <div style={{ background:"#FEF2F2", border:"1px solid #FECACA", borderRadius:10, padding:"10px 14px", marginBottom:"1rem" }}>
-                  <p style={{ fontSize:".875rem", color:"#B91C1C", fontFamily:BF, margin:0 }}>{errorMsg}</p>
-                </div>
-              )}
-
-              <button
-                type="submit"
-                className="btn-submit"
-                style={{
-                  width:"100%", padding:"14px", borderRadius:999,
-                  background: isCouple
-                    ? "linear-gradient(135deg,#C0364A,#A82C3E)"
-                    : "linear-gradient(135deg,#8A5A44,#6D4535)",
-                  color:"#fff",
-                  fontSize:".875rem", fontWeight:700, fontFamily:BF,
-                  letterSpacing:".12em", textTransform:"uppercase",
-                  boxShadow: isCouple
-                    ? "0 6px 22px rgba(192,54,74,.30)"
-                    : "0 6px 22px rgba(138,90,68,.28)",
-                }}
-              >
-                Sign in →
-              </button>
-            </form>
 
             {/* Divider */}
-            <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:"1.25rem" }}>
-              <div style={{ flex:1, height:1, background:"#EDE8E4" }} />
-              <span style={{ fontSize:".62rem", letterSpacing:".18em", textTransform:"uppercase", color:"#B0A0A0", fontFamily:BF }}>or</span>
-              <div style={{ flex:1, height:1, background:"#EDE8E4" }} />
+            <div style={{
+              width: "min(72px,40%)", height: 1, marginBottom: "1.75rem",
+              background: `linear-gradient(to right, rgba(190,45,69,.55), rgba(184,134,10,.45), transparent)`,
+            }} />
+
+            {/* Copy */}
+            <p style={{
+              fontFamily: DF, fontStyle: "italic", fontWeight: 300,
+              fontSize: "clamp(.95rem,1.8vw,1.15rem)",
+              color: "rgba(255,255,255,.40)", lineHeight: 1.80,
+              maxWidth: 280,
+            }}>
+              {activeTab === "signup"
+                ? "Create your account to access the private family vault, photo albums, and wedding memories."
+                : "Sign in to your account to access the private family vault, photos, and time capsules."}
+            </p>
+
+            {/* Date + venue chips */}
+            <div style={{
+              display: "flex", flexWrap: "wrap", gap: ".5rem",
+              marginTop: "2rem",
+            }}>
+              {[
+                weddingConfig.weddingDate
+                  ? new Date(weddingConfig.weddingDate).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })
+                  : null,
+                weddingConfig.venueCity || null,
+              ].filter(Boolean).map(chip => (
+                <span key={chip} style={{
+                  display: "inline-flex", alignItems: "center",
+                  padding: "4px 12px", borderRadius: 999,
+                  background: "rgba(255,255,255,.06)",
+                  border: "1px solid rgba(255,255,255,.09)",
+                  fontFamily: BF, fontSize: ".52rem",
+                  letterSpacing: ".14em", textTransform: "uppercase",
+                  color: "rgba(255,255,255,.35)",
+                }}>
+                  {chip}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <a href="/" className="lp-back">← Back to wedding</a>
+        </div>
+
+        {/* ══════════════════════════════════════════════
+            RIGHT — form panel
+        ══════════════════════════════════════════════ */}
+        <div className="lp-right lp-panel-r" style={{
+          flex: 1,
+          display: "flex", alignItems: "center", justifyContent: "center",
+          padding: "clamp(2rem,5vh,5rem) clamp(2rem,5vw,5rem)",
+          background: CREAM,
+        }}>
+          <div style={{ width: "100%", maxWidth: 400 }}>
+
+            {/* Tabs */}
+            <div style={{
+              display: "flex",
+              borderBottom: "1px solid #DDD0CC",
+              marginBottom: "2rem",
+            }}>
+              <a
+                href="/login?tab=login"
+                className={`lp-tab${activeTab === "login" ? " active" : ""}`}
+              >
+                Sign in
+              </a>
+              <a
+                href="/login?tab=signup"
+                className={`lp-tab${activeTab === "signup" ? " active" : ""}`}
+              >
+                Create account
+              </a>
             </div>
 
-            {/* Magic link */}
-            <div style={{ background:"#FAF7F5", border:"1px solid #EDE0D8", borderRadius:16, padding:"1.125rem", marginBottom:".875rem" }}>
-              <form method="POST" action="/api/auth/magic-link-form">
-                <input type="hidden" name="hint" value={hint} />
-                <p style={{ fontSize:".72rem", fontWeight:700, color:"#7A5460", fontFamily:BF, marginBottom:3 }}>Magic link</p>
-                <p style={{ fontSize:".8rem", color:"#A08080", fontFamily:BF, marginBottom:".75rem", lineHeight:1.6 }}>
-                  We&apos;ll email you a one-click sign-in link — no password needed.
+            {/* ── Error banner ── */}
+            {errorMsg && (
+              <div style={{
+                padding: "11px 16px", borderRadius: 12, marginBottom: "1.25rem",
+                background: "rgba(190,45,69,.07)",
+                border: "1px solid rgba(190,45,69,.22)",
+              }}>
+                <p style={{ fontFamily: BF, fontSize: ".875rem", color: ROSE, margin: 0 }}>
+                  {errorMsg}
                 </p>
-                <div style={{ display:"flex", gap:8 }}>
-                  <input name="email" type="email" required placeholder="your@email.com"
-                    style={{ ...inp, flex:1, padding:"9px 12px", fontSize:".875rem" }} />
-                  <button type="submit" className="btn-sm"
-                    style={{ padding:"9px 16px", borderRadius:10, background:accentColor, color:"#fff", fontSize:".78rem", fontWeight:700, fontFamily:BF, whiteSpace:"nowrap" }}>
-                    Send
-                  </button>
-                </div>
-              </form>
-            </div>
+              </div>
+            )}
 
-            {/* Access code */}
-            <div style={{ background:"#FAF7F5", border:"1px solid #EDE0D8", borderRadius:16, padding:"1.125rem" }}>
-              <form method="POST" action="/api/auth/access-code-form">
-                <input type="hidden" name="hint" value={hint} />
-                <p style={{ fontSize:".72rem", fontWeight:700, color:"#7A5460", fontFamily:BF, marginBottom:3 }}>Private access code</p>
-                <p style={{ fontSize:".8rem", color:"#A08080", fontFamily:BF, marginBottom:".75rem", lineHeight:1.6 }}>
-                  Use the code shared with you by the couple.
+            {/* ════════════ LOGIN FORM ════════════ */}
+            {activeTab === "login" && (
+              <>
+                <p style={{
+                  fontFamily: DF, fontStyle: "italic", fontWeight: 300,
+                  fontSize: "clamp(1.4rem,3vw,2rem)",
+                  color: INK, marginBottom: "1.75rem", lineHeight: 1.15,
+                }}>
+                  Welcome back.
                 </p>
-                <div style={{ display:"flex", gap:8 }}>
-                  <input name="accessCode" type="text" required placeholder="ENTER CODE"
-                    style={{ ...inp, flex:1, padding:"9px 12px", fontSize:".875rem", textTransform:"uppercase", letterSpacing:".12em" }} />
-                  <button type="submit" className="btn-sm"
-                    style={{ padding:"9px 16px", borderRadius:10, background:accentColor, color:"#fff", fontSize:".78rem", fontWeight:700, fontFamily:BF, whiteSpace:"nowrap" }}>
-                    Enter
+
+                <form method="POST" action="/api/auth/login">
+                  <input type="hidden" name="hint"     value={hint} />
+                  <input type="hidden" name="redirect" value={redirectTo} />
+
+                  <div style={{ display: "flex", flexDirection: "column", gap: "1rem", marginBottom: "1.5rem" }}>
+                    <div>
+                      <label style={{
+                        display: "block", fontFamily: BF,
+                        fontSize: ".56rem", fontWeight: 700,
+                        letterSpacing: ".18em", textTransform: "uppercase",
+                        color: INK_3, marginBottom: 7,
+                      }}>
+                        Email address
+                      </label>
+                      <input
+                        name="email" type="email" required
+                        autoComplete="email"
+                        placeholder="your@email.com"
+                        className="lp-inp"
+                      />
+                    </div>
+
+                    <div>
+                      <label style={{
+                        display: "block", fontFamily: BF,
+                        fontSize: ".56rem", fontWeight: 700,
+                        letterSpacing: ".18em", textTransform: "uppercase",
+                        color: INK_3, marginBottom: 7,
+                      }}>
+                        Password
+                      </label>
+                      <input
+                        name="password" type="password" required
+                        autoComplete="current-password"
+                        placeholder="Your password"
+                        className="lp-inp"
+                      />
+                    </div>
+                  </div>
+
+                  <button type="submit" className="lp-btn">
+                    Sign in →
                   </button>
-                </div>
-              </form>
-            </div>
+                </form>
+
+                <p style={{
+                  marginTop: "1.5rem", textAlign: "center",
+                  fontFamily: BF, fontSize: ".78rem", color: INK_4,
+                }}>
+                  New here?{" "}
+                  <a href="/login?tab=signup" style={{ color: ROSE, fontWeight: 600, textDecoration: "none" }}>
+                    Create an account
+                  </a>
+                </p>
+              </>
+            )}
+
+            {/* ════════════ SIGNUP FORM ════════════ */}
+            {activeTab === "signup" && (
+              <>
+                <p style={{
+                  fontFamily: DF, fontStyle: "italic", fontWeight: 300,
+                  fontSize: "clamp(1.4rem,3vw,2rem)",
+                  color: INK, marginBottom: "1.75rem", lineHeight: 1.15,
+                }}>
+                  Join the family vault.
+                </p>
+
+                <form method="POST" action="/api/auth/signup">
+                  <input type="hidden" name="redirect" value={redirectTo} />
+
+                  <div style={{ display: "flex", flexDirection: "column", gap: "1rem", marginBottom: "1.5rem" }}>
+                    <div>
+                      <label style={{
+                        display: "block", fontFamily: BF,
+                        fontSize: ".56rem", fontWeight: 700,
+                        letterSpacing: ".18em", textTransform: "uppercase",
+                        color: INK_3, marginBottom: 7,
+                      }}>
+                        Email address
+                      </label>
+                      <input
+                        name="email" type="email" required
+                        autoComplete="email"
+                        placeholder="your@email.com"
+                        className="lp-inp"
+                      />
+                    </div>
+
+                    <div>
+                      <label style={{
+                        display: "block", fontFamily: BF,
+                        fontSize: ".56rem", fontWeight: 700,
+                        letterSpacing: ".18em", textTransform: "uppercase",
+                        color: INK_3, marginBottom: 7,
+                      }}>
+                        Password
+                      </label>
+                      <input
+                        name="password" type="password" required
+                        autoComplete="new-password"
+                        placeholder="At least 8 characters"
+                        className="lp-inp"
+                      />
+                    </div>
+
+                    <div>
+                      <label style={{
+                        display: "block", fontFamily: BF,
+                        fontSize: ".56rem", fontWeight: 700,
+                        letterSpacing: ".18em", textTransform: "uppercase",
+                        color: INK_3, marginBottom: 7,
+                      }}>
+                        Confirm password
+                      </label>
+                      <input
+                        name="password2" type="password" required
+                        autoComplete="new-password"
+                        placeholder="Repeat your password"
+                        className="lp-inp"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Role note */}
+                  <div style={{
+                    padding: "10px 14px", borderRadius: 12, marginBottom: "1.25rem",
+                    background: "rgba(184,134,10,.07)",
+                    border: "1px solid rgba(184,134,10,.22)",
+                    display: "flex", alignItems: "flex-start", gap: 10,
+                  }}>
+                    <span style={{ fontSize: "1rem", flexShrink: 0, marginTop: 1 }}>✦</span>
+                    <p style={{
+                      fontFamily: BF, fontSize: ".78rem",
+                      color: "#6B4A18", lineHeight: 1.65, margin: 0,
+                    }}>
+                      New accounts are created with <strong>family</strong> access.
+                      Admin access is granted separately by the couple.
+                    </p>
+                  </div>
+
+                  <button type="submit" className="lp-btn">
+                    Create account →
+                  </button>
+                </form>
+
+                <p style={{
+                  marginTop: "1.5rem", textAlign: "center",
+                  fontFamily: BF, fontSize: ".78rem", color: INK_4,
+                }}>
+                  Already have an account?{" "}
+                  <a href="/login?tab=login" style={{ color: ROSE, fontWeight: 600, textDecoration: "none" }}>
+                    Sign in
+                  </a>
+                </p>
+              </>
+            )}
 
           </div>
         </div>
       </div>
 
-      {/* Gold stripe bottom */}
-      <div style={{ position:"fixed", bottom:0, left:0, right:0, height:2, background:STRIPE, zIndex:20 }} />
+      {/* Bottom accent line */}
+      <div aria-hidden style={{
+        position: "fixed", bottom: 0, left: 0, right: 0, height: 2, zIndex: 50,
+        background: `linear-gradient(90deg, transparent 0%, ${ROSE} 30%, ${GOLD} 50%, ${ROSE} 70%, transparent 100%)`,
+      }} />
     </>
   );
 }
