@@ -1,34 +1,18 @@
 "use client";
 
-/**
- * VaultPhotoAlbums
- * Surfaces photo albums (created in admin) inside the family vault.
- * Public albums are also visible in the guest gallery.
- * Private albums appear here only.
- *
- * Features:
- *  - Album grid with cover photo, name, description, photo count, visibility badge
- *  - Click album → full-screen photo grid for that album
- *  - Download button on every photo (opens image in new tab for native save)
- *  - Falls back gracefully when no albums exist
- */
-
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Image from "next/image";
-import { ArrowLeft, Download, Globe, Lock, Images } from "lucide-react";
+import { ArrowLeft, Download, Globe, Images, Lock, Play } from "lucide-react";
 import { LightBox } from "@/components/gallery/LightBox";
 import type { PhotoRow } from "@/lib/types";
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Types
-// ─────────────────────────────────────────────────────────────────────────────
 export interface VaultAlbum {
-  id:          string;
-  album_name:  string;
+  id: string;
+  album_name: string;
   description: string | null;
   cover_photo: string | null;
-  is_public:   boolean;
-  sort_order:  number;
+  is_public: boolean;
+  sort_order: number;
   photo_count: number;
 }
 
@@ -37,169 +21,404 @@ interface VaultPhotoAlbumsProps {
   photos: PhotoRow[];
 }
 
-const BF   = "var(--font-body), system-ui, sans-serif";
-const DF   = "var(--font-display), Georgia, serif";
-const ROSE = "#C0364A";
-const INK  = "#1A1012";
+const BF = "var(--font-body), system-ui, sans-serif";
+const DF = "var(--font-display), Georgia, serif";
+const ROSE = "#BE2D45";
+const INK = "#1A1012";
 const INK3 = "#7A5460";
-const BG   = "#FAF8F6";
-const W    = "#FFFFFF";
-const BDR  = "#D0C0BC";
+const GOLD = "#B8820A";
+const BG = "#FAF7F3";
+const CARD = "#FFFFFF";
+const BDR = "rgba(190,45,69,.10)";
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Download helper — opens image URL in new tab (triggers native save dialog)
-// ─────────────────────────────────────────────────────────────────────────────
+function formatPhotoDate(value?: string | null) {
+  if (!value) return "Saved recently";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "Saved recently";
+  return date.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+}
+
 async function downloadPhoto(url: string, filename: string) {
   try {
-    const res  = await fetch(url, { mode: "cors" });
+    const res = await fetch(url, { mode: "cors" });
     const blob = await res.blob();
     const href = URL.createObjectURL(blob);
-    const a    = document.createElement("a");
-    a.href     = href;
-    a.download = filename;
-    a.click();
+    const link = document.createElement("a");
+    link.href = href;
+    link.download = filename;
+    link.click();
     URL.revokeObjectURL(href);
   } catch {
-    // Fallback: open in new tab if CORS blocks direct download
     window.open(url, "_blank", "noopener,noreferrer");
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// AlbumPhotoGrid — full album view after clicking an album card
-// ─────────────────────────────────────────────────────────────────────────────
 function AlbumPhotoGrid({ album, photos, onBack }: { album: VaultAlbum; photos: PhotoRow[]; onBack: () => void }) {
   const [lightboxIndex, setLightboxIndex] = useState(0);
-  const [lightboxOpen,  setLightboxOpen]  = useState(false);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const heroImage = album.cover_photo ?? photos[0]?.image_url ?? null;
 
-  if (photos.length === 0) {
+  if (!photos.length) {
     return (
-      <div>
-        <button onClick={onBack} style={{ display: "inline-flex", alignItems: "center", gap: 8, marginBottom: "1.5rem", background: "none", border: "none", cursor: "pointer", color: ROSE, fontSize: ".875rem", fontFamily: BF, fontWeight: 600 }}>
-          <ArrowLeft size={16} /> Back to albums
+      <div style={{ display: "grid", gap: "1.2rem" }}>
+        <button
+          type="button"
+          onClick={onBack}
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 8,
+            background: "none",
+            border: "none",
+            color: ROSE,
+            cursor: "pointer",
+            fontFamily: BF,
+            fontSize: ".78rem",
+            fontWeight: 700,
+            letterSpacing: ".16em",
+            textTransform: "uppercase",
+            padding: 0,
+          }}
+        >
+          <ArrowLeft size={15} /> Back to albums
         </button>
-        <div style={{ padding: "3rem", textAlign: "center", background: BG, borderRadius: 18, border: `1.5px dashed ${BDR}` }}>
-          <p style={{ fontSize: ".875rem", color: INK3, fontFamily: BF }}>No photos in this album yet.</p>
+
+        <div style={{ borderRadius: 28, padding: "3rem 1.5rem", textAlign: "center", background: BG, border: `1px dashed ${BDR}` }}>
+          <div style={{ width: 54, height: 54, borderRadius: 18, display: "grid", placeItems: "center", margin: "0 auto 1rem", background: "rgba(190,45,69,.06)", color: ROSE }}>
+            <Images size={24} />
+          </div>
+          <p className="font-display" style={{ fontSize: "1.7rem", color: INK }}>This album is ready for photos.</p>
+          <p style={{ fontSize: ".9rem", color: INK3, fontFamily: BF, marginTop: ".65rem" }}>Once the couple curates images into this chapter, they will appear here in a richer gallery view.</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div>
-      {/* Back + header */}
-      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "1rem", marginBottom: "1.5rem", flexWrap: "wrap" }}>
-        <div>
-          <button onClick={onBack} style={{ display: "inline-flex", alignItems: "center", gap: 6, marginBottom: ".5rem", background: "none", border: "none", cursor: "pointer", color: ROSE, fontSize: ".8rem", fontFamily: BF, fontWeight: 600, letterSpacing: ".1em", textTransform: "uppercase" }}>
-            <ArrowLeft size={14} /> All albums
-          </button>
-          <h3 style={{ fontFamily: DF, fontSize: "clamp(1.25rem,3vw,1.75rem)", fontWeight: 700, color: INK }}>{album.album_name}</h3>
-          {album.description && <p style={{ fontSize: ".875rem", color: INK3, fontFamily: BF, marginTop: ".25rem" }}>{album.description}</p>}
-          <p style={{ fontSize: ".72rem", color: INK3, fontFamily: BF, marginTop: ".375rem" }}>{photos.length} photo{photos.length !== 1 ? "s" : ""}</p>
-        </div>
-        {/* Download all button */}
-        <button
-          onClick={() => photos.forEach((p, i) => setTimeout(() => downloadPhoto(p.image_url, `${album.album_name}-${i + 1}.jpg`), i * 200))}
-          style={{ display: "inline-flex", alignItems: "center", gap: 7, padding: "9px 18px", borderRadius: 999, background: BG, border: `1.5px solid ${BDR}`, color: INK3, fontSize: ".78rem", fontWeight: 600, fontFamily: BF, cursor: "pointer", letterSpacing: ".12em", textTransform: "uppercase" }}
-        >
-          <Download size={14} /> Download all
-        </button>
-      </div>
+    <div style={{ display: "grid", gap: "1.25rem" }}>
+      <button
+        type="button"
+        onClick={onBack}
+        style={{
+          display: "inline-flex",
+          alignItems: "center",
+          gap: 8,
+          background: "none",
+          border: "none",
+          color: ROSE,
+          cursor: "pointer",
+          fontFamily: BF,
+          fontSize: ".78rem",
+          fontWeight: 700,
+          letterSpacing: ".16em",
+          textTransform: "uppercase",
+          padding: 0,
+        }}
+      >
+        <ArrowLeft size={15} /> Back to albums
+      </button>
 
-      {/* Photo grid */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: ".75rem" }}>
-        {photos.map((photo, index) => (
-          <div key={photo.id} style={{ position: "relative", borderRadius: 14, overflow: "hidden", background: BG, aspectRatio: "1" }}>
-            <button
-              type="button"
-              onClick={() => { setLightboxIndex(index); setLightboxOpen(true); }}
-              style={{ display: "block", width: "100%", height: "100%", padding: 0, border: "none", cursor: "pointer", position: "relative" }}
-            >
-              <Image
-                src={photo.image_url}
-                alt={photo.uploaded_by}
-                fill
-                className="object-cover"
-                sizes="(max-width: 640px) 50vw, 200px"
-                style={{ transition: "transform .4s ease" }}
-              />
-            </button>
-            {/* Download button overlay */}
-            <button
-              onClick={() => downloadPhoto(photo.image_url, `${album.album_name}-${index + 1}.jpg`)}
-              style={{ position: "absolute", bottom: 6, right: 6, width: 32, height: 32, borderRadius: "50%", background: "rgba(0,0,0,.55)", backdropFilter: "blur(6px)", border: "1px solid rgba(255,255,255,.2)", display: "grid", placeItems: "center", cursor: "pointer" }}
-              title="Download photo"
-            >
-              <Download size={13} style={{ color: W }} />
-            </button>
+      <section style={{ borderRadius: 30, overflow: "hidden", background: CARD, border: `1px solid ${BDR}`, boxShadow: "0 20px 44px rgba(26,12,14,.08)" }}>
+        <div style={{ position: "relative", minHeight: 280 }}>
+          {heroImage ? (
+            <>
+              <Image alt={album.album_name} src={heroImage} fill className="object-cover" sizes="(max-width: 1024px) 100vw, 65vw" />
+              <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(18,10,12,.84), rgba(18,10,12,.1))" }} />
+            </>
+          ) : (
+            <div style={{ position: "absolute", inset: 0, background: "linear-gradient(135deg, rgba(190,45,69,.10), rgba(212,184,150,.14))" }} />
+          )}
+
+          <div style={{ position: "absolute", inset: "auto 0 0 0", padding: "1.25rem" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem", flexWrap: "wrap" }}>
+              <div>
+                <div style={{ display: "inline-flex", alignItems: "center", gap: 8, borderRadius: 999, padding: "8px 12px", background: "rgba(255,255,255,.12)", border: "1px solid rgba(255,255,255,.14)", color: "rgba(255,245,241,.86)", fontSize: ".62rem", letterSpacing: ".16em", textTransform: "uppercase", marginBottom: ".75rem" }}>
+                  {album.is_public ? <Globe size={12} /> : <Lock size={12} />}
+                  {album.is_public ? "Public album" : "Family-only album"}
+                </div>
+                <h3 className="font-display" style={{ fontSize: "clamp(1.9rem,4vw,3rem)", color: "#fff", lineHeight: 1 }}>{album.album_name}</h3>
+                {album.description ? <p style={{ fontSize: ".95rem", lineHeight: 1.7, color: "rgba(255,242,238,.72)", marginTop: ".6rem", maxWidth: 620 }}>{album.description}</p> : null}
+              </div>
+
+              <button
+                type="button"
+                onClick={() => photos.forEach((photo, index) => window.setTimeout(() => downloadPhoto(photo.image_url, `${album.album_name}-${index + 1}.jpg`), index * 180))}
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 8,
+                  padding: "11px 18px",
+                  borderRadius: 999,
+                  border: "1px solid rgba(255,255,255,.16)",
+                  background: "rgba(255,255,255,.12)",
+                  color: "#fff",
+                  fontFamily: BF,
+                  fontSize: ".72rem",
+                  fontWeight: 700,
+                  letterSpacing: ".18em",
+                  textTransform: "uppercase",
+                  cursor: "pointer",
+                }}
+              >
+                <Download size={14} /> Download all
+              </button>
+            </div>
           </div>
-        ))}
-      </div>
+        </div>
+
+        <div style={{ display: "grid", gap: "1rem", padding: "1.25rem" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: ".75rem" }}>
+            {[
+              { label: "Photos in chapter", value: photos.length },
+              { label: "Visibility", value: album.is_public ? "Public" : "Private" },
+              { label: "Last added", value: formatPhotoDate(photos[0]?.created_at) },
+            ].map((item) => (
+              <div key={item.label} style={{ borderRadius: 22, padding: "1rem", background: BG, border: `1px solid ${BDR}` }}>
+                <p style={{ fontSize: ".58rem", letterSpacing: ".18em", textTransform: "uppercase", color: INK3 }}>{item.label}</p>
+                <p className="font-display" style={{ fontSize: "1.4rem", color: INK, marginTop: ".45rem", lineHeight: 1.05 }}>{item.value}</p>
+              </div>
+            ))}
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: ".8rem" }}>
+            {photos.map((photo, index) => {
+              const aspectRatio = index % 5 === 0 ? "4 / 5" : index % 3 === 0 ? "3 / 4" : "1 / 1";
+
+              return (
+                <article key={photo.id} style={{ position: "relative", borderRadius: 22, overflow: "hidden", background: BG, aspectRatio, border: `1px solid ${BDR}` }}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setLightboxIndex(index);
+                      setLightboxOpen(true);
+                    }}
+                    style={{ position: "absolute", inset: 0, border: "none", padding: 0, cursor: "pointer", background: "none" }}
+                    className="album-photo-trigger"
+                  >
+                    <Image
+                      src={photo.image_url}
+                      alt={photo.uploaded_by}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 640px) 48vw, (max-width: 1024px) 33vw, 180px"
+                      style={{ transition: "transform .8s ease" }}
+                    />
+                    <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(18,10,12,.82), rgba(18,10,12,.08) 62%)" }} />
+                    <div style={{ position: "absolute", inset: "auto 0 0 0", padding: ".8rem" }}>
+                      <p style={{ fontSize: ".56rem", letterSpacing: ".18em", textTransform: "uppercase", color: "rgba(255,238,233,.58)", marginBottom: ".3rem" }}>{formatPhotoDate(photo.created_at)}</p>
+                      <p style={{ fontSize: ".8rem", color: "#fff", fontFamily: BF, fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{photo.uploaded_by}</p>
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => downloadPhoto(photo.image_url, `${album.album_name}-${index + 1}.jpg`)}
+                    title="Download photo"
+                    style={{
+                      position: "absolute",
+                      top: 10,
+                      right: 10,
+                      width: 34,
+                      height: 34,
+                      borderRadius: "50%",
+                      border: "1px solid rgba(255,255,255,.18)",
+                      background: "rgba(0,0,0,.46)",
+                      color: "#fff",
+                      display: "grid",
+                      placeItems: "center",
+                      cursor: "pointer",
+                      backdropFilter: "blur(8px)",
+                    }}
+                  >
+                    <Download size={14} />
+                  </button>
+                </article>
+              );
+            })}
+          </div>
+        </div>
+      </section>
 
       <LightBox
         photos={photos}
         activeIndex={lightboxIndex}
         open={lightboxOpen}
         onClose={() => setLightboxOpen(false)}
-        onNext={() => setLightboxIndex(i => (i + 1) % photos.length)}
-        onPrevious={() => setLightboxIndex(i => (i - 1 + photos.length) % photos.length)}
+        onNext={() => setLightboxIndex((index) => (index + 1) % photos.length)}
+        onPrevious={() => setLightboxIndex((index) => (index - 1 + photos.length) % photos.length)}
       />
     </div>
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// VaultPhotoAlbums — main export
-// ─────────────────────────────────────────────────────────────────────────────
 export function VaultPhotoAlbums({ albums, photos }: VaultPhotoAlbumsProps) {
   const [selectedAlbum, setSelectedAlbum] = useState<string | null>(null);
 
-  if (albums.length === 0) {
+  const albumPhotoMap = useMemo(() => {
+    const map = new Map<string, PhotoRow[]>();
+
+    for (const photo of photos) {
+      const albumId = (photo as PhotoRow & { album_id?: string | null }).album_id;
+      if (!albumId) continue;
+      const existing = map.get(albumId) ?? [];
+      existing.push(photo);
+      map.set(albumId, existing);
+    }
+
+    return map;
+  }, [photos]);
+
+  if (!albums.length) {
     return (
-      <div style={{ padding: "3rem", textAlign: "center", background: BG, borderRadius: 20, border: `1.5px dashed ${BDR}` }}>
-        <Images size={36} style={{ color: BDR, margin: "0 auto 1rem" }} />
-        <p style={{ fontFamily: DF, fontSize: "1.125rem", color: INK, marginBottom: ".5rem" }}>No albums yet.</p>
-        <p style={{ fontSize: ".875rem", color: INK3, fontFamily: BF }}>The couple will publish photo albums here after the wedding.</p>
+      <div style={{ borderRadius: 28, padding: "3rem 1.5rem", textAlign: "center", background: BG, border: `1px dashed ${BDR}` }}>
+        <div style={{ width: 60, height: 60, borderRadius: 20, display: "grid", placeItems: "center", margin: "0 auto 1rem", background: "rgba(190,45,69,.06)", color: ROSE }}>
+          <Images size={28} />
+        </div>
+        <p className="font-display" style={{ fontSize: "1.9rem", color: INK }}>The album shelf is waiting for its first chapter.</p>
+        <p style={{ fontSize: ".92rem", color: INK3, fontFamily: BF, maxWidth: 420, margin: ".75rem auto 0" }}>
+          Once the couple curates wedding photos into albums, this part of the vault will feel like a polished social gallery instead of a plain file list.
+        </p>
       </div>
     );
   }
 
-  // Selected album view
-  if (selectedAlbum) {
-    const album       = albums.find(a => a.id === selectedAlbum)!;
-    const albumPhotos = photos.filter(p => (p as PhotoRow & { album_id?: string | null }).album_id === selectedAlbum);
-    return <AlbumPhotoGrid album={album} photos={albumPhotos} onBack={() => setSelectedAlbum(null)} />;
+  const selectedAlbumItem = selectedAlbum ? albums.find((item) => item.id === selectedAlbum) ?? null : null;
+
+  if (selectedAlbumItem) {
+    return <AlbumPhotoGrid album={selectedAlbumItem} photos={albumPhotoMap.get(selectedAlbumItem.id) ?? []} onBack={() => setSelectedAlbum(null)} />;
   }
 
-  // Album grid
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: "1.25rem" }}>
-      {albums.map(album => (
-        <button
-          key={album.id}
-          type="button"
-          onClick={() => setSelectedAlbum(album.id)}
-          style={{ background: W, border: `1px solid ${BDR}`, borderRadius: 18, overflow: "hidden", textAlign: "left", cursor: "pointer", transition: "box-shadow .2s, transform .2s" }}
-          onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 8px 28px rgba(0,0,0,.1)"; (e.currentTarget as HTMLButtonElement).style.transform = "translateY(-2px)"; }}
-          onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.boxShadow = "none"; (e.currentTarget as HTMLButtonElement).style.transform = "none"; }}
-        >
-          {/* Cover */}
-          <div style={{ height: 160, background: album.cover_photo ? `url(${album.cover_photo}) center/cover` : BG, position: "relative", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            {!album.cover_photo && <Images size={28} style={{ color: BDR }} />}
-            {/* Visibility badge */}
-            <span style={{ position: "absolute", top: 10, right: 10, display: "inline-flex", alignItems: "center", gap: 4, padding: "3px 10px", borderRadius: 999, background: "rgba(0,0,0,.45)", backdropFilter: "blur(4px)", fontSize: ".62rem", color: W, fontFamily: BF, fontWeight: 600 }}>
-              {album.is_public ? <Globe size={10} /> : <Lock size={10} />}
-              {album.is_public ? "Public" : "Private"}
-            </span>
-          </div>
-          {/* Info */}
-          <div style={{ padding: "1rem 1.125rem" }}>
-            <p style={{ fontWeight: 700, fontSize: ".9375rem", color: INK, fontFamily: BF, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{album.album_name}</p>
-            {album.description && <p style={{ fontSize: ".78rem", color: INK3, fontFamily: BF, marginTop: ".125rem", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{album.description}</p>}
-            <p style={{ fontSize: ".72rem", color: INK3, fontFamily: BF, marginTop: ".5rem" }}>{album.photo_count} photo{album.photo_count !== 1 ? "s" : ""}</p>
-          </div>
-        </button>
-      ))}
+    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))", gap: "1rem" }}>
+      {albums.map((album, index) => {
+        const previewPhotos = (albumPhotoMap.get(album.id) ?? []).slice(0, 3);
+
+        return (
+          <button
+            key={album.id}
+            type="button"
+            onClick={() => setSelectedAlbum(album.id)}
+            style={{
+              display: "grid",
+              gap: 0,
+              background: CARD,
+              border: `1px solid ${BDR}`,
+              borderRadius: 28,
+              overflow: "hidden",
+              textAlign: "left",
+              cursor: "pointer",
+              boxShadow: "0 18px 40px rgba(26,12,14,.06)",
+              transition: "transform .22s ease, box-shadow .22s ease",
+            }}
+            onMouseEnter={(event) => {
+              event.currentTarget.style.transform = "translateY(-3px)";
+              event.currentTarget.style.boxShadow = "0 28px 52px rgba(26,12,14,.12)";
+            }}
+            onMouseLeave={(event) => {
+              event.currentTarget.style.transform = "none";
+              event.currentTarget.style.boxShadow = "0 18px 40px rgba(26,12,14,.06)";
+            }}
+          >
+            <div style={{ position: "relative", minHeight: 250 }}>
+              {album.cover_photo ? (
+                <>
+                  <Image alt={album.album_name} src={album.cover_photo} fill className="object-cover" sizes="(max-width: 768px) 100vw, 26vw" />
+                  <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(18,10,12,.86), rgba(18,10,12,.08) 58%)" }} />
+                </>
+              ) : (
+                <div style={{ position: "absolute", inset: 0, background: index % 2 === 0 ? "linear-gradient(135deg, rgba(190,45,69,.12), rgba(212,184,150,.18))" : "linear-gradient(135deg, rgba(212,184,150,.22), rgba(190,45,69,.10))" }} />
+              )}
+
+              <div style={{ position: "absolute", inset: 0, padding: "1rem", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+                <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: ".75rem" }}>
+                  <span
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: 6,
+                      padding: "7px 11px",
+                      borderRadius: 999,
+                      background: "rgba(255,255,255,.12)",
+                      border: "1px solid rgba(255,255,255,.14)",
+                      color: "#fff",
+                      fontFamily: BF,
+                      fontSize: ".62rem",
+                      fontWeight: 700,
+                      letterSpacing: ".16em",
+                      textTransform: "uppercase",
+                    }}
+                  >
+                    {album.is_public ? <Globe size={11} /> : <Lock size={11} />}
+                    {album.is_public ? "Public" : "Private"}
+                  </span>
+
+                  <span
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: 6,
+                      padding: "7px 11px",
+                      borderRadius: 999,
+                      background: "rgba(12,8,8,.36)",
+                      border: "1px solid rgba(255,255,255,.10)",
+                      color: "#fff",
+                      fontFamily: BF,
+                      fontSize: ".62rem",
+                      fontWeight: 700,
+                      letterSpacing: ".16em",
+                      textTransform: "uppercase",
+                    }}
+                  >
+                    <Images size={11} /> {album.photo_count}
+                  </span>
+                </div>
+
+                <div>
+                  <p style={{ fontSize: ".58rem", letterSpacing: ".2em", textTransform: "uppercase", color: "rgba(255,234,228,.58)", marginBottom: ".35rem" }}>
+                    {previewPhotos.length ? `${previewPhotos.length} previews ready` : "Chapter ready"}
+                  </p>
+                  <h3 className="font-display" style={{ fontSize: "1.8rem", lineHeight: 1.02, color: "#fff" }}>{album.album_name}</h3>
+                  {album.description ? (
+                    <p style={{ fontSize: ".88rem", lineHeight: 1.7, color: "rgba(255,242,238,.72)", marginTop: ".5rem" }}>
+                      {album.description}
+                    </p>
+                  ) : null}
+                </div>
+              </div>
+            </div>
+
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: ".75rem", padding: "1rem 1.1rem" }}>
+              <div style={{ display: "flex", alignItems: "center" }}>
+                {previewPhotos.length ? previewPhotos.map((photo, previewIndex) => (
+                  <div
+                    key={photo.id}
+                    style={{
+                      position: "relative",
+                      width: 42,
+                      height: 42,
+                      borderRadius: 14,
+                      overflow: "hidden",
+                      border: "2px solid #fff",
+                      marginLeft: previewIndex === 0 ? 0 : -10,
+                      boxShadow: "0 8px 16px rgba(26,12,14,.12)",
+                    }}
+                  >
+                    <Image alt={photo.uploaded_by} src={photo.image_url} fill className="object-cover" sizes="42px" />
+                  </div>
+                )) : (
+                  <div style={{ width: 42, height: 42, borderRadius: 14, display: "grid", placeItems: "center", background: BG, border: `1px solid ${BDR}`, color: GOLD }}>
+                    <Images size={18} />
+                  </div>
+                )}
+              </div>
+
+              <span style={{ display: "inline-flex", alignItems: "center", gap: 7, color: ROSE, fontFamily: BF, fontSize: ".72rem", fontWeight: 700, letterSpacing: ".16em", textTransform: "uppercase" }}>
+                Open album <Play size={13} fill={ROSE} />
+              </span>
+            </div>
+          </button>
+        );
+      })}
     </div>
   );
 }

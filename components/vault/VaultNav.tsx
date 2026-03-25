@@ -1,134 +1,155 @@
 "use client";
 
-/**
- * VaultNav — sticky horizontal tab bar for the family vault.
- * Highlights the active section based on scroll position using IntersectionObserver.
- * On mobile it horizontally scrolls so all tabs fit.
- *
- * Props:
- *   isSquad — when true, adds a "Squad Hub" tab linking to the #squad section.
- *             Only bridesmaids, groomsmen, and admins see this tab.
- */
-
-import { useEffect, useRef, useState } from "react";
-import { PenLine, Images, Clock, BarChart2, Film, Shield } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { BarChart2, Clock, Film, Images, PenLine, Shield } from "lucide-react";
 
 const BASE_TABS = [
-  { id: "memories",  label: "Memories",  icon: PenLine  },
-  { id: "timeline",  label: "Timeline",  icon: Film     },
-  { id: "photos",    label: "Albums",    icon: Images   },
-  { id: "capsules",  label: "Capsules",  icon: Clock    },
-  { id: "polls",     label: "Polls",     icon: BarChart2 },
+  { id: "memories", label: "Memories", icon: PenLine },
+  { id: "timeline", label: "Timeline", icon: Film },
+  { id: "photos", label: "Albums", icon: Images },
+  { id: "capsules", label: "Capsules", icon: Clock },
+  { id: "polls", label: "Polls", icon: BarChart2 },
 ];
 
 const SQUAD_TAB = { id: "squad", label: "Squad Hub", icon: Shield };
 
-const BF   = "var(--font-body), system-ui, sans-serif";
-const ROSE = "#C0364A";
-const GOLD = "#A87808";
+const BF = "var(--font-body), system-ui, sans-serif";
+const ROSE = "#BE2D45";
+const ROSE_DARK = "#7E2032";
+const GOLD = "#B8820A";
+const GOLD_DARK = "#7A5800";
 
 interface VaultNavProps {
   isSquad?: boolean;
 }
 
 export function VaultNav({ isSquad = false }: VaultNavProps) {
-  const TABS = isSquad ? [...BASE_TABS, SQUAD_TAB] : BASE_TABS;
-
+  const tabs = useMemo(() => (isSquad ? [...BASE_TABS, SQUAD_TAB] : BASE_TABS), [isSquad]);
   const [active, setActive] = useState("memories");
   const scrolling = useRef(false);
 
-  // ── Highlight active section via IntersectionObserver ─────────────────────
   useEffect(() => {
     const observers: IntersectionObserver[] = [];
 
-    TABS.forEach(({ id }) => {
-      const el = document.getElementById(id);
-      if (!el) return;
+    tabs.forEach(({ id }) => {
+      const element = document.getElementById(id);
+      if (!element) return;
 
-      const obs = new IntersectionObserver(
+      const observer = new IntersectionObserver(
         ([entry]) => {
-          if (entry?.isIntersecting && !scrolling.current) {
-            setActive(id);
-          }
+          if (entry?.isIntersecting && !scrolling.current) setActive(id);
         },
-        { threshold: 0.3, rootMargin: "-60px 0px -40% 0px" }
+        { threshold: 0.32, rootMargin: "-80px 0px -45% 0px" }
       );
-      obs.observe(el);
-      observers.push(obs);
+
+      observer.observe(element);
+      observers.push(observer);
     });
 
-    return () => observers.forEach(o => o.disconnect());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isSquad]);
+    return () => observers.forEach((observer) => observer.disconnect());
+  }, [tabs]);
 
   function scrollTo(id: string) {
     scrolling.current = true;
     setActive(id);
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
-    setTimeout(() => { scrolling.current = false; }, 900);
+    window.setTimeout(() => {
+      scrolling.current = false;
+    }, 900);
   }
 
   return (
     <nav
-      style={{
-        position:             "sticky",
-        top:                  "var(--vault-header-height, 57px)",
-        zIndex:               40,
-        background:           "rgba(250,248,246,0.92)",
-        backdropFilter:       "blur(12px)",
-        WebkitBackdropFilter: "blur(12px)",
-        borderBottom:         "1px solid var(--color-border)",
-        overflowX:            "auto",
-        scrollbarWidth:       "none",
-      }}
       className="hide-scrollbar"
+      style={{
+        position: "sticky",
+        top: "var(--vault-header-height, 57px)",
+        zIndex: 40,
+        padding: ".9rem 0 1rem",
+        background: "linear-gradient(180deg, rgba(252,248,244,.92), rgba(252,248,244,.74))",
+        backdropFilter: "blur(16px)",
+        WebkitBackdropFilter: "blur(16px)",
+        borderBottom: "1px solid rgba(190,45,69,.08)",
+        overflowX: "auto",
+        scrollbarWidth: "none",
+      }}
     >
-      <div style={{ display: "flex", gap: 0, minWidth: "max-content", padding: "0 1rem" }}>
-        {TABS.map(({ id, label, icon: Icon }) => {
-          const isActive  = active === id;
-          const isSquadTab = id === "squad";
-          const activeColor = isSquadTab ? GOLD : ROSE;
+      <div style={{ maxWidth: 1320, margin: "0 auto", padding: "0 1.25rem" }}>
+        <div
+          style={{
+            display: "inline-flex",
+            minWidth: "max-content",
+            alignItems: "center",
+            gap: ".45rem",
+            padding: ".45rem",
+            borderRadius: 999,
+            background: "rgba(255,255,255,.78)",
+            border: "1px solid rgba(190,45,69,.10)",
+            boxShadow: "0 18px 34px rgba(26,12,14,.08)",
+          }}
+        >
+          {tabs.map(({ id, label, icon: Icon }) => {
+            const isActive = active === id;
+            const isSquadTab = id === "squad";
+            const accent = isSquadTab ? GOLD : ROSE;
+            const accentDark = isSquadTab ? GOLD_DARK : ROSE_DARK;
 
-          return (
-            <button
-              key={id}
-              type="button"
-              onClick={() => scrollTo(id)}
-              style={{
-                display:       "inline-flex",
-                alignItems:    "center",
-                gap:           6,
-                padding:       "14px 16px",
-                cursor:        "pointer",
-                background:    "transparent",
-                border:        "none",
-                borderBottom:  `2px solid ${isActive ? activeColor : "transparent"}`,
-                color:         isActive ? activeColor : "var(--color-text-muted)",
-                fontSize:      ".72rem",
-                fontWeight:    isActive ? 700 : 500,
-                letterSpacing: ".12em",
-                textTransform: "uppercase",
-                fontFamily:    BF,
-                transition:    "all .15s ease",
-                flexShrink:    0,
-                whiteSpace:    "nowrap",
-              }}
-            >
-              <Icon size={13} />
-              {label}
-              {/* Squad Hub gets a subtle gold pip when it's the squad tab */}
-              {isSquadTab && !isActive && (
-                <span style={{
-                  width: 5, height: 5, borderRadius: "50%",
-                  background: GOLD, opacity: .55, flexShrink: 0,
-                }} />
-              )}
-            </button>
-          );
-        })}
+            return (
+              <button
+                key={id}
+                type="button"
+                aria-current={isActive ? "page" : undefined}
+                onClick={() => scrollTo(id)}
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 8,
+                  padding: "12px 16px",
+                  cursor: "pointer",
+                  borderRadius: 999,
+                  border: `1px solid ${isActive ? "transparent" : "rgba(190,45,69,.08)"}`,
+                  background: isActive
+                    ? `linear-gradient(135deg, ${accent}, ${accentDark})`
+                    : "rgba(255,255,255,.44)",
+                  color: isActive ? "#fff" : "var(--color-text-secondary)",
+                  fontSize: ".72rem",
+                  fontWeight: isActive ? 700 : 600,
+                  letterSpacing: ".16em",
+                  textTransform: "uppercase",
+                  fontFamily: BF,
+                  transition: "transform .18s ease, box-shadow .18s ease, background .18s ease, color .18s ease",
+                  boxShadow: isActive ? "0 14px 28px rgba(26,12,14,.16)" : "none",
+                  flexShrink: 0,
+                  whiteSpace: "nowrap",
+                }}
+                onMouseEnter={(event) => {
+                  if (!isActive) event.currentTarget.style.transform = "translateY(-1px)";
+                }}
+                onMouseLeave={(event) => {
+                  event.currentTarget.style.transform = "none";
+                }}
+              >
+                <Icon size={14} />
+                {label}
+                {!isActive && isSquadTab ? (
+                  <span
+                    style={{
+                      width: 6,
+                      height: 6,
+                      borderRadius: "50%",
+                      background: GOLD,
+                      opacity: 0.8,
+                      flexShrink: 0,
+                    }}
+                  />
+                ) : null}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
-      <style>{`.hide-scrollbar::-webkit-scrollbar{display:none}`}</style>
+      <style>{".hide-scrollbar::-webkit-scrollbar{display:none}"}</style>
     </nav>
   );
 }
