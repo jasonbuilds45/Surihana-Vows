@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: false, message: "Invalid JSON." }, { status: 400 });
   }
 
-  const { weddingId, title, content, postType = "memory", postedBy } = body;
+  const { weddingId, title, content, postType = "memory", postedBy, mediaUrl } = body;
 
   if (!weddingId || !title?.trim() || !content?.trim()) {
     return NextResponse.json(
