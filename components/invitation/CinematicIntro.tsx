@@ -53,19 +53,27 @@ const DF = "var(--font-display),'Cormorant Garamond',Georgia,serif";
 const BF = "var(--font-body),'Manrope',system-ui,sans-serif";
 
 // ── Props ──────────────────────────────────────────────────────────────────
+interface SenderProfile {
+  display_title: string;
+  sub_text:      string;
+  sender_code:   string;
+}
+
 interface CinematicIntroProps {
-  inviteCode:    string;
-  guestLabel:    string;
-  brideName:     string;
-  groomName:     string;
-  title:         string;
-  subtitle:      string;
-  weddingDate?:  string;
-  venueName?:    string;
-  venueCity?:    string;
-  heroPhotoUrl?: string;
-  audioSrc?:     string | null;
-  children:      ReactNode;
+  inviteCode:      string;
+  guestLabel:      string;
+  brideName:       string;
+  groomName:       string;
+  title:           string;
+  subtitle:        string;
+  weddingDate?:    string;
+  venueName?:      string;
+  venueCity?:      string;
+  heroPhotoUrl?:   string;
+  audioSrc?:       string | null;
+  // When present the host block shows the sender's name instead of the couple
+  senderProfile?:  SenderProfile | null;
+  children:        ReactNode;
 }
 
 type Phase = "title" | "hero";
@@ -101,7 +109,8 @@ function pad(n: number) { return String(n).padStart(2, "0"); }
 export function CinematicIntro({
   inviteCode, guestLabel, brideName, groomName,
   title, subtitle, weddingDate, venueName, venueCity,
-  heroPhotoUrl, audioSrc = "/audio/wedding-theme.mp3", children,
+  heroPhotoUrl, audioSrc = "/audio/wedding-theme.mp3",
+  senderProfile = null, children,
 }: CinematicIntroProps) {
 
   const [mounted,    setMounted]    = useState(false);
@@ -1142,7 +1151,7 @@ export function CinematicIntro({
                   textOverflow: "ellipsis",
                   whiteSpace: "nowrap",
                 }}>
-                  {brideFirst} &amp; {groomFirst}
+                  {senderProfile ? senderProfile.display_title : `${brideFirst} & ${groomFirst}`}
                 </span>
                 <span style={{
                   fontFamily: "var(--font-body),'Manrope',system-ui,sans-serif",
@@ -1154,7 +1163,7 @@ export function CinematicIntro({
                   textOverflow: "ellipsis",
                   whiteSpace: "nowrap",
                 }}>
-                  {weddingDate ?? ""}{", " }{venueName ?? ""}
+                  {senderProfile ? senderProfile.sub_text : `${weddingDate ?? ""}, ${venueName ?? ""}`}
                 </span>
               </div>
             </div>
@@ -1202,8 +1211,10 @@ export function CinematicIntro({
                     fontSize: "clamp(1rem,2.4vw,1.18rem)",
                     color: INK_2, lineHeight: 1.95,
                   }}>
-                    {brideFirst} and {groomFirst} warmly invite you to witness
-                    and celebrate their union — first at the Holy Matrimony at{" "}
+                    {senderProfile
+                    ? `${senderProfile.display_title} ${senderProfile.sub_text} — `
+                    : `${brideFirst} and ${groomFirst} warmly invite you to witness and celebrate their union — `}
+                    first at the Holy Matrimony at{" "}
                     <em>Divine Mercy Church, Kelambakkam</em> at 3 in the afternoon,
                     and then as the sun sets over the Bay of Bengal, at the Shoreline Reception
                     at <em>Blue Bay Beach Resort, Mahabalipuram</em>.

@@ -32,9 +32,13 @@ import { getFamilyVaultBundle } from "@/modules/luxury/family-vault";
 import { resolveLifecycleStage } from "@/modules/luxury/lifecycle-orchestrator";
 import { getLivestreamBundle } from "@/modules/luxury/livestream";
 import { getGalleryPhotos } from "@/modules/premium/photo-gallery";
+import { getSenderProfile } from "@/modules/elegant/sender-profiles";
 import { formatDate, formatTime } from "@/utils/formatDate";
 
-interface InvitePageProps { params: { guest: string } }
+interface InvitePageProps {
+  params:       { guest: string };
+  searchParams: { from?: string };
+}
 
 export async function generateMetadata({ params }: InvitePageProps): Promise<Metadata> {
   const invite = await getInviteBundle(params.guest);
@@ -51,9 +55,11 @@ export async function generateMetadata({ params }: InvitePageProps): Promise<Met
   };
 }
 
-export default async function InvitePage({ params }: InvitePageProps) {
+export default async function InvitePage({ params, searchParams }: InvitePageProps) {
   const invite = await getInviteBundle(params.guest);
   if (!invite) notFound();
+
+  const senderCode    = searchParams.from ?? null;
 
   const stage = await resolveLifecycleStage({
     weddingId: invite.wedding.id,
@@ -127,9 +133,10 @@ export default async function InvitePage({ params }: InvitePageProps) {
   }
 
   // ── INVITATION stage ────────────────────────────────────────────────────────
-  const [guestMessages, galleryPhotos] = await Promise.all([
+  const [guestMessages, galleryPhotos, senderProfile] = await Promise.all([
     getGuestMessages(invite.wedding.id),
     getGalleryPhotos(invite.wedding.id),
+    getSenderProfile(senderCode, invite.wedding.id),
   ]);
 
   const travelEssentials = invite.travelInfo.filter((i) => i.category === "essentials");
@@ -152,6 +159,7 @@ export default async function InvitePage({ params }: InvitePageProps) {
       venueName={invite.wedding.venue_name}
       venueCity={weddingConfig.venueCity}
       heroPhotoUrl={heroPhoto}
+      senderProfile={senderProfile}
     >
       <InviteTracker guestId={invite.guest.id} inviteCode={invite.guest.invite_code} />
 

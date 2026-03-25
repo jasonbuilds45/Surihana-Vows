@@ -22,8 +22,9 @@ import { PlanningDashboard } from "@/components/admin/PlanningDashboard";
 import { SquadManager } from "@/components/admin/SquadManager";
 import type { SquadProposal } from "@/modules/squad/squad-system";
 import { GoldStripe, SectionLabel, BtnLink } from "@/components/ui";
-import { Download, LayoutDashboard, Users, Image, Clock, Grid3X3, BarChart3, Zap, ClipboardList, Heart } from "lucide-react";
+import { Download, LayoutDashboard, Users, Image, Clock, Grid3X3, BarChart3, Zap, ClipboardList, Heart, Share2 } from "lucide-react";
 import { SnapQR } from "@/components/admin/SnapQR";
+import { SenderProfileManager } from "@/components/admin/SenderProfileManager";
 import { getStoredToken } from "@/lib/client/token";
 import { weddingConfig } from "@/lib/config";
 
@@ -76,12 +77,13 @@ interface AnalyticsResponse {
 // ─────────────────────────────────────────────────────────────────────────────
 // Tab definitions
 // ─────────────────────────────────────────────────────────────────────────────
-type Tab = "overview" | "guests" | "squad" | "media" | "capsules" | "seating" | "insights" | "command" | "planning";
+type Tab = "overview" | "guests" | "squad" | "senders" | "media" | "capsules" | "seating" | "insights" | "command" | "planning";
 
 const TABS: Array<{ id: Tab; label: string; icon: React.ElementType }> = [
   { id: "overview",  label: "Overview",        icon: LayoutDashboard },
   { id: "guests",    label: "Guest tools",      icon: Users },
   { id: "squad",     label: "Squad proposals",  icon: Heart },
+  { id: "senders",   label: "Sender profiles",  icon: Share2 },
   { id: "media",     label: "Media & albums",   icon: Image },
   { id: "capsules",  label: "Capsules & games", icon: Clock },
   { id: "seating",   label: "Seating",          icon: Grid3X3 },
@@ -239,6 +241,11 @@ export function AdminDashboard({
             <FamilyInviteManager initialMembers={initialFamilyMembers} weddingId={weddingId} />
             <MessageModeration initialMessages={guestMessages} weddingId={weddingId} />
           </>
+        )}
+
+        {/* SENDER PROFILES */}
+        {activeTab === "senders" && (
+          <SenderProfileManager weddingId={weddingId} />
         )}
 
         {/* MEDIA & ALBUMS */}

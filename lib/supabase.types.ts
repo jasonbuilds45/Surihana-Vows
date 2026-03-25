@@ -56,6 +56,8 @@ export interface Database {
           // Added in missing-features SQL
           city: string | null;
           country: string | null;
+          // Added in 016_sender_profiles.sql
+          sender_id: string | null;
         };
         Insert: {
           id?: string;
@@ -70,6 +72,7 @@ export interface Database {
           guest_role?: "family" | "friends" | "bride_side" | "groom_side" | "vip" | null;
           city?: string | null;
           country?: string | null;
+          sender_id?: string | null;
         };
         Update: Partial<Database["public"]["Tables"]["guests"]["Insert"]>;
         Relationships: [
@@ -637,6 +640,37 @@ export interface Database {
         Relationships: [
           {
             foreignKeyName: "fk_squad_proposals_wedding";
+            columns: ["wedding_id"];
+            referencedRelation: "weddings";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      sender_profiles: {
+        Row: {
+          id:            string;
+          wedding_id:    string;
+          display_title: string;
+          sub_text:      string;
+          side:          "bride" | "groom" | "both";
+          sender_type:   "parents" | "sibling" | "joint" | "other";
+          sender_code:   string;
+          created_at:    string;
+        };
+        Insert: {
+          id?:            string;
+          wedding_id:     string;
+          display_title:  string;
+          sub_text?:      string;
+          side?:          "bride" | "groom" | "both";
+          sender_type?:   "parents" | "sibling" | "joint" | "other";
+          sender_code:    string;
+          created_at?:    string;
+        };
+        Update: Partial<Database["public"]["Tables"]["sender_profiles"]["Insert"]>;
+        Relationships: [
+          {
+            foreignKeyName: "fk_sender_profiles_wedding";
             columns: ["wedding_id"];
             referencedRelation: "weddings";
             referencedColumns: ["id"];

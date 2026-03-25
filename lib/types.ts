@@ -148,6 +148,7 @@ export type InviteAnalyticsRow = Database["public"]["Tables"]["invite_analytics"
 export type FamilyUserRow      = Database["public"]["Tables"]["family_users"]["Row"];
 export type FamilyPostRow            = Database["public"]["Tables"]["family_posts"]["Row"];
 export type FamilyPostReactionRow    = Database["public"]["Tables"]["family_post_reactions"]["Row"];
+export type SenderProfileRow         = Database["public"]["Tables"]["sender_profiles"]["Row"];
 
 // Phase 3.3 — previously missing tables, now fully typed
 export type FamilyMagicLinkRow      = Database["public"]["Tables"]["family_magic_links"]["Row"];

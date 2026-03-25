@@ -14,14 +14,11 @@ import { weddingConfig } from "@/lib/config";
 import { getGuestMessages } from "@/modules/premium/guestbook-system";
 import { getGalleryPhotos } from "@/modules/premium/photo-gallery";
 import { getWeddingEvents } from "@/modules/elegant/event-display";
+import { getSenderProfile } from "@/modules/elegant/sender-profiles";
 import { formatDate } from "@/utils/formatDate";
 
-// ── The fixed general invite URL ───────────────────────────────────────────
-// This is the URL shared when a guest forwards the wedding to someone
-// outside the original guest list. It shows the full experience but
-// carries no personalised identity, no RSVP form, no invite tracking.
-const GENERAL_INVITE_URL =
-  `${(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").replace(/\/$/, "")}/invite/general`;
+// ── Site URL ──────────────────────────────────────────────────────────────────
+const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").replace(/\/$/, "");
 
 export const metadata: Metadata = {
   title: `${weddingConfig.celebrationTitle} | Marion & Livingston`,
@@ -29,31 +26,44 @@ export const metadata: Metadata = {
   openGraph: {
     title: `You're invited — Marion & Livingston`,
     description: weddingConfig.heroSubtitle,
-    url: GENERAL_INVITE_URL,
+    url: `${SITE_URL}/invite/general`,
   },
 };
 
-const WEDDING_ID = weddingConfig.id;
-const brideFirst = weddingConfig.brideName.split(" ")[0]!;
-const groomFirst = weddingConfig.groomName.split(" ")[0]!;
+const WEDDING_ID  = weddingConfig.id;
+const brideFirst  = weddingConfig.brideName.split(" ")[0]!;
+const groomFirst  = weddingConfig.groomName.split(" ")[0]!;
 
-export default async function GeneralInvitePage() {
-  const [guestMessages, galleryPhotos, events] = await Promise.all([
+// searchParams is provided by Next.js App Router for pages with dynamic data.
+// We need it to read the optional ?from= query param.
+interface GeneralInvitePageProps {
+  searchParams: { from?: string };
+}
+
+export default async function GeneralInvitePage({ searchParams }: GeneralInvitePageProps) {
+  const senderCode = searchParams.from ?? null;
+
+  const [guestMessages, galleryPhotos, events, senderProfile] = await Promise.all([
     getGuestMessages(WEDDING_ID),
     getGalleryPhotos(WEDDING_ID),
     getWeddingEvents(),
+    getSenderProfile(senderCode, WEDDING_ID),
   ]);
 
   const heroPhoto =
     (await import("@/modules/premium/photo-gallery").then((m) => m.getSlideshowPhotos()))[0]?.imageUrl ??
     "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1800&q=85";
 
+  // Guest label — if a sender profile exists, make the greeting feel personal
+  // to who is sharing it, not to a named individual guest.
+  const guestLabel = "our beloved guests";
+
   return (
     <CinematicIntro
       brideName={weddingConfig.brideName}
       groomName={weddingConfig.groomName}
-      guestLabel="our beloved guests"
-      inviteCode="general"
+      guestLabel={guestLabel}
+      inviteCode={senderCode ? `general-${senderCode}` : "general"}
       subtitle={weddingConfig.heroSubtitle}
       title={weddingConfig.celebrationTitle}
       weddingDate={formatDate(weddingConfig.weddingDate)}
@@ -61,6 +71,7 @@ export default async function GeneralInvitePage() {
       venueCity={weddingConfig.venueCity}
       heroPhotoUrl={heroPhoto}
       audioSrc={null}
+      senderProfile={senderProfile}
     >
       {/* ── WELCOME STRIP ─────────────────────────────────────────────────── */}
       <section
@@ -83,9 +94,27 @@ export default async function GeneralInvitePage() {
           <div className="flex flex-wrap items-start justify-between gap-8 lg:flex-nowrap">
 
             <div className="space-y-4 min-w-0">
-              <p className="section-label" style={{ color: "var(--color-text-muted)" }}>
-                You&apos;re invited to celebrate
-              </p>
+              {/* Sender context line */}
+              {senderProfile ? (
+                <div className="space-y-1">
+                  <p className="section-label" style={{ color: "var(--color-text-muted)" }}>
+                    An invitation from
+                  </p>
+                  <p
+                    className="font-display"
+                    style={{ fontSize: "clamp(1.1rem,2.8vw,1.5rem)", color: "var(--color-text-primary)", lineHeight: 1.2 }}
+                  >
+                    {senderProfile.display_title}
+                  </p>
+                  <p className="text-sm" style={{ color: "var(--color-text-secondary)", fontStyle: "italic" }}>
+                    {senderProfile.sub_text}
+                  </p>
+                </div>
+              ) : (
+                <p className="section-label" style={{ color: "var(--color-text-muted)" }}>
+                  You&apos;re invited to celebrate
+                </p>
+              )}
 
               <div className="space-y-1.5">
                 <div className="flex items-start gap-2.5">
@@ -259,7 +288,7 @@ export default async function GeneralInvitePage() {
         </section>
       ) : null}
 
-      {/* ── RSVP NUDGE — no form here, just a contact prompt ─────────────── */}
+      {/* ── RSVP NUDGE ────────────────────────────────────────────────────── */}
       <section style={{ background: "var(--color-background)", borderTop: "1px solid var(--color-border)" }}>
         <Container className="py-14">
           <div
@@ -275,10 +304,10 @@ export default async function GeneralInvitePage() {
               Let us know you&apos;re coming
             </h2>
             <p className="text-sm leading-7" style={{ color: "var(--color-text-secondary)" }}>
-              This is a shared invitation. To RSVP, please contact{" "}
-              <strong style={{ color: "var(--color-text-primary)" }}>{brideFirst}</strong> or{" "}
-              <strong style={{ color: "var(--color-text-primary)" }}>{groomFirst}</strong> directly —
-              or ask the person who shared this with you to send you your own personalised link.
+              {senderProfile
+                ? `This invitation was shared by ${senderProfile.display_title}. To RSVP, please contact them directly — or ask for your personalised invite link.`
+                : `This is a shared invitation. To RSVP, please contact ${brideFirst} or ${groomFirst} directly — or ask the person who shared this with you to send you your own personalised link.`
+              }
             </p>
             <a
               href={`mailto:${weddingConfig.contactEmail}`}
@@ -337,9 +366,20 @@ export default async function GeneralInvitePage() {
           >
             <Heart className="h-6 w-6" style={{ color: "var(--color-accent-soft)" }} />
           </div>
-          <p className="font-display text-xl" style={{ color: "var(--color-text-primary)", letterSpacing: "0.06em" }}>
-            {brideFirst} &amp; {groomFirst}
-          </p>
+          {senderProfile ? (
+            <>
+              <p className="font-display text-xl" style={{ color: "var(--color-text-primary)", letterSpacing: "0.06em" }}>
+                {senderProfile.display_title}
+              </p>
+              <p className="text-sm" style={{ color: "var(--color-text-muted)" }}>
+                at the wedding of {brideFirst} &amp; {groomFirst}
+              </p>
+            </>
+          ) : (
+            <p className="font-display text-xl" style={{ color: "var(--color-text-primary)", letterSpacing: "0.06em" }}>
+              {brideFirst} &amp; {groomFirst}
+            </p>
+          )}
           <p className="text-sm" style={{ color: "var(--color-text-muted)" }}>
             {formatDate(weddingConfig.weddingDate)} · {weddingConfig.venueName}
           </p>
