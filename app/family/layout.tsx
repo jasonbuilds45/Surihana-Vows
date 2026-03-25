@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BarChart2, Clock, Heart, Images, PenLine } from "lucide-react";
 import { Container } from "@/components/layout/Container";
 import { ElderModeProvider, ElderModeToggle } from "@/components/vault/ElderMode";
 import { weddingConfig } from "@/lib/config";
@@ -59,11 +60,69 @@ export default function FamilyLayout({ children }: { children: React.ReactNode }
           </Container>
         </header>
 
-        <main>{children}</main>
+        {/* Main content with bottom padding for mobile nav */}
+        <main style={{ paddingBottom: "env(safe-area-inset-bottom)" }} className="pb-20 sm:pb-0">{children}</main>
 
-        {/* Vault footer */}
+        {/* Mobile bottom navigation — Instagram-style, hidden on desktop */}
+        <nav
+          className="sm:hidden fixed bottom-0 left-0 right-0 z-50"
+          style={{
+            background: "rgba(255,250,246,0.97)",
+            backdropFilter: "blur(20px)",
+            WebkitBackdropFilter: "blur(20px)",
+            borderTop: "1px solid rgba(190,45,69,0.10)",
+            paddingBottom: "env(safe-area-inset-bottom)",
+            boxShadow: "0 -8px 32px rgba(26,12,14,0.08)",
+          }}
+        >
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", padding: "0.4rem 0.5rem" }}>
+            {[
+              { href: "#memories", icon: Heart, label: "Feed" },
+              { href: "#photos", icon: Images, label: "Albums" },
+              { href: "#", icon: PenLine, label: "Post", primary: true },
+              { href: "#capsules", icon: Clock, label: "Capsules" },
+              { href: "#polls", icon: BarChart2, label: "Polls" },
+            ].map(({ href, icon: Icon, label, primary }) => (
+              <a
+                key={label}
+                href={href}
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  gap: "0.2rem",
+                  padding: "0.5rem 0.25rem",
+                  textDecoration: "none",
+                }}
+              >
+                {primary ? (
+                  <div style={{
+                    width: 44, height: 44, borderRadius: "50%",
+                    background: "linear-gradient(135deg, #BE2D45, #7E2032)",
+                    display: "grid", placeItems: "center",
+                    boxShadow: "0 6px 18px rgba(190,45,69,0.35)",
+                    marginTop: "-8px",
+                  }}>
+                    <Icon size={20} color="#fff" />
+                  </div>
+                ) : (
+                  <Icon size={22} color="var(--color-text-muted)" />
+                )}
+                <span style={{
+                  fontSize: "0.58rem",
+                  letterSpacing: "0.06em",
+                  color: primary ? "var(--color-accent)" : "var(--color-text-muted)",
+                  fontWeight: primary ? 700 : 500,
+                  marginTop: primary ? "0.3rem" : 0,
+                }}>{label}</span>
+              </a>
+            ))}
+          </div>
+        </nav>
+
+        {/* Vault footer — desktop only */}
         <footer
-          className="py-8 text-center"
+          className="hidden sm:block py-8 text-center"
           style={{ background: "var(--color-surface-muted)", borderTop: "1px solid var(--color-border)" }}
         >
           <p

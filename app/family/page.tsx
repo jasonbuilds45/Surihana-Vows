@@ -173,205 +173,203 @@ export default async function FamilyPage() {
   return (
     <ElderModeWrapper>
       <style>{`
-        .vault-page{background:radial-gradient(circle at top right,rgba(190,45,69,.06),transparent 24%),radial-gradient(circle at 12% 38%,rgba(212,184,150,.11),transparent 26%),linear-gradient(180deg,#fffdfb 0%,#f7efe8 38%,#fcf8f4 100%)}
-        .vault-hero{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(320px,.95fr);gap:1.4rem;padding:clamp(1.35rem,3vw,2rem);border-radius:34px;overflow:hidden;background:radial-gradient(circle at top left,rgba(255,241,232,.16),transparent 34%),radial-gradient(circle at bottom right,rgba(190,45,69,.18),transparent 28%),linear-gradient(140deg,#17080a 0%,#241014 46%,#3c1720 100%);border:1px solid rgba(255,255,255,.08);box-shadow:0 34px 80px rgba(14,4,8,.28)}
-        .vault-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.85rem;margin-top:1.7rem}
-        .vault-metric{border-radius:22px;padding:.95rem 1rem;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.10)}
-        .vault-tags{display:flex;flex-wrap:wrap;gap:.55rem;margin-top:1.4rem}
-        .vault-tag{display:inline-flex;align-items:center;gap:.45rem;padding:.68rem .9rem;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.78);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;white-space:nowrap}
-        .vault-collage{display:grid;grid-template-columns:1.1fr .8fr;gap:.85rem;min-height:500px}
-        .vault-collage-main,.vault-collage-card{position:relative;border-radius:26px;overflow:hidden;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.08)}
-        .vault-collage-stack{display:grid;gap:.85rem;grid-template-rows:1fr 1fr}
-        .vault-surface{padding:clamp(1.25rem,2.2vw,1.8rem);border-radius:30px;background:rgba(255,255,255,.74);border:1px solid rgba(190,45,69,.10);box-shadow:0 24px 56px rgba(26,12,14,.08);backdrop-filter:blur(10px)}
-        .vault-feed{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(300px,.9fr);gap:1rem}
-        .vault-stack{display:grid;gap:1rem}
-        .vault-duo{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.95fr);gap:1rem}
-        .vault-capsules{background:radial-gradient(circle at top left,rgba(212,72,96,.16),transparent 26%),radial-gradient(circle at bottom right,rgba(201,150,10,.10),transparent 24%),linear-gradient(160deg,#18090c 0%,#241014 42%,#120609 100%)}
-        .vault-dark-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.10);border-radius:22px;padding:.95rem 1rem;color:rgba(255,255,255,.72);backdrop-filter:blur(10px)}
-        .vault-composer{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:1rem}
-        .vault-squad{border-radius:34px;padding:clamp(1.4rem,2.6vw,2rem);background:radial-gradient(circle at top right,rgba(190,45,69,.09),transparent 28%),linear-gradient(180deg,rgba(255,255,255,.84),rgba(248,243,238,.92));border:1px solid rgba(190,45,69,.10);box-shadow:0 28px 60px rgba(26,12,14,.08)}
-        .vault-poll-wrap{padding:clamp(1.1rem,2.4vw,1.6rem);border-radius:32px;background:radial-gradient(circle at top left,rgba(212,184,150,.16),transparent 20%),rgba(255,255,255,.66);border:1px solid rgba(190,45,69,.08);box-shadow:0 20px 48px rgba(26,12,14,.08)}
-        @media (max-width:1100px){.vault-hero,.vault-feed,.vault-duo,.vault-composer{grid-template-columns:1fr}.vault-collage{min-height:380px}}
-        @media (max-width:760px){.vault-metrics{grid-template-columns:1fr}.vault-collage{grid-template-columns:1fr;min-height:auto}.vault-collage-main{min-height:280px}.vault-collage-stack{grid-template-columns:1fr 1fr;grid-template-rows:auto}.vault-feed{grid-template-columns:1fr}}
+        .vault-page{background:radial-gradient(circle at top right,rgba(190,45,69,.05),transparent 24%),radial-gradient(circle at 12% 38%,rgba(212,184,150,.09),transparent 26%),linear-gradient(180deg,#fffdfb 0%,#f7efe8 38%,#fcf8f4 100%)}
+        .vault-surface{padding:clamp(1.1rem,2vw,1.6rem);border-radius:24px;background:rgba(255,255,255,.80);border:1px solid rgba(190,45,69,.09);box-shadow:0 18px 42px rgba(26,12,14,.07);backdrop-filter:blur(10px)}
+        .vault-stack{display:grid;gap:.85rem}
+        .vault-duo{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.95fr);gap:.85rem}
+        .vault-composer{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:.85rem}
+        .vault-stories{display:flex;gap:.85rem;overflow-x:auto;padding:.75rem 0 .9rem;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+        .vault-stories::-webkit-scrollbar{display:none}
+        .vault-story-item{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:.4rem;cursor:pointer}
+        .vault-story-ring{position:relative;width:66px;height:66px;border-radius:50%;padding:2.5px;background:linear-gradient(135deg,#BE2D45,#B8820A,#BE2D45);flex-shrink:0}
+        .vault-story-ring.seen{background:linear-gradient(135deg,rgba(190,45,69,.22),rgba(184,130,10,.22))}
+        .vault-story-inner{width:100%;height:100%;border-radius:50%;overflow:hidden;border:2.5px solid #fffdfb;position:relative;background:rgba(190,45,69,.08)}
+        .vault-story-label{font-size:.56rem;letter-spacing:.06em;color:var(--color-text-muted);white-space:nowrap;max-width:64px;overflow:hidden;text-overflow:ellipsis;text-align:center}
+        .vault-add-story{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:.4rem;cursor:pointer}
+        .vault-add-ring{width:66px;height:66px;border-radius:50%;border:2px dashed rgba(190,45,69,.28);display:grid;place-items:center;background:rgba(190,45,69,.04);position:relative}
+        .vault-add-plus{position:absolute;bottom:0;right:0;width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,#BE2D45,#7E2032);display:grid;place-items:center;border:2px solid #fffdfb;color:#fff;font-size:14px;font-weight:700;line-height:1}
+        .vault-post-card{background:rgba(255,255,255,.88);border:1px solid rgba(190,45,69,.09);border-radius:22px;overflow:hidden;box-shadow:0 12px 32px rgba(26,12,14,.07)}
+        .vault-post-header{display:flex;align-items:center;gap:.75rem;padding:.85rem 1rem .7rem}
+        .vault-post-avatar{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,rgba(190,45,69,.16),rgba(212,184,150,.28));border:1px solid rgba(190,45,69,.12);font-family:var(--font-display),Georgia,serif;font-weight:700;font-size:.9rem;flex-shrink:0}
+        .vault-post-meta{flex:1;min-width:0}
+        .vault-post-author{font-size:.82rem;font-weight:600;color:var(--color-text-primary);line-height:1.2}
+        .vault-post-time{font-size:.62rem;letter-spacing:.08em;color:var(--color-text-muted);margin-top:.1rem}
+        .vault-post-type{display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:999px;background:rgba(190,45,69,.06);border:1px solid rgba(190,45,69,.10);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;color:var(--color-accent);flex-shrink:0}
+        .vault-post-media{position:relative;width:100%}
+        .vault-post-body{padding:.85rem 1rem}
+        .vault-post-title{font-family:var(--font-display),Georgia,serif;font-size:1.18rem;color:var(--color-text-primary);line-height:1.08;margin-bottom:.45rem}
+        .vault-post-content{font-size:.88rem;line-height:1.7;color:var(--color-text-secondary)}
+        .vault-post-actions{display:flex;align-items:center;gap:.5rem;padding:.7rem 1rem .9rem;border-top:1px solid rgba(190,45,69,.06)}
+        .vault-action-btn{display:inline-flex;align-items:center;gap:.35rem;padding:.45rem .8rem;border-radius:999px;background:rgba(190,45,69,.05);border:1px solid rgba(190,45,69,.09);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--color-text-secondary);cursor:pointer;transition:background .15s}
+        .vault-action-btn:hover{background:rgba(190,45,69,.10)}
+        .vault-feed-col{display:grid;gap:.85rem;max-width:620px;margin:0 auto}
+        .vault-feed-wrap{display:grid;grid-template-columns:minmax(0,620px) minmax(280px,.42fr);gap:1.1rem;align-items:start}
+        .vault-sidebar{display:grid;gap:.85rem;position:sticky;top:calc(var(--vault-header-height,57px) + 3.5rem)}
+        .vault-capsules{background:radial-gradient(circle at top left,rgba(212,72,96,.16),transparent 26%),radial-gradient(circle at bottom right,rgba(201,150,10,.10),transparent 24%),linear-gradient(160deg,#18090c 0%,#241014 42%,#120609 100%);border-radius:28px;padding:clamp(1.2rem,2.4vw,1.8rem)}
+        .vault-dark-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.10);border-radius:18px;padding:.85rem .95rem;color:rgba(255,255,255,.72);backdrop-filter:blur(10px)}
+        .vault-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.75rem;margin-top:1.4rem}
+        .vault-poll-wrap{padding:clamp(1rem,2.2vw,1.5rem);border-radius:26px;background:radial-gradient(circle at top left,rgba(212,184,150,.14),transparent 20%),rgba(255,255,255,.72);border:1px solid rgba(190,45,69,.08);box-shadow:0 16px 40px rgba(26,12,14,.07)}
+        .vault-squad{border-radius:28px;padding:clamp(1.2rem,2.4vw,1.8rem);background:radial-gradient(circle at top right,rgba(190,45,69,.08),transparent 28%),linear-gradient(180deg,rgba(255,255,255,.84),rgba(248,243,238,.92));border:1px solid rgba(190,45,69,.09);box-shadow:0 22px 50px rgba(26,12,14,.07)}
+        .vault-section-head{display:flex;align-items:baseline;justify-content:space-between;gap:.75rem;margin-bottom:1rem}
+        .vault-eyebrow{font-size:.58rem;letter-spacing:.38em;text-transform:uppercase;color:var(--color-accent)}
+        .vault-section-title{font-family:var(--font-display),Georgia,serif;font-size:clamp(1.5rem,3vw,2.2rem);color:var(--color-text-primary);line-height:1.04}
+        @media(max-width:1024px){.vault-feed-wrap{grid-template-columns:1fr}.vault-sidebar{position:static}.vault-duo,.vault-composer{grid-template-columns:1fr}}
+        @media(max-width:640px){.vault-metrics{grid-template-columns:1fr 1fr}.vault-metrics .vault-dark-card:last-child{grid-column:1/-1}}
       `}</style>
 
       <div className="vault-page">
         <CapsuleUnlockBanner capsules={capsules} />
-        <Container className="pt-5 pb-8 sm:pt-8 sm:pb-10">
-          <section className="vault-hero">
-            <div style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", gap: "1.4rem" }}>
-              <div>
-                <p style={{ fontSize: ".64rem", letterSpacing: ".42em", textTransform: "uppercase", color: "rgba(255,235,230,.72)", marginBottom: ".9rem" }}>
-                  Family vault / {formatDate(familyVault.wedding.wedding_date)} / {familyVault.wedding.venue_name}
-                </p>
-                <h1 className="font-display" style={{ fontSize: "clamp(2.6rem,7vw,5.75rem)", lineHeight: ".95", color: "#fff", maxWidth: 720 }}>
-                  The wedding now lives like a memory feed.
-                </h1>
-                <p className="text-base leading-8" style={{ color: "rgba(255,244,240,.76)", maxWidth: 650, marginTop: "1rem" }}>
-                  A private archive for {brideFirst} and {groomFirst}, with family stories, albums, films, and sealed messages that keep unfolding long after the celebration ends.
-                </p>
-              </div>
 
-              <div className="vault-tags">
-                <span className="vault-tag"><Sparkles size={14} /> Private archive</span>
-                <span className="vault-tag"><Images size={14} /> {albums.length} curated album{albums.length === 1 ? "" : "s"}</span>
-                <span className="vault-tag"><Lock size={14} /> Invite-only family access</span>
-                {isSquad ? <span className="vault-tag"><Shield size={14} /> Squad access enabled</span> : null}
-              </div>
-
-              <div className="vault-metrics">
-                <div className="vault-metric">
-                  <p style={{ fontSize: ".62rem", letterSpacing: ".22em", textTransform: "uppercase", color: "rgba(255,236,229,.62)" }}>Stories saved</p>
-                  <p className="font-display" style={{ fontSize: "2rem", color: "#fff", marginTop: ".35rem" }}>{familyVault.posts.length}</p>
-                  <p style={{ fontSize: ".84rem", color: "rgba(255,244,240,.68)", marginTop: ".25rem" }}>Messages and blessings from the people closest to them.</p>
+        {/* ── Stories strip ── */}
+        <div style={{ borderBottom: "1px solid rgba(190,45,69,.07)", background: "rgba(255,253,251,.96)", backdropFilter: "blur(10px)", position: "sticky", top: "calc(var(--vault-header-height,57px))", zIndex: 30 }}>
+          <Container style={{ paddingTop: 0, paddingBottom: 0 }}>
+            <div className="vault-stories">
+              <div className="vault-add-story">
+                <div className="vault-add-ring">
+                  <Images size={22} color="rgba(190,45,69,.5)" />
+                  <div className="vault-add-plus">+</div>
                 </div>
-                <div className="vault-metric">
-                  <p style={{ fontSize: ".62rem", letterSpacing: ".22em", textTransform: "uppercase", color: "rgba(255,236,229,.62)" }}>Media moments</p>
-                  <p className="font-display" style={{ fontSize: "2rem", color: "#fff", marginTop: ".35rem" }}>{familyVault.photos.length + familyVault.videos.length}</p>
-                  <p style={{ fontSize: ".84rem", color: "rgba(255,244,240,.68)", marginTop: ".25rem" }}>Photos, films, and galleries building the family archive.</p>
-                </div>
-                <div className="vault-metric">
-                  <p style={{ fontSize: ".62rem", letterSpacing: ".22em", textTransform: "uppercase", color: "rgba(255,236,229,.62)" }}>Capsules waiting</p>
-                  <p className="font-display" style={{ fontSize: "2rem", color: "#fff", marginTop: ".35rem" }}>{lockedCapsules.length}</p>
-                  <p style={{ fontSize: ".84rem", color: "rgba(255,244,240,.68)", marginTop: ".25rem" }}>{revealedCapsules.length} already open, with more set aside for future anniversaries.</p>
-                </div>
+                <span className="vault-story-label">Add photo</span>
               </div>
-            </div>
-
-            <div className="vault-collage">
-              <div className="vault-collage-main" style={{ minHeight: 500 }}>
-                {mainHeroImage ? (
-                  <>
-                    <Image alt={`${brideFirst} and ${groomFirst} family vault`} src={mainHeroImage} fill className="object-cover" sizes="(max-width: 1100px) 100vw, 40vw" />
-                    <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(16,8,10,.86) 0%, rgba(16,8,10,.08) 60%)" }} />
-                  </>
-                ) : (
-                  <div style={{ position: "absolute", inset: 0, background: "linear-gradient(135deg, rgba(255,255,255,.08), rgba(255,255,255,.02))" }} />
-                )}
-
-                <div style={{ position: "absolute", inset: "auto 0 0 0", padding: "1.4rem" }}>
-                  <div style={{ display: "inline-flex", alignItems: "center", gap: 8, borderRadius: 999, padding: "8px 12px", background: "rgba(255,255,255,.12)", border: "1px solid rgba(255,255,255,.14)", color: "rgba(255,246,242,.86)", fontSize: ".62rem", letterSpacing: ".18em", textTransform: "uppercase", marginBottom: ".85rem" }}>
-                    <Heart size={12} /> Featured memory
-                  </div>
-                  <h2 className="font-display" style={{ fontSize: "clamp(1.8rem,4vw,3rem)", color: "#fff", lineHeight: 1.02 }}>
-                    {featuredPost?.title ?? "The family archive is ready for the first chapter."}
-                  </h2>
-                  <p className="text-sm leading-7" style={{ color: "rgba(255,245,241,.72)", marginTop: ".7rem", maxWidth: 500 }}>
-                    {featuredPost?.content ?? "Once memories begin arriving, this surface turns into a living record of the wedding and everything that follows after it."}
-                  </p>
-                </div>
-              </div>
-
-              <div className="vault-collage-stack">
-                {collageImages.map((image, index) => (
-                  <div key={`hero-image-${index}`} className="vault-collage-card" style={{ minHeight: 0 }}>
-                    {image ? (
-                      <>
-                        <Image alt={`Family vault collage ${index + 1}`} src={image} fill className="object-cover" sizes="(max-width: 760px) 50vw, 20vw" />
-                        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(18,9,12,.78) 0%, rgba(18,9,12,.08) 64%)" }} />
-                      </>
-                    ) : (
-                      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(135deg, rgba(255,255,255,.12), rgba(255,255,255,.02))" }} />
-                    )}
-                    <div style={{ position: "absolute", inset: "auto 0 0 0", padding: "1rem" }}>
-                      <p style={{ fontSize: ".56rem", letterSpacing: ".2em", textTransform: "uppercase", color: "rgba(255,238,233,.62)", marginBottom: ".32rem" }}>
-                        {index === 0 ? "Albums" : index === 1 ? "Family feed" : "Sealed for later"}
-                      </p>
-                      <p className="font-display" style={{ fontSize: "1.15rem", color: "#fff" }}>
-                        {index === 0 ? `${albums.length} visual chapters` : index === 1 ? `${familyVault.posts.length} saved stories` : `${capsules.length} future messages`}
-                      </p>
+              {albums.slice(0, 10).map((album) => (
+                <div key={album.id} className="vault-story-item">
+                  <div className="vault-story-ring">
+                    <div className="vault-story-inner">
+                      {album.cover_photo ? (
+                        <Image alt={album.album_name} src={album.cover_photo} fill className="object-cover" sizes="66px" />
+                      ) : (
+                        <div style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center", background: "linear-gradient(135deg,rgba(190,45,69,.12),rgba(212,184,150,.18))" }}>
+                          <Images size={18} color="rgba(190,45,69,.5)" />
+                        </div>
+                      )}
                     </div>
                   </div>
-                ))}
-              </div>
+                  <span className="vault-story-label">{album.album_name}</span>
+                </div>
+              ))}
+              {recentPhotos.slice(0, 6).map((photo, i) => (
+                <div key={photo.id} className="vault-story-item">
+                  <div className={`vault-story-ring${i > 1 ? " seen" : ""}`}>
+                    <div className="vault-story-inner">
+                      <Image alt="Family moment" src={photo.image_url} fill className="object-cover" sizes="66px" />
+                    </div>
+                  </div>
+                  <span className="vault-story-label">{photo.uploaded_by?.split(" ")[0] ?? "Family"}</span>
+                </div>
+              ))}
             </div>
-          </section>
-        </Container>
+          </Container>
+        </div>
 
         <VaultNav isSquad={isSquad} />
 
-        <Container className="space-y-8 py-8 sm:space-y-10 sm:py-10 lg:py-12">
-          <section id="memories" style={{ scrollMarginTop: "8rem" }} className="space-y-6">
-            <SectionIntro
-              eyebrow="Memory feed"
-              title="Stories from the celebration, arranged with more presence."
-              subtitle="Instead of reading like a utility page, the family vault now opens as a visual feed of blessings, photos, and posts that feel worth revisiting."
-            />
-
-            {featuredPost ? (
-              <div className="vault-feed">
-                <MemoryCard post={featuredPost} featured />
-                <div className="vault-stack">
-                  {sidePosts.length ? sidePosts.map((post) => <MemoryCard key={post.id} post={post} />) : (
-                    <div className="vault-surface" style={{ display: "grid", gap: ".9rem", alignContent: "start" }}>
-                      <div style={{ display: "inline-flex", width: 44, height: 44, borderRadius: 16, alignItems: "center", justifyContent: "center", background: "rgba(190,45,69,.08)", color: "var(--color-accent)" }}>
-                        <PenLine size={18} />
-                      </div>
-                      <div>
-                        <p style={{ fontSize: ".6rem", letterSpacing: ".36em", textTransform: "uppercase", color: "var(--color-accent)", marginBottom: ".5rem" }}>Archive open</p>
-                        <h3 className="font-display" style={{ fontSize: "2rem", color: "var(--color-text-primary)", lineHeight: 1.04 }}>The next story belongs here.</h3>
-                      </div>
-                      <p className="text-sm leading-7" style={{ color: "var(--color-text-secondary)" }}>
-                        Once more family members add blessings, anniversary notes, and wedding-day memories, they will appear here as a layered feed.
-                      </p>
+        <Container className="pt-5 pb-8 sm:pt-6 sm:pb-10">
+          {/* ── Feed + Sidebar ── */}
+          <section id="memories" style={{ scrollMarginTop: "9rem" }}>
+            <div className="vault-feed-wrap">
+              {/* Feed column */}
+              <div className="vault-feed-col">
+                {familyVault.posts.length === 0 ? (
+                  <div className="vault-surface" style={{ textAlign: "center", padding: "2.5rem 1.5rem" }}>
+                    <div style={{ width: 52, height: 52, borderRadius: 18, display: "grid", placeItems: "center", margin: "0 auto .85rem", background: "rgba(190,45,69,.07)", color: "var(--color-accent)" }}>
+                      <Heart size={22} />
                     </div>
-                  )}
-                </div>
-              </div>
-            ) : (
-              <div className="vault-surface" style={{ textAlign: "center", padding: "3rem 1.5rem" }}>
-                <div style={{ width: 56, height: 56, borderRadius: 20, display: "grid", placeItems: "center", margin: "0 auto 1rem", background: "rgba(190,45,69,.08)", color: "var(--color-accent)" }}>
-                  <Heart size={24} />
-                </div>
-                <h3 className="font-display" style={{ fontSize: "2rem", color: "var(--color-text-primary)" }}>The archive is ready for its first post.</h3>
-                <p className="text-sm leading-7" style={{ color: "var(--color-text-secondary)", maxWidth: 520, margin: ".85rem auto 0" }}>
-                  Family stories will appear here as a polished feed once the couple or their loved ones start adding memories.
-                </p>
-              </div>
-            )}
-
-            <div className="vault-composer">
-              <div className="vault-surface" style={{ display: "grid", gap: "1rem", alignContent: "start" }}>
-                <p style={{ fontSize: ".6rem", letterSpacing: ".36em", textTransform: "uppercase", color: "var(--color-accent)" }}>Add your voice</p>
-                <h3 className="font-display" style={{ fontSize: "clamp(1.8rem,4vw,2.8rem)", color: "var(--color-text-primary)", lineHeight: 1.02 }}>
-                  Help the vault feel alive, not archived away.
-                </h3>
-                <p className="text-sm leading-7" style={{ color: "var(--color-text-secondary)" }}>
-                  Share a blessing, an anniversary note, or a small wedding-day detail. The goal is to make this feel like an intimate social archive the family keeps returning to.
-                </p>
-
-                <div className="vault-stack">
-                  <div style={{ borderRadius: 24, padding: "1rem 1.1rem", background: "linear-gradient(135deg, rgba(190,45,69,.08), rgba(212,184,150,.14))", border: "1px solid rgba(190,45,69,.08)" }}>
-                    <p style={{ fontSize: ".58rem", letterSpacing: ".28em", textTransform: "uppercase", color: "var(--color-text-muted)", marginBottom: ".45rem" }}>What belongs here</p>
-                    <p style={{ fontSize: ".92rem", lineHeight: 1.7, color: "var(--color-text-secondary)" }}>
-                      Ceremony memories, candid stories, blessings from elders, and the kind of family moments that would never fit inside a formal gallery.
+                    <h3 className="font-display" style={{ fontSize: "1.6rem", color: "var(--color-text-primary)" }}>The feed is ready for its first memory.</h3>
+                    <p style={{ fontSize: ".88rem", lineHeight: 1.7, color: "var(--color-text-secondary)", maxWidth: 440, margin: ".7rem auto 0" }}>
+                      Family stories will appear here as a scrollable feed once the couple and their loved ones start adding memories.
                     </p>
                   </div>
-                  <div style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: ".7rem" }}>
+                ) : (
+                  familyVault.posts.map((post) => (
+                    <article key={post.id} className="vault-post-card">
+                      <div className="vault-post-header">
+                        <div className="vault-post-avatar">{initials(post.posted_by ?? post.title)}</div>
+                        <div className="vault-post-meta">
+                          <p className="vault-post-author">{post.posted_by ?? "Family archive"}</p>
+                          <p className="vault-post-time">{formatArchiveDate(post.created_at)}</p>
+                        </div>
+                        <span className="vault-post-type"><Heart size={10} /> {formatPostType(post.post_type)}</span>
+                      </div>
+                      {post.media_url && (
+                        <div className="vault-post-media" style={{ aspectRatio: "4/3" }}>
+                          <Image alt={post.title} src={post.media_url} fill className="object-cover" sizes="(max-width:1024px) 100vw,620px" />
+                          <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(20,10,12,.3) 0%, transparent 50%)" }} />
+                        </div>
+                      )}
+                      <div className="vault-post-body">
+                        <h3 className="vault-post-title">{post.title}</h3>
+                        <p className="vault-post-content">{post.content}</p>
+                      </div>
+                      <div className="vault-post-actions">
+                        <button type="button" className="vault-action-btn"><Heart size={12} /> Save</button>
+                        <button type="button" className="vault-action-btn"><Sparkles size={12} /> Bless</button>
+                      </div>
+                    </article>
+                  ))
+                )}
+                {/* Post composer */}
+                <div className="vault-surface">
+                  <p className="vault-eyebrow" style={{ marginBottom: ".5rem" }}>Add your voice</p>
+                  <h3 className="font-display" style={{ fontSize: "1.35rem", color: "var(--color-text-primary)", lineHeight: 1.06, marginBottom: ".8rem" }}>Share a memory or blessing</h3>
+                  <FamilyPostForm weddingId={weddingConfig.id} authorEmail={session.email} />
+                </div>
+              </div>
+
+              {/* Sidebar */}
+              <div className="vault-sidebar">
+                <div className="vault-surface">
+                  <p className="vault-eyebrow" style={{ marginBottom: ".8rem" }}>Vault at a glance</p>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: ".65rem" }}>
                     {[
-                      { label: "Feed entries", value: familyVault.posts.length },
-                      { label: "Photos", value: familyVault.photos.length },
-                      { label: "Films", value: familyVault.videos.length },
-                    ].map((item) => (
-                      <div key={item.label} style={{ borderRadius: 20, padding: ".95rem", background: "rgba(255,255,255,.8)", border: "1px solid rgba(190,45,69,.08)" }}>
-                        <p className="font-display" style={{ fontSize: "1.6rem", color: "var(--color-text-primary)" }}>{item.value}</p>
-                        <p style={{ fontSize: ".72rem", color: "var(--color-text-muted)", marginTop: ".25rem" }}>{item.label}</p>
+                      { label: "Stories", value: familyVault.posts.length, icon: PenLine },
+                      { label: "Photos", value: familyVault.photos.length, icon: Images },
+                      { label: "Films", value: familyVault.videos.length, icon: Video },
+                      { label: "Capsules", value: capsules.length, icon: Lock },
+                    ].map(({ label, value, icon: Icon }) => (
+                      <div key={label} style={{ borderRadius: 16, padding: ".75rem", background: "rgba(190,45,69,.04)", border: "1px solid rgba(190,45,69,.08)" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: ".3rem" }}>
+                          <Icon size={13} color="var(--color-accent)" />
+                          <p style={{ fontSize: ".6rem", letterSpacing: ".18em", textTransform: "uppercase", color: "var(--color-text-muted)" }}>{label}</p>
+                        </div>
+                        <p className="font-display" style={{ fontSize: "1.55rem", color: "var(--color-text-primary)" }}>{value}</p>
                       </div>
                     ))}
                   </div>
                 </div>
+                {recentPhotos.length > 0 && (
+                  <div className="vault-surface">
+                    <p className="vault-eyebrow" style={{ marginBottom: ".5rem" }}>Recent photos</p>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: ".45rem", marginTop: ".5rem" }}>
+                      {recentPhotos.slice(0, 9).map((photo, i) => (
+                        <div key={photo.id} style={{ position: "relative", aspectRatio: "1", borderRadius: 10, overflow: "hidden", background: "rgba(190,45,69,.06)" }}>
+                          <Image alt={`Capture ${i + 1}`} src={photo.image_url} fill className="object-cover" sizes="100px" />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {lockedCapsules.length > 0 && (
+                  <div style={{ borderRadius: 20, padding: "1rem 1.1rem", background: "linear-gradient(140deg,#18090c,#241014)", border: "1px solid rgba(255,255,255,.08)", color: "#fff" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: ".6rem" }}>
+                      <Lock size={14} color="rgba(255,220,210,.7)" />
+                      <p style={{ fontSize: ".6rem", letterSpacing: ".28em", textTransform: "uppercase", color: "rgba(255,220,210,.7)" }}>Sealed capsules</p>
+                    </div>
+                    <p className="font-display" style={{ fontSize: "1.6rem", lineHeight: 1.04 }}>{lockedCapsules.length} message{lockedCapsules.length === 1 ? "" : "s"} waiting</p>
+                    <p style={{ fontSize: ".82rem", color: "rgba(255,236,230,.62)", marginTop: ".4rem", lineHeight: 1.6 }}>Sealed for future anniversaries. They unlock automatically on the dates chosen.</p>
+                  </div>
+                )}
               </div>
-
-              <FamilyPostForm weddingId={weddingConfig.id} authorEmail={session.email} />
             </div>
           </section>
 
-          <section id="timeline" style={{ scrollMarginTop: "8rem" }} className="space-y-6">
-            <SectionIntro
-              eyebrow="Timeline and film"
-              title="The archive should flow through time, not stop at the wedding."
-              subtitle="This section ties together the years ahead with highlight films and anniversary milestones so the vault feels like a living continuation of the story."
-            />
+          {/* ── Timeline & Film ── */}
+          <section id="timeline" style={{ scrollMarginTop: "9rem", marginTop: "2rem" }} className="space-y-4">
+            <div className="vault-section-head">
+              <div>
+                <p className="vault-eyebrow">Timeline &amp; film</p>
+                <h2 className="vault-section-title">The archive grows beyond the wedding day.</h2>
+              </div>
+            </div>
 
             <div className="vault-duo">
               <div className="vault-surface">
@@ -450,12 +448,14 @@ export default async function FamilyPage() {
             </div>
           </section>
 
-          <section id="photos" style={{ scrollMarginTop: "8rem" }} className="space-y-6">
-            <SectionIntro
-              eyebrow="Albums and gallery"
-              title="Photo browsing should feel closer to a curated social gallery."
-              subtitle="Albums now sit inside a stronger editorial frame, while the latest photos stay easy to scan like a modern post-wedding feed."
-            />
+          <section id="photos" style={{ scrollMarginTop: "9rem", marginTop: "2rem" }} className="space-y-4">
+            <div className="vault-section-head">
+              <div>
+                <p className="vault-eyebrow">Albums &amp; gallery</p>
+                <h2 className="vault-section-title">Photo albums, curated by chapter.</h2>
+              </div>
+              <span style={{ fontSize: ".62rem", letterSpacing: ".18em", textTransform: "uppercase", color: "var(--color-text-muted)" }}>{albums.length} album{albums.length === 1 ? "" : "s"}</span>
+            </div>
 
             <div className="vault-duo">
               <div className="vault-surface">
@@ -488,15 +488,13 @@ export default async function FamilyPage() {
             </div>
           </section>
 
-          <section id="capsules" style={{ scrollMarginTop: "8rem" }} className="space-y-6">
-            <div className="vault-surface vault-capsules" style={{ color: "#fff" }}>
-              <div style={{ display: "grid", gap: "1.5rem" }}>
-                <SectionIntro
-                  eyebrow="Time capsules"
-                  title="Messages for future anniversaries deserve a more cinematic stage."
-                  subtitle="Sealed notes, delayed reveals, and video capsules are one of the most emotional parts of the platform, so this section now leads with more atmosphere and clearer hierarchy."
-                  inverse
-                />
+          <section id="capsules" style={{ scrollMarginTop: "9rem", marginTop: "2rem" }} className="space-y-4">
+            <div className="vault-capsules" style={{ color: "#fff" }}>
+              <div style={{ display: "grid", gap: "1.2rem" }}>
+                <div>
+                  <p className="vault-eyebrow" style={{ color: "rgba(255,235,230,.7)" }}>Time capsules</p>
+                  <h2 className="vault-section-title" style={{ color: "#fff", marginTop: ".4rem" }}>Messages sealed for future anniversaries.</h2>
+                </div>
 
                 <div className="vault-metrics">
                   <div className="vault-dark-card">
@@ -538,7 +536,7 @@ export default async function FamilyPage() {
             </div>
           </section>
 
-          <section id="polls" style={{ scrollMarginTop: "8rem" }}>
+          <section id="polls" style={{ scrollMarginTop: "9rem", marginTop: "2rem" }}>
             <div className="vault-poll-wrap">
               <FamilyPolls
                 weddingId={weddingConfig.id}
@@ -549,12 +547,13 @@ export default async function FamilyPage() {
           </section>
 
           {isSquad ? (
-            <section id="squad" style={{ scrollMarginTop: "8rem" }} className="vault-squad">
-              <SectionIntro
-                eyebrow="Squad hub"
-                title="A sharper backstage layer for the people helping keep the vault alive."
-                subtitle="This gives the squad a dedicated visual zone inside the family archive, with quick prompts for posting, collecting, and keeping the wedding story active after the event."
-              />
+            <section id="squad" style={{ scrollMarginTop: "9rem", marginTop: "2rem" }} className="vault-squad">
+              <div className="vault-section-head">
+                <div>
+                  <p className="vault-eyebrow">Squad hub</p>
+                  <h2 className="vault-section-title">Backstage access for the inner circle.</h2>
+                </div>
+              </div>
 
               <div className="vault-duo" style={{ marginTop: "1.5rem" }}>
                 <div className="vault-stack">
