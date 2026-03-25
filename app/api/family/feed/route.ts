@@ -49,7 +49,8 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ success: false, message: postsResult.error.message }, { status: 500 });
   }
 
-  const posts    = postsResult.data ?? [];
+  type PostRow = { id: string; [key: string]: unknown };
+  const posts    = (postsResult.data ?? []) as PostRow[];
   const reactions = (reactionsResult.data ?? []) as Array<{ post_id: string; emoji: string; reacted_by: string }>;
 
   // Group reactions by post_id → { emoji → { count, mine } }
