@@ -24,7 +24,7 @@ export default function HomePage() {
       <style>{`
         /* ── Reset ── */
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        html, body { height: 100%; background: #FBF7F2; }
+        html, body { height: 100%; background: #F5EDE4; }
 
         /* ── Keyframes ── */
         @keyframes slowZoom {
@@ -92,25 +92,25 @@ export default function HomePage() {
                       background 0.2s ease;
         }
         .btn-couple {
-          background: #C0364A;
-          border: 1px solid rgba(192,54,74,0.3);
-          box-shadow: 0 6px 28px rgba(192,54,74,0.28), 0 2px 8px rgba(0,0,0,0.08);
+          background: #7E1628;
+          border: 1px solid rgba(126,22,40,0.30);
+          box-shadow: 0 6px 28px rgba(126,22,40,0.35), 0 2px 8px rgba(0,0,0,0.12);
         }
         .btn-couple:hover {
-          background: #A82C3E;
+          background: #6B1020;
           transform: translateY(-3px) scale(1.01);
-          box-shadow: 0 12px 40px rgba(192,54,74,0.38), 0 4px 12px rgba(0,0,0,0.10);
+          box-shadow: 0 12px 40px rgba(126,22,40,0.45), 0 4px 12px rgba(0,0,0,0.14);
         }
         .btn-family {
-          background: rgba(26,16,18,0.07);
-          border: 1.5px solid rgba(26,16,18,0.18);
-          box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+          background: rgba(245,237,228,0.88);
+          border: 1.5px solid rgba(126,22,40,0.28);
+          box-shadow: 0 4px 20px rgba(126,22,40,0.10);
         }
         .btn-family:hover {
-          background: rgba(26,16,18,0.12);
+          background: rgba(255,252,248,0.96);
           transform: translateY(-3px) scale(1.01);
-          box-shadow: 0 10px 32px rgba(0,0,0,0.10);
-          border-color: rgba(192,54,74,0.35);
+          box-shadow: 0 10px 32px rgba(126,22,40,0.18);
+          border-color: rgba(126,22,40,0.48);
         }
 
         /* ── Desktop: show full cards, hide pills ── */
@@ -132,18 +132,18 @@ export default function HomePage() {
         }
         .btn-mobile-pill:hover { transform: translateY(-2px); }
         .btn-mobile-couple {
-          background: #C0364A;
-          border: 1px solid rgba(192,54,74,0.3);
-          box-shadow: 0 4px 16px rgba(192,54,74,0.28);
+          background: #7E1628;
+          border: 1px solid rgba(126,22,40,0.30);
+          box-shadow: 0 4px 16px rgba(126,22,40,0.32);
         }
-        .btn-mobile-couple:hover { background: #A82C3E; }
+        .btn-mobile-couple:hover { background: #6B1020; }
         .btn-mobile-family {
-          background: rgba(255,255,255,0.80);
-          border: 1.5px solid rgba(192,54,74,0.22);
-          box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+          background: rgba(245,237,228,0.90);
+          border: 1.5px solid rgba(126,22,40,0.28);
+          box-shadow: 0 4px 16px rgba(126,22,40,0.10);
           backdrop-filter: blur(10px);
         }
-        .btn-mobile-family:hover { background: rgba(255,255,255,0.95); }
+        .btn-mobile-family:hover { background: rgba(255,252,248,0.98); }
 
         /* ── Mobile ── */
         @media (max-width: 640px) {
@@ -177,7 +177,7 @@ export default function HomePage() {
         minHeight: "100dvh",
         display: "flex",
         flexDirection: "column",
-        background: "#FBF7F2",
+        background: "#F5EDE4",
         fontFamily: "var(--font-body), system-ui, sans-serif",
       }}>
 
@@ -188,16 +188,16 @@ export default function HomePage() {
           {/* Rose-gold rule */}
           <div style={{
             height: 2,
-            background: "linear-gradient(90deg, transparent 0%, #C0364A 20%, #D4AA3A 50%, #C0364A 80%, transparent 100%)",
+            background: "linear-gradient(90deg, transparent 0%, #7E1628 20%, #B8973A 50%, #7E1628 80%, transparent 100%)",
           }} />
           {/* Ticker bar */}
           <div style={{
             overflow: "hidden",
             padding: "7px 0",
-            background: "rgba(251,247,242,0.92)",
+            background: "rgba(245,237,228,0.94)",
             backdropFilter: "blur(16px)",
             WebkitBackdropFilter: "blur(16px)",
-            borderBottom: "1px solid rgba(192,54,74,0.12)",
+            borderBottom: "1px solid rgba(126,22,40,0.14)",
           }}>
             <div style={{
               display: "flex", gap: "4rem",
@@ -209,7 +209,7 @@ export default function HomePage() {
                   fontSize: "0.5rem",
                   letterSpacing: "0.38em",
                   textTransform: "uppercase",
-                  color: "rgba(192,54,74,0.65)",
+                  color: "rgba(126,22,40,0.72)",
                   fontFamily: "var(--font-body), system-ui, sans-serif",
                   fontWeight: 600,
                 }}>
@@ -249,11 +249,11 @@ export default function HomePage() {
             position: "absolute", inset: 0, zIndex: 1,
             background: `
               linear-gradient(to bottom,
-                rgba(251,247,242,0.82) 0%,
-                rgba(251,247,242,0.65) 22%,
-                rgba(251,247,242,0.55) 45%,
-                rgba(251,247,242,0.82) 68%,
-                rgba(251,247,242,0.98) 100%
+                rgba(245,237,228,0.80) 0%,
+                rgba(245,237,228,0.60) 22%,
+                rgba(245,237,228,0.50) 45%,
+                rgba(245,237,228,0.80) 68%,
+                rgba(245,237,228,0.97) 100%
               )
             `,
           }} />
@@ -261,7 +261,7 @@ export default function HomePage() {
           {/* Warm side vignette */}
           <div aria-hidden style={{
             position: "absolute", inset: 0, zIndex: 2,
-            background: "radial-gradient(ellipse 100% 80% at 50% 50%, transparent 40%, rgba(251,247,242,0.55) 100%)",
+            background: "radial-gradient(ellipse 100% 80% at 50% 50%, transparent 40%, rgba(245,237,228,0.55) 100%)",
           }} />
 
           {/* ── Content ── */}
@@ -282,16 +282,16 @@ export default function HomePage() {
               display: "flex", alignItems: "center", gap: 12,
               marginBottom: "1.75rem",
             }}>
-              <div style={{ width: 36, height: 1, background: "rgba(192,54,74,0.45)" }} />
+              <div style={{ width: 36, height: 1, background: "rgba(184,151,58,0.55)" }} />
               <span style={{
                 fontSize: "0.56rem", letterSpacing: "0.44em",
                 textTransform: "uppercase",
-                color: "#C0364A",
+                color: "#8A6C1C",
                 fontWeight: 700,
               }}>
                 {weddingConfig.celebrationTitle}
               </span>
-              <div style={{ width: 36, height: 1, background: "rgba(192,54,74,0.45)" }} />
+              <div style={{ width: 36, height: 1, background: "rgba(184,151,58,0.55)" }} />
             </div>
 
             {/* ── BRIDE name ── */}
@@ -301,7 +301,7 @@ export default function HomePage() {
               fontWeight: 700,
               lineHeight: 0.88,
               letterSpacing: "-0.035em",
-              color: "#1A0D0A",
+              color: "#6B1020",
               marginBottom: "0.06em",
             }}>
               {bf}
@@ -313,7 +313,7 @@ export default function HomePage() {
               fontSize: "clamp(1.5rem, 4vw, 3rem)",
               fontWeight: 300,
               fontStyle: "italic",
-              color: "#A82C3E",
+              color: "#7E1628",
               letterSpacing: "0.06em",
               lineHeight: 1.2,
               marginBottom: "0.04em",
@@ -328,7 +328,7 @@ export default function HomePage() {
               fontWeight: 700,
               lineHeight: 0.88,
               letterSpacing: "-0.035em",
-              color: "#1A0D0A",
+              color: "#6B1020",
               marginBottom: "1.5rem",
             }}>
               {gf}
@@ -337,7 +337,7 @@ export default function HomePage() {
             {/* ── Gold rule ── */}
             <div className="r5 line-anim" style={{
               width: "min(280px, 60%)", height: 1,
-              background: "linear-gradient(90deg, transparent, rgba(212,170,58,0.70), transparent)",
+              background: "linear-gradient(90deg, transparent, rgba(184,151,58,0.85), transparent)",
               marginBottom: "1.5rem",
             }} />
 
@@ -350,28 +350,28 @@ export default function HomePage() {
             }}>
               <span style={{
                 fontSize: "0.9rem", fontWeight: 700,
-                color: "#1A0D0A", letterSpacing: "0.04em",
+                color: "#3D1018", letterSpacing: "0.04em",
               }}>
                 {date}
               </span>
               <span className="dot-sep" style={{
                 width: 4, height: 4, borderRadius: "50%",
-                background: "#C0364A",
+                background: "#B8973A",
                 display: "inline-block", flexShrink: 0,
               }} />
               <span style={{
-                fontSize: "0.875rem", color: "#1A0D0A", fontWeight: 600,
+                fontSize: "0.875rem", color: "#5A1A28", fontWeight: 600,
                 letterSpacing: "0.03em",
               }}>
                 {weddingConfig.venueName}
               </span>
               <span className="dot-sep" style={{
                 width: 4, height: 4, borderRadius: "50%",
-                background: "rgba(192,54,74,0.55)",
+                background: "rgba(184,151,58,0.65)",
                 display: "inline-block", flexShrink: 0,
               }} />
               <span style={{
-                fontSize: "0.875rem", color: "#2A1218", fontWeight: 600,
+                fontSize: "0.875rem", color: "#5A1A28", fontWeight: 600,
                 letterSpacing: "0.03em",
               }}>
                 {weddingConfig.venueCity}
@@ -383,7 +383,7 @@ export default function HomePage() {
               fontFamily: "var(--font-display), Georgia, serif",
               fontStyle: "italic",
               fontSize: "clamp(0.9rem, 1.6vw, 1.05rem)",
-              color: "#1A0D0A",
+              color: "#4A1520",
               maxWidth: "34rem",
               lineHeight: 1.85,
               marginBottom: "2.75rem",
@@ -397,11 +397,11 @@ export default function HomePage() {
               display: "flex", alignItems: "center", gap: 10,
               marginBottom: "1rem",
             }}>
-              <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#C0364A", animation: "floatDot 2.5s ease-in-out infinite" }} />
-              <span style={{ fontSize: "0.54rem", letterSpacing: "0.38em", textTransform: "uppercase", color: "#1A0D0A", fontWeight: 700 }}>
+              <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#B8973A", animation: "floatDot 2.5s ease-in-out infinite" }} />
+              <span style={{ fontSize: "0.54rem", letterSpacing: "0.38em", textTransform: "uppercase", color: "#3D1018", fontWeight: 700 }}>
                 Private access
               </span>
-              <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#C0364A", animation: "floatDot 2.5s 1.25s ease-in-out infinite" }} />
+              <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#B8973A", animation: "floatDot 2.5s 1.25s ease-in-out infinite" }} />
             </div>
 
             {/* ── TWO BUTTONS ── */}
@@ -426,19 +426,19 @@ export default function HomePage() {
 
               {/* Family — desktop */}
               <a href="/login?hint=vault&redirect=/family" className="login-btn btn-family btn-desktop" style={{ flex: "1 1 220px" }}>
-                <div style={{ width: 44, height: 44, borderRadius: 12, flexShrink: 0, background: "rgba(192,54,74,0.10)", border: "1px solid rgba(192,54,74,0.20)", display: "grid", placeItems: "center", fontSize: "1.2rem" }}>🫂</div>
+                <div style={{ width: 44, height: 44, borderRadius: 12, flexShrink: 0, background: "rgba(126,22,40,0.08)", border: "1px solid rgba(126,22,40,0.22)", display: "grid", placeItems: "center", fontSize: "1.2rem" }}>🫂</div>
                 <div style={{ flex: 1, minWidth: 0, textAlign: "left" }}>
-                  <p style={{ fontSize: "0.52rem", letterSpacing: "0.28em", textTransform: "uppercase", color: "#5A2030", fontWeight: 700, marginBottom: "0.25rem" }}>Family vault</p>
-                  <p style={{ fontSize: "0.9rem", fontWeight: 700, color: "#1A0D0A", lineHeight: 1.2, whiteSpace: "nowrap" }}>Family of the couple</p>
+                  <p style={{ fontSize: "0.52rem", letterSpacing: "0.28em", textTransform: "uppercase", color: "#7E1628", fontWeight: 700, marginBottom: "0.25rem" }}>Family vault</p>
+                  <p style={{ fontSize: "0.9rem", fontWeight: 700, color: "#3D1018", lineHeight: 1.2, whiteSpace: "nowrap" }}>Family of the couple</p>
                 </div>
-                <svg style={{ flexShrink: 0, color: "#C0364A" }} width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                <svg style={{ flexShrink: 0, color: "#7E1628" }} width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
               </a>
 
               {/* Family — mobile pill */}
               <a href="/login?hint=vault&redirect=/family" className="btn-mobile-pill btn-mobile-family">
                 <span style={{ fontSize: "1rem" }}>🫂</span>
-                <span style={{ fontSize: "0.8rem", fontWeight: 700, color: "#1A0D0A" }}>Family login</span>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#C0364A" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                <span style={{ fontSize: "0.8rem", fontWeight: 700, color: "#3D1018" }}>Family login</span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#7E1628" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
               </a>
 
             </div>
@@ -447,7 +447,7 @@ export default function HomePage() {
             <p className="r10" style={{
               marginTop: "1.5rem",
               fontSize: "0.72rem",
-              color: "#2A1218",
+              color: "#4A1520",
               fontStyle: "italic",
               letterSpacing: "0.02em",
               maxWidth: "36rem",
@@ -464,7 +464,7 @@ export default function HomePage() {
         {/* ── BOTTOM RULE ── */}
         <div aria-hidden style={{
           position: "fixed", bottom: 0, left: 0, right: 0, height: 2, zIndex: 50,
-          background: "linear-gradient(90deg, transparent 0%, #C0364A 20%, #D4AA3A 50%, #C0364A 80%, transparent 100%)",
+          background: "linear-gradient(90deg, transparent 0%, #7E1628 20%, #B8973A 50%, #7E1628 80%, transparent 100%)",
         }} />
 
       </div>
