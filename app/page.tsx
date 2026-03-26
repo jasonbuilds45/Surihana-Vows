@@ -400,7 +400,7 @@ export default function HomePage() {
             fontFamily:"var(--df)",
             fontSize:"clamp(1.5rem,4.2vw,3rem)",
             fontWeight:300, fontStyle:"italic",
-            color:"var(--rose)",
+            color:"#C9960A",
             letterSpacing:".16em", lineHeight:1.1,
             display:"block",
             margin:".06em 0",
@@ -410,8 +410,8 @@ export default function HomePage() {
 
           {/* LIVINGSTON — warm gold-brown from platform --name-groom-light */}
           <span className="name c-nb" style={{
-            color:"#F2C8A0",
-            textShadow:"0 2px 32px rgba(0,0,0,.45), 0 1px 2px rgba(0,0,0,.28)",
+            color:"#BE2D45",
+            textShadow:"0 0 40px rgba(190,45,69,.65), 0 2px 24px rgba(0,0,0,.40), 0 1px 2px rgba(0,0,0,.25)",
           }}>
             {gf}
           </span>
