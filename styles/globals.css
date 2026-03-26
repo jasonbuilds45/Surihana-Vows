@@ -231,7 +231,7 @@ html {
 body {
   background: var(--bg);
   color: var(--ink);
-  font-family: 'Manrope', var(--font-body), -apple-system, system-ui, sans-serif;
+  font-family: var(--font-body), 'Manrope', -apple-system, system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
@@ -282,16 +282,16 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
    4. TYPOGRAPHY — 2026 optical sizing
    ========================================================================== */
 .font-display {
-  font-family: 'Cormorant Garamond', var(--font-display), Georgia, serif;
+  font-family: var(--font-display), 'Cormorant Garamond', Georgia, serif;
 }
 
 h1, h2, h3, h4, .display-copy {
-  font-family: 'Cormorant Garamond', var(--font-display), Georgia, serif;
+  font-family: var(--font-display), 'Cormorant Garamond', Georgia, serif;
 }
 
 /* Fluid display names */
 .display-name {
-  font-family: 'Cormorant Garamond', serif;
+  font-family: var(--font-display), 'Cormorant Garamond', serif;
   font-size: clamp(3.2rem, 10vw, 8rem);
   font-weight: 700;
   line-height: 0.90;
@@ -301,7 +301,7 @@ h1, h2, h3, h4, .display-copy {
 
 /* Eyebrow */
 .tag-label, .eyebrow, .section-label {
-  font-family: 'Manrope', sans-serif;
+  font-family: var(--font-body), 'Manrope', sans-serif;
   font-size: 0.60rem;
   font-weight: 700;
   letter-spacing: 0.25em;
@@ -340,7 +340,7 @@ h1, h2, h3, h4, .display-copy {
   border-radius: 999px;
   background: linear-gradient(135deg, var(--rose-lgt) 0%, var(--rose) 50%, var(--rose-hov) 100%);
   color: #FFFFFF;
-  font-family: 'Manrope', sans-serif;
+  font-family: var(--font-body), 'Manrope', sans-serif;
   font-size: 0.85rem;
   font-weight: 700;
   letter-spacing: 0.01em;
@@ -398,7 +398,7 @@ h1, h2, h3, h4, .display-copy {
   border-radius: 999px;
   background: rgba(255,255,255,0.50);
   color: var(--ink-2);
-  font-family: 'Manrope', sans-serif;
+  font-family: var(--font-body), 'Manrope', sans-serif;
   font-size: 0.85rem;
   font-weight: 600;
   border: 1px solid var(--bdr-md);
@@ -426,7 +426,7 @@ h1, h2, h3, h4, .display-copy {
   border-radius: 999px;
   background: rgba(255,255,255,0.08);
   color: rgba(255,255,255,0.88);
-  font-family: 'Manrope', sans-serif;
+  font-family: var(--font-body), 'Manrope', sans-serif;
   font-size: 0.85rem;
   font-weight: 600;
   border: 1px solid rgba(255,255,255,0.16);
@@ -537,7 +537,7 @@ h1, h2, h3, h4, .display-copy {
   border-radius: var(--r-sm);
   padding: 0.9375rem 1.25rem;
   color: var(--ink);
-  font-family: 'Manrope', sans-serif;
+  font-family: var(--font-body), 'Manrope', sans-serif;
   font-size: 0.9375rem;
   line-height: 1.5;
   outline: none;

@@ -1,5 +1,5 @@
 .font-display {
-  font-family: var(--font-display), serif;
+  font-family: var(--font-display), 'Cormorant Garamond', Georgia, serif;
 }
 
 h1,
@@ -7,7 +7,7 @@ h2,
 h3,
 h4,
 .display-copy {
-  font-family: var(--font-display), serif;
+  font-family: var(--font-display), 'Cormorant Garamond', Georgia, serif;
 }
 
 p,
@@ -17,5 +17,5 @@ button,
 input,
 textarea,
 select {
-  font-family: var(--font-body), sans-serif;
+  font-family: var(--font-body), 'Manrope', system-ui, sans-serif;
 }
