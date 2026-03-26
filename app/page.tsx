@@ -163,17 +163,7 @@ export default function HomePage() {
           box-shadow: 0 8px 28px rgba(110,20,35,0.12);
         }
 
-        /* ── Corner ornament ─────────────────────────────────────────────── */
-        .corner {
-          position: absolute;
-          width: 48px; height: 48px;
-          pointer-events: none;
-        }
-        .corner svg { width: 100%; height: 100%; }
-        .corner-tl { top: 28px; left: 28px; }
-        .corner-tr { top: 28px; right: 28px; transform: scaleX(-1); }
-        .corner-bl { bottom: 28px; left: 28px; transform: scaleY(-1); }
-        .corner-br { bottom: 28px; right: 28px; transform: scale(-1,-1); }
+
 
         /* ── Event cards ─────────────────────────────────────────────────── */
         .event-cards {
@@ -211,21 +201,22 @@ export default function HomePage() {
         /* ── Responsive ──────────────────────────────────────────────────── */
         @media (max-width: 600px) {
           .name-display {
-            font-size: clamp(3.8rem, 18vw, 6rem) !important;
+            font-size: clamp(3.4rem, 16vw, 5.5rem) !important;
             letter-spacing: -0.03em !important;
           }
-          .ampersand-glyph { font-size: clamp(1.4rem, 6vw, 2.5rem) !important; }
-          .corner { width: 32px !important; height: 32px !important; }
-          .corner-tl { top: 18px !important; left: 18px !important; }
-          .corner-tr { top: 18px !important; right: 18px !important; }
-          .corner-bl { bottom: 18px !important; left: 18px !important; }
-          .corner-br { bottom: 18px !important; right: 18px !important; }
-          .event-cards { grid-template-columns: 1fr !important; }
-          .event-card + .event-card { border-left: none !important; border-top: 1px solid var(--border) !important; }
+          .ampersand-glyph { font-size: clamp(1.3rem, 6vw, 2rem) !important; }
+          .event-cards {
+            grid-template-columns: 1fr 1fr !important;
+            max-width: 100% !important;
+          }
+          .event-card { padding: 10px 12px !important; }
+          .event-card p:first-child { font-size: 0.38rem !important; margin-bottom: 0.28rem !important; }
+          .event-card p:nth-child(2) { font-size: 0.76rem !important; }
+          .event-card p:last-child { font-size: 0.62rem !important; }
           .btn-row { flex-direction: column !important; align-items: stretch !important; }
           .access-btn { justify-content: center !important; }
-          .hero-pad { padding: 5.5rem 1.5rem 3rem !important; }
-          .quote-block { font-size: 0.9rem !important; padding: 1rem 1.25rem !important; }
+          .hero-pad { padding: 5.5rem 1.5rem 2.5rem !important; }
+          .quote-block { font-size: 0.85rem !important; padding: 0.85rem 1rem !important; margin: 1.25rem 0 !important; }
           .eyebrow-text { letter-spacing: 0.28em !important; }
         }
         @media (min-width: 601px) and (max-width: 960px) {
@@ -298,14 +289,7 @@ export default function HomePage() {
           }} />
         </div>
 
-        {/* Corner ornaments — thin gold lines forming a bracket at each corner */}
-        {["tl","tr","bl","br"].map(pos => (
-          <div key={pos} className={`corner corner-${pos} rise-1`} aria-hidden>
-            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M4 44 L4 4 L44 4" stroke="#A8882A" strokeWidth="1.2" strokeLinecap="round"/>
-            </svg>
-          </div>
-        ))}
+
 
         {/* ── Main content ── */}
         <div className="hero-pad" style={{
