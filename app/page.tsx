@@ -390,7 +390,7 @@ export default function HomePage() {
           {/* Over photo we use the dark name token — white-adjacent      */}
           <span className="name c-na" style={{
             color:"#FFFFFF",
-            textShadow:"0 2px 32px rgba(0,0,0,.45), 0 1px 2px rgba(0,0,0,.28)",
+            textShadow:"0 0 48px rgba(190,45,69,.38), 0 0 20px rgba(190,45,69,.22), 0 2px 12px rgba(0,0,0,.35)",
           }}>
             {bf}
           </span>
@@ -410,8 +410,8 @@ export default function HomePage() {
 
           {/* LIVINGSTON — warm gold-brown from platform --name-groom-light */}
           <span className="name c-nb" style={{
-            color:"#BE2D45",
-            textShadow:"0 0 40px rgba(190,45,69,.65), 0 2px 24px rgba(0,0,0,.40), 0 1px 2px rgba(0,0,0,.25)",
+            color:"#1A0D0B",
+            textShadow:"0 0 48px rgba(201,150,10,.42), 0 0 20px rgba(201,150,10,.24), 0 2px 12px rgba(0,0,0,.30)",
           }}>
             {gf}
           </span>
