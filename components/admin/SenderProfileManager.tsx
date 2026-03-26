@@ -135,7 +135,7 @@ function ProfileCard({
             {profile.display_title}
           </p>
           <p style={{ fontFamily: BF, fontSize: ".78rem", color: INK3, marginTop: ".2rem", fontStyle: "italic" }}>
-            "{profile.sub_text}"
+            &ldquo;{profile.sub_text}&rdquo;
           </p>
         </div>
         <div style={{ display: "flex", gap: ".375rem", flexShrink: 0 }}>
@@ -299,8 +299,8 @@ function ProfileForm({
         <div>
           {label("Side")}
           <select value={side} onChange={e => setSide(e.target.value as typeof side)} style={inp()}>
-            <option value="bride">Bride's side</option>
-            <option value="groom">Groom's side</option>
+            <option value="bride">Bride&apos;s side</option>
+            <option value="groom">Groom&apos;s side</option>
             <option value="both">Both sides</option>
           </select>
         </div>
@@ -412,7 +412,7 @@ export function SenderProfileManager({ weddingId }: SenderProfileManagerProps) {
             Who is sending the invitation?
           </h2>
           <p style={{ fontFamily: BF, fontSize: ".84rem", color: INK3, marginTop: ".35rem", maxWidth: 480, lineHeight: 1.7 }}>
-            Create a profile for each sender — bride's parents, groom's parents, siblings.
+            Create a profile for each sender &mdash; bride&apos;s parents, groom&apos;s parents, siblings.
             Each profile generates a generic link and a personalised link template.
           </p>
         </div>
@@ -451,7 +451,7 @@ export function SenderProfileManager({ weddingId }: SenderProfileManagerProps) {
             No sender profiles yet.
           </p>
           <p style={{ fontFamily: BF, fontSize: ".84rem", color: INK3, lineHeight: 1.7 }}>
-            Create a profile for the bride's parents, groom's parents, or any sibling
+            Create a profile for the bride&apos;s parents, groom&apos;s parents, or any sibling
             who will be sending invites under their own name.
           </p>
         </div>
