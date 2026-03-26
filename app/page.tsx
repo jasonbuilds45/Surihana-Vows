@@ -126,17 +126,15 @@ export default function HomePage() {
         }
 
         /* ── NAMES ZONE — photo behind names only ── */
-        /* The photo is scoped entirely to this zone.                        */
-        /* It does NOT bleed to the rest of the page.                        */
         .names-zone {
           position: relative;
           width: 100%;
           overflow: hidden;
-          /* Height = just enough to frame the two names comfortably */
+          /* Explicit min-height so ::before pseudo-element has a real box */
+          min-height: clamp(320px, 72vh, 680px);
           padding: clamp(5rem,10vh,7.5rem) 1.5rem clamp(2.5rem,5vh,4rem);
           display:flex; flex-direction:column; align-items:center;
           text-align:center;
-          /* Top margin clears the fixed ticker */
           margin-top: clamp(2rem,4.5vh,3.2rem);
         }
 
@@ -145,7 +143,7 @@ export default function HomePage() {
           content: '';
           position: absolute;
           inset: 0;
-          background-image: url('https://images.unsplash.com/photo-1548625361-58a9d386b2ac?auto=format&fit=crop&w=1800&q=80');
+          background-image: url('https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=1800&q=80');
           background-size: cover;
           background-position: center 35%;
           /* ── Overlay values ──────────────────────────────────────────────
@@ -155,7 +153,7 @@ export default function HomePage() {
              sepia(0.15)     — pushes remaining colour into the --bg family 
              Net result: photo reads as warm parchment depth, not a photo  
           ── */
-          filter: saturate(0.40) brightness(0.65) sepia(0.18);
+          filter: saturate(0.50) brightness(0.60) sepia(0.14);
           z-index: 0;
           animation: bgZoom 28s ease-in-out infinite alternate;
         }
@@ -306,7 +304,8 @@ export default function HomePage() {
         /* ── MOBILE ── */
         @media (max-width:600px) {
           .names-zone {
-            padding: 4rem 1.25rem 2rem !important;
+            min-height: 58vw !important;
+            padding: 3.5rem 1.25rem 2rem !important;
             margin-top: 1.8rem !important;
           }
           .name { font-size:13vw !important; }
