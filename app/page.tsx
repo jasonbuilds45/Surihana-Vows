@@ -301,7 +301,7 @@ export default function HomePage() {
               fontWeight: 700,
               lineHeight: 0.88,
               letterSpacing: "-0.035em",
-              color: "#B8973A",
+              color: "#FFFFFF",
               marginBottom: "0.06em",
             }}>
               {bf}
@@ -355,9 +355,10 @@ export default function HomePage() {
                 {date}
               </span>
               <span className="dot-sep" style={{
-                width: 4, height: 4, borderRadius: "50%",
+                width: 5, height: 5, borderRadius: "50%",
                 background: "#B8973A",
                 display: "inline-block", flexShrink: 0,
+                boxShadow: "0 0 6px rgba(184,151,58,0.55)",
               }} />
               <span style={{
                 fontSize: "0.875rem", color: "#5A1A28", fontWeight: 600,
@@ -366,9 +367,10 @@ export default function HomePage() {
                 {weddingConfig.venueName}
               </span>
               <span className="dot-sep" style={{
-                width: 4, height: 4, borderRadius: "50%",
-                background: "rgba(184,151,58,0.65)",
+                width: 5, height: 5, borderRadius: "50%",
+                background: "#B8973A",
                 display: "inline-block", flexShrink: 0,
+                boxShadow: "0 0 6px rgba(184,151,58,0.55)",
               }} />
               <span style={{
                 fontSize: "0.875rem", color: "#5A1A28", fontWeight: 600,
@@ -383,7 +385,7 @@ export default function HomePage() {
               fontFamily: "var(--font-display), Georgia, serif",
               fontStyle: "italic",
               fontSize: "clamp(0.9rem, 1.6vw, 1.05rem)",
-              color: "#4A1520",
+              color: "#1A0D0A",
               maxWidth: "34rem",
               lineHeight: 1.85,
               marginBottom: "2.75rem",
