@@ -145,7 +145,7 @@ export default function HomePage() {
           content: '';
           position: absolute;
           inset: 0;
-          background-image: url('https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?auto=format&fit=crop&w=1800&q=80');
+          background-image: url('https://images.unsplash.com/photo-1548625361-58a9d386b2ac?auto=format&fit=crop&w=1800&q=80');
           background-size: cover;
           background-position: center 35%;
           /* ── Overlay values ──────────────────────────────────────────────
@@ -155,7 +155,7 @@ export default function HomePage() {
              sepia(0.15)     — pushes remaining colour into the --bg family 
              Net result: photo reads as warm parchment depth, not a photo  
           ── */
-          filter: saturate(0.42) brightness(0.72) sepia(0.15);
+          filter: saturate(0.40) brightness(0.65) sepia(0.18);
           z-index: 0;
           animation: bgZoom 28s ease-in-out infinite alternate;
         }
@@ -188,9 +188,9 @@ export default function HomePage() {
         .name {
           font-family: var(--df);
           font-size: clamp(4.2rem,12.5vw,10.5rem);
-          font-weight: 300;
+          font-weight: 600;
           line-height: .88;
-          letter-spacing: -.025em;
+          letter-spacing: -.02em;
           display: block;
           text-align: center;
         }
@@ -390,9 +390,8 @@ export default function HomePage() {
           {/* MARION — platform name-bride-light on light bg = deep ink */}
           {/* Over photo we use the dark name token — white-adjacent      */}
           <span className="name c-na" style={{
-            color:"var(--ink)",
-            /* Very subtle warm shadow — lifts name off photo depth */
-            textShadow:"0 2px 24px rgba(253,250,247,.55), 0 1px 0 rgba(253,250,247,.30)",
+            color:"#FFFFFF",
+            textShadow:"0 2px 32px rgba(0,0,0,.45), 0 1px 2px rgba(0,0,0,.28)",
           }}>
             {bf}
           </span>
@@ -412,8 +411,8 @@ export default function HomePage() {
 
           {/* LIVINGSTON — warm gold-brown from platform --name-groom-light */}
           <span className="name c-nb" style={{
-            color:"var(--ink-2)",
-            textShadow:"0 2px 24px rgba(253,250,247,.50), 0 1px 0 rgba(253,250,247,.25)",
+            color:"#F2C8A0",
+            textShadow:"0 2px 32px rgba(0,0,0,.45), 0 1px 2px rgba(0,0,0,.28)",
           }}>
             {gf}
           </span>
