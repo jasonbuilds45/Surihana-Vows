@@ -22,234 +22,203 @@ export default function HomePage() {
     <>
       <style>{`
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        html, body { height: 100%; overflow-x: hidden; background: #F7F2EA; }
+        html, body { height: 100%; overflow-x: hidden; }
 
-        /* ── Palette ─────────────────────────────────────────────────────── */
+        /* ── Palette ── */
         :root {
-          --ivory:  #F7F2EA;
-          --cream:  #EDE5D8;
-          --maroon: #6E1423;
-          --gold:   #A8882A;
-          --ink:    #1C1008;
-          --stone:  #5C4A3A;
-          --border: rgba(168,136,42,0.22);
-          --df: var(--font-display), 'Cormorant Garamond', Georgia, serif;
-          --bf: var(--font-body), 'Manrope', system-ui, sans-serif;
+          --ivory:   #F5EFE6;
+          --parch:   #EDE3D4;
+          --maroon:  #6B1221;
+          --crimson: #8B1A2E;
+          --gold:    #A07828;
+          --gold-lt: #C9A84C;
+          --ink:     #180C0A;
+          --stone:   #5A4030;
+          --mist:    rgba(245,239,230,0.96);
+          --border:  rgba(160,120,40,0.18);
+          --df: var(--font-display),'Cormorant Garamond',Georgia,serif;
+          --bf: var(--font-body),'Manrope',system-ui,sans-serif;
         }
 
-        /* ── Keyframes ───────────────────────────────────────────────────── */
-        @keyframes slowZoom {
-          from { transform: scale(1.00); }
-          to   { transform: scale(1.06); }
+        /* ── Keyframes ── */
+        @keyframes bgPan {
+          0%   { transform: scale(1.06) translate(0,0); }
+          100% { transform: scale(1.06) translate(-1%,-1.5%); }
         }
-        @keyframes tickerMove {
+        @keyframes ticker {
           from { transform: translateX(0); }
           to   { transform: translateX(-50%); }
         }
-        @keyframes nameReveal {
-          from { opacity: 0; transform: translateY(36px); }
-          to   { opacity: 1; transform: translateY(0); }
+        @keyframes rise {
+          from { opacity:0; transform:translateY(30px); }
+          to   { opacity:1; transform:translateY(0); }
         }
-        @keyframes riseIn {
-          from { opacity: 0; transform: translateY(24px); }
-          to   { opacity: 1; transform: translateY(0); }
+        @keyframes nameIn {
+          from { opacity:0; transform:translateY(48px) scaleY(0.96); }
+          to   { opacity:1; transform:translateY(0) scaleY(1); }
+        }
+        @keyframes ruleIn {
+          from { opacity:0; transform:scaleX(0); }
+          to   { opacity:1; transform:scaleX(1); }
         }
         @keyframes fadeIn {
-          from { opacity: 0; }
-          to   { opacity: 1; }
-        }
-        @keyframes ruleExpand {
-          from { transform: scaleX(0); opacity: 0; }
-          to   { transform: scaleX(1); opacity: 1; }
+          from { opacity:0; } to { opacity:1; }
         }
 
-        /* ── Reveals ─────────────────────────────────────────────────────── */
-        .fade     { animation: fadeIn    1.2s 0.00s ease both; }
-        .rise-0   { animation: riseIn   0.9s 0.10s cubic-bezier(.16,1,.3,1) both; }
-        .name-a   { animation: nameReveal 1.1s 0.28s cubic-bezier(.16,1,.3,1) both; }
-        .name-amp { animation: nameReveal 0.8s 0.50s cubic-bezier(.16,1,.3,1) both; }
-        .name-b   { animation: nameReveal 1.1s 0.44s cubic-bezier(.16,1,.3,1) both; }
-        .rise-2   { animation: riseIn   0.9s 0.60s cubic-bezier(.16,1,.3,1) both; }
-        .rise-3   { animation: riseIn   0.9s 0.74s cubic-bezier(.16,1,.3,1) both; }
-        .rise-4   { animation: riseIn   0.9s 0.88s cubic-bezier(.16,1,.3,1) both; }
-        .rise-5   { animation: riseIn   0.9s 1.02s cubic-bezier(.16,1,.3,1) both; }
-        .rise-6   { animation: riseIn   0.9s 1.16s cubic-bezier(.16,1,.3,1) both; }
-        .rule-anim {
-          transform-origin: center;
-          animation: ruleExpand 1.0s 0.58s ease both;
-        }
+        /* ── Stagger ── */
+        .c-fade { animation: fadeIn .8s ease both; }
+        .c-r0  { animation: rise  .9s .10s cubic-bezier(.16,1,.3,1) both; }
+        .c-na  { animation: nameIn 1.1s .22s cubic-bezier(.16,1,.3,1) both; }
+        .c-amp { animation: rise   .7s .42s cubic-bezier(.16,1,.3,1) both; }
+        .c-nb  { animation: nameIn 1.1s .36s cubic-bezier(.16,1,.3,1) both; }
+        .c-r1  { animation: rise  .9s .58s cubic-bezier(.16,1,.3,1) both; }
+        .c-r2  { animation: rise  .9s .70s cubic-bezier(.16,1,.3,1) both; }
+        .c-r3  { animation: rise  .9s .84s cubic-bezier(.16,1,.3,1) both; }
+        .c-r4  { animation: rise  .9s .98s cubic-bezier(.16,1,.3,1) both; }
+        .c-r5  { animation: rise  .9s 1.12s cubic-bezier(.16,1,.3,1) both; }
+        .c-r6  { animation: rise  .9s 1.26s cubic-bezier(.16,1,.3,1) both; }
+        .c-rule { transform-origin:center; animation: ruleIn 1.0s .55s ease both; }
 
-        /* ── Ticker ──────────────────────────────────────────────────────── */
-        .ticker-shell {
-          position: fixed; top: 0; left: 0; right: 0; z-index: 60;
+        /* ── Ticker ── */
+        .tk-shell {
+          position:fixed; top:0; left:0; right:0; z-index:80;
         }
-        .ticker-line {
-          height: 1px;
+        .tk-stripe {
+          height:2px;
           background: linear-gradient(90deg,
-            transparent, var(--maroon) 25%, var(--gold) 50%, var(--maroon) 75%, transparent);
+            transparent 0%, var(--maroon) 20%,
+            var(--gold-lt) 50%, var(--maroon) 80%, transparent 100%);
         }
-        .ticker-bar {
-          overflow: hidden;
-          padding: 6px 0;
-          background: rgba(247,242,234,0.97);
+        .tk-bar {
+          overflow:hidden; padding:5px 0;
+          background: rgba(245,239,230,0.97);
           backdrop-filter: blur(20px);
           -webkit-backdrop-filter: blur(20px);
           border-bottom: 1px solid var(--border);
         }
-        .ticker-track {
-          display: flex; gap: 3rem;
-          white-space: nowrap; width: max-content;
-          animation: tickerMove 68s linear infinite;
+        .tk-track {
+          display:flex; gap:3.5rem;
+          white-space:nowrap; width:max-content;
+          animation: ticker 72s linear infinite;
         }
-        .ticker-item {
+        .tk-item {
           font-family: var(--bf);
-          font-size: 0.47rem;
-          letter-spacing: 0.44em;
-          text-transform: uppercase;
+          font-size:.45rem; letter-spacing:.44em;
+          text-transform:uppercase; font-weight:600;
           color: var(--stone);
-          font-weight: 600;
         }
-        .t-gold { color: var(--gold); }
+        .tk-gem { color: var(--gold); margin:0 .05em; }
 
-        /* ── Photo band ──────────────────────────────────────────────────── */
-        .hero-bg { animation: slowZoom 26s ease-in-out infinite alternate; }
-
-        /* ── Name sizes — the hero centrepiece ───────────────────────────── */
-        /* Desktop: up to 11rem. Tablet: ~8rem. Mobile: 3.6rem floor.        */
-        .name-hero {
+        /* ── Name ── */
+        .name {
           font-family: var(--df);
-          font-size: clamp(3.6rem, 11vw, 11rem);
-          font-weight: 600;
-          line-height: 0.90;
-          letter-spacing: -0.02em;
+          font-size: clamp(4.2rem,12.5vw,10.5rem);
+          font-weight: 300;
+          line-height: .88;
+          letter-spacing: -.02em;
           display: block;
           text-align: center;
         }
 
-        /* ── Event grid ──────────────────────────────────────────────────── */
-        .event-grid {
-          display: grid;
+        /* ── Event strip ── */
+        .ev-strip {
+          display:grid;
           grid-template-columns: 1fr 1px 1fr;
-          width: 100%;
-          max-width: 460px;
+          width:100%;
+          max-width:420px;
+          border: 1px solid var(--border);
+          border-radius: 2px;
         }
-        .event-divider { background: var(--border); align-self: stretch; }
-        .event-cell    { padding: 18px 20px; text-align: center; }
+        .ev-col { padding:16px 18px; text-align:center; }
+        .ev-sep { background: var(--border); }
 
-        /* ── Buttons ─────────────────────────────────────────────────────── */
+        /* ── Buttons ── */
+        .btn-row { display:flex; gap:.75rem; width:100%; }
         .btn {
-          display: inline-flex; align-items: center; gap: 10px;
-          padding: 14px 22px; border-radius: 3px;
-          text-decoration: none; cursor: pointer;
-          font-family: var(--bf);
-          transition: transform 0.2s cubic-bezier(.16,1,.3,1), box-shadow 0.2s ease;
+          flex:1;
+          display:inline-flex; align-items:center; justify-content:space-between;
+          gap:10px; padding:14px 20px; border-radius:2px;
+          text-decoration:none; cursor:pointer;
+          font-family:var(--bf);
+          transition: transform .2s cubic-bezier(.16,1,.3,1), box-shadow .2s ease;
         }
-        .btn-solid {
+        .btn-p {
           background: var(--maroon);
-          border: 1px solid rgba(110,20,35,0.35);
-          box-shadow: 0 4px 18px rgba(110,20,35,0.24);
+          border: 1px solid rgba(107,18,33,.30);
+          box-shadow: 0 4px 22px rgba(107,18,33,.26),
+                      inset 0 1px 0 rgba(255,255,255,.08);
         }
-        .btn-solid:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 10px 32px rgba(110,20,35,0.34);
-        }
-        .btn-outline {
+        .btn-p:hover { transform:translateY(-2px); box-shadow:0 10px 32px rgba(107,18,33,.36); }
+        .btn-s {
           background: transparent;
-          border: 1px solid rgba(110,20,35,0.55);
+          border: 1px solid rgba(107,18,33,.45);
         }
-        .btn-outline:hover {
-          transform: translateY(-2px);
-          background: rgba(110,20,35,0.04);
-        }
+        .btn-s:hover { transform:translateY(-2px); background:rgba(107,18,33,.04); }
 
-        /* ── Bottom rule ─────────────────────────────────────────────────── */
+        /* ── Foot rule ── */
         .foot-rule {
-          position: fixed; bottom: 0; left: 0; right: 0;
-          height: 1px; z-index: 60;
+          position:fixed; bottom:0; left:0; right:0; height:2px; z-index:80;
           background: linear-gradient(90deg,
-            transparent, var(--maroon) 25%, var(--gold) 50%, var(--maroon) 75%, transparent);
+            transparent 0%, var(--maroon) 20%,
+            var(--gold-lt) 50%, var(--maroon) 80%, transparent 100%);
         }
 
-        /* ────────────────────────────────────────────────────────────────────
-           MOBILE — ≤600px
-           Everything explicit. No clamp() that collapses at small sizes.
-        ──────────────────────────────────────────────────────────────────── */
-        @media (max-width: 600px) {
-
-          /* Names: bold and commanding on a phone */
-          .name-hero { font-size: 13vw !important; letter-spacing: -0.015em !important; }
-
-          /* Photo band: shorter on mobile so content is visible below fold */
-          .photo-band { height: 60vw !important; min-height: 220px !important; max-height: 320px !important; }
-
-          /* Eyebrow above names */
-          .hero-eyebrow { margin-bottom: 0.75rem !important; }
-          .hero-eyebrow span { font-size: 0.42rem !important; letter-spacing: 0.32em !important; }
-
-          /* Ampersand */
-          .name-amp-elem { font-size: 8vw !important; }
-
-          /* Content shell */
-          .content-shell { padding: 0 1.25rem 3.5rem !important; }
-
-          /* Gold rule */
-          .top-rule { margin-bottom: 1.25rem !important; }
-
-          /* Event cards — stay 2-col but smaller */
-          .event-cell { padding: 12px 10px !important; }
-          .ev-label   { font-size: 0.38rem !important; letter-spacing: 0.28em !important; margin-bottom: 0.3rem !important; }
-          .ev-venue   { font-size: 0.82rem !important; line-height: 1.25 !important; margin-bottom: 0.2rem !important; }
-          .ev-time    { font-size: 0.66rem !important; }
-
-          /* Rule between cards and quote */
-          .cards-rule { margin-bottom: 1.25rem !important; }
-
-          /* Quote */
-          .quote-text {
-            font-size: 0.88rem !important;
-            line-height: 1.80 !important;
-            padding: 0.9rem 1rem !important;
-            margin-bottom: 1.5rem !important;
+        /* ─────────────────────────────────────────────
+           MOBILE ≤ 600px
+        ───────────────────────────────────────────── */
+        @media (max-width:600px) {
+          .photo-zone {
+            height: 56vw !important;
+            min-height: 210px !important;
+            max-height: 300px !important;
           }
+          .name { font-size: 12.5vw !important; }
+          .amp  { font-size: 7vw   !important; }
+          .c-r0 .eyebrow-lbl { font-size:.38rem !important; letter-spacing:.28em !important; }
 
-          /* Private access divider */
-          .access-label span { font-size: 0.40rem !important; letter-spacing: 0.30em !important; }
-          .access-label { margin-bottom: 0.9rem !important; }
+          .shell { padding: 0 1.25rem 3.5rem !important; }
 
-          /* Buttons — compact pills on mobile, side by side */
-          .btn-row   { flex-direction: row !important; gap: 0.5rem !important; }
-          .btn       { padding: 10px 14px !important; flex: 1 !important; min-width: 0 !important; }
-          .btn-label-top   { display: none !important; }
-          .btn-label-name  { font-size: 0.78rem !important; white-space: nowrap !important; overflow: hidden !important; text-overflow: ellipsis !important; }
-          .btn svg { display: none !important; }
+          .ev-col { padding: 11px 10px !important; }
+          .ev-eyebrow { font-size:.36rem !important; letter-spacing:.26em !important; margin-bottom:.28rem !important; }
+          .ev-name    { font-size:.82rem !important; }
+          .ev-time    { font-size:.64rem !important; }
 
-          /* Footnote */
-          .footnote { font-size: 0.70rem !important; margin-top: 1.25rem !important; }
+          .quote { font-size:.86rem !important; padding:.85rem 1rem !important; }
+
+          .div-label { font-size:.38rem !important; letter-spacing:.28em !important; }
+
+          /* Buttons: compact side-by-side pills, no two-line label */
+          .btn { padding: 11px 14px !important; }
+          .btn-top { display:none !important; }
+          .btn-name { font-size:.80rem !important; }
+          .btn-arr  { display:none !important; }
+
+          .fnote { font-size:.68rem !important; }
         }
 
-        /* ── Tablet ───────────────────────────────────────────────────────── */
-        @media (min-width: 601px) and (max-width: 960px) {
-          .name-hero  { font-size: clamp(4rem, 10vw, 7.5rem) !important; }
-          .photo-band { height: 55vh !important; }
-          .content-shell { padding: 0 2rem 4rem !important; }
+        /* TABLET */
+        @media (min-width:601px) and (max-width:960px) {
+          .photo-zone { height:58vh !important; }
+          .name { font-size: clamp(4rem,10.5vw,7rem) !important; }
+          .shell { padding: 0 2rem 4rem !important; }
         }
       `}</style>
 
-      {/* ── TICKER ───────────────────────────────────────────────────────── */}
-      <div className="ticker-shell fade">
-        <div className="ticker-line" />
-        <div className="ticker-bar">
-          <div className="ticker-track">
+      {/* ═══ TICKER ═══════════════════════════════════════════════════════ */}
+      <div className="tk-shell c-fade">
+        <div className="tk-stripe" />
+        <div className="tk-bar">
+          <div className="tk-track">
             {Array(12).fill(null).map((_, i) => (
-              <span key={i} className="ticker-item">
+              <span key={i} className="tk-item">
                 {weddingConfig.celebrationTitle}
-                <span className="t-gold"> ✦ </span>
+                <span className="tk-gem"> ✦ </span>
                 {date}
-                <span className="t-gold"> ✦ </span>
+                <span className="tk-gem"> ✦ </span>
                 {weddingConfig.venueName}
-                <span className="t-gold"> ✦ </span>
+                <span className="tk-gem"> ✦ </span>
                 {weddingConfig.venueCity}
-                <span className="t-gold"> ✦ </span>
+                <span className="tk-gem"> ✦ </span>
                 {bf} &amp; {gf}
               </span>
             ))}
@@ -257,109 +226,98 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* ══════════════════════════════════════════════════════════════════
-          PAGE
-      ══════════════════════════════════════════════════════════════════ */}
+      {/* ═══ PAGE ═════════════════════════════════════════════════════════ */}
       <main style={{
-        minHeight: "100dvh",
-        background: "var(--ivory)",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        fontFamily: "var(--bf)",
-        overflowX: "hidden",
+        minHeight:"100dvh",
+        background:"var(--ivory)",
+        display:"flex", flexDirection:"column", alignItems:"center",
+        fontFamily:"var(--bf)",
+        overflowX:"hidden",
       }}>
 
-        {/* ── PHOTO BAND with names ─────────────────────────────────────── */}
-        <div className="photo-band" style={{
-          position: "relative",
-          width: "100%",
-          height: "clamp(300px, 78vh, 700px)",
-          overflow: "hidden",
-          marginTop: "clamp(2rem, 4.5vh, 3.5rem)",
+        {/* ─── HERO PHOTO ZONE ────────────────────────────────────────── */}
+        {/* Full-width, edge-to-edge. Photo is properly dark.             */}
+        {/* Names sit centered over it — they are the headline.           */}
+        <div className="photo-zone" style={{
+          position:"relative",
+          width:"100%",
+          height:"clamp(280px,75vh,680px)",
+          overflow:"hidden",
+          /* Top margin just clears the ticker bar */
+          marginTop:"clamp(1.8rem,4vh,3rem)",
         }}>
 
-          {/* Photo — more visible now: brightness 0.88, saturate 0.50 */}
-          {/* Enough warmth and texture that it feels atmospheric,        */}
-          {/* not so washed it looks blank.                               */}
-          <div className="hero-bg" style={{
-            position: "absolute", inset: "-6%",
-            backgroundImage: `url(${heroPhoto})`,
-            backgroundSize: "cover",
-            backgroundPosition: "center 28%",
-            filter: "saturate(0.55) brightness(0.68) sepia(0.08)",
+          {/* ── Photo ── dark, desaturated, sepia-warm ── */}
+          <div style={{
+            position:"absolute", inset:"-5%",
+            backgroundImage:`url(${heroPhoto})`,
+            backgroundSize:"cover",
+            backgroundPosition:"center 30%",
+            filter:"saturate(.45) brightness(.62) sepia(.12)",
+            animation:"bgPan 30s ease-in-out infinite alternate",
           }} />
 
-          {/* Ivory overlay — only top 18% and bottom 22% fade to page bg  */}
-          {/* Centre is open so the photo is clearly visible               */}
+          {/* ── Gradient — top & bottom ONLY fade to ivory ── */}
+          {/* Centre stays open so photo breathes clearly     */}
           <div style={{
-            position: "absolute", inset: 0,
-            background: `linear-gradient(to bottom,
+            position:"absolute", inset:0,
+            background:`linear-gradient(to bottom,
               var(--ivory) 0%,
-              rgba(247,242,234,0.10) 18%,
-              rgba(247,242,234,0.10) 75%,
-              var(--ivory) 100%
-            )`,
+              rgba(245,239,230,.08) 16%,
+              rgba(245,239,230,.08) 76%,
+              var(--ivory) 100%)`,
           }} />
 
-
-
-          {/* ── Names centred over photo ─────────────────────────────── */}
+          {/* ── Names ────────────────────────────────────── */}
           <div style={{
-            position: "absolute", inset: 0,
-            display: "flex", flexDirection: "column",
-            alignItems: "center", justifyContent: "center",
-            textAlign: "center",
-            padding: "0 1.5rem",
+            position:"absolute", inset:0,
+            display:"flex", flexDirection:"column",
+            alignItems:"center", justifyContent:"center",
+            textAlign:"center", padding:"0 1.5rem",
           }}>
 
-            {/* Eyebrow label */}
-            <div className="rise-0 hero-eyebrow" style={{
-              display: "flex", alignItems: "center", gap: 12,
-              marginBottom: "clamp(1rem, 2.5vh, 1.75rem)",
+            {/* Occasion eyebrow */}
+            <div className="c-r0" style={{
+              display:"flex", alignItems:"center", gap:12,
+              marginBottom:"clamp(.9rem,2vh,1.6rem)",
             }}>
-              <div style={{ width: 26, height: 1, background: "var(--gold)" }} />
-              <span style={{
-                fontFamily: "var(--bf)",
-                fontSize: "0.47rem",
-                letterSpacing: "0.48em",
-                textTransform: "uppercase",
-                color: "var(--gold)",
-                fontWeight: 700,
+              <div style={{ width:24, height:1, background:"var(--gold-lt)" }} />
+              <span className="eyebrow-lbl" style={{
+                fontFamily:"var(--bf)",
+                fontSize:".46rem", letterSpacing:".48em",
+                textTransform:"uppercase", color:"var(--gold-lt)", fontWeight:700,
               }}>
                 {weddingConfig.celebrationTitle}
               </span>
-              <div style={{ width: 26, height: 1, background: "var(--gold)" }} />
+              <div style={{ width:24, height:1, background:"var(--gold-lt)" }} />
             </div>
 
-            {/* MARION */}
-            <span className="name-hero name-a" style={{
-              color: "#FFFFFF",
-              textShadow: "0 2px 24px rgba(0,0,0,0.35), 0 1px 4px rgba(0,0,0,0.20)",
+            {/* MARION — white, large, commanding */}
+            <span className="name c-na" style={{
+              color:"#FFFFFF",
+              textShadow:"0 1px 0 rgba(0,0,0,.18), 0 4px 28px rgba(0,0,0,.40)",
             }}>
               {bf}
             </span>
 
-            {/* & */}
-            <span className="name-amp name-amp-elem" style={{
-              fontFamily: "var(--df)",
-              fontSize: "clamp(1.6rem, 4.5vw, 3.2rem)",
-              fontWeight: 300,
-              fontStyle: "italic",
-              color: "var(--maroon)",
-              letterSpacing: "0.14em",
-              lineHeight: 1.1,
-              display: "block",
-              marginTop: "0.05em",
-              marginBottom: "0.05em",
+            {/* & — italic crimson, smaller */}
+            <span className="amp c-amp" style={{
+              fontFamily:"var(--df)",
+              fontSize:"clamp(1.5rem,4.2vw,3rem)",
+              fontWeight:300, fontStyle:"italic",
+              color:"var(--gold-lt)",
+              letterSpacing:".14em", lineHeight:1.1,
+              display:"block",
+              margin:".06em 0",
             }}>
               &amp;
             </span>
 
-            {/* LIVINGSTON */}
-            <span className="name-hero name-b" style={{
-              color: "#F2C4AF",
-              textShadow: "0 2px 24px rgba(0,0,0,0.35), 0 1px 4px rgba(0,0,0,0.18)",
+            {/* LIVINGSTON — warm parchment, slightly lighter so it reads */}
+            {/* distinctly from Marion but equally present               */}
+            <span className="name c-nb" style={{
+              color:"#EDD9BF",
+              textShadow:"0 1px 0 rgba(0,0,0,.18), 0 4px 28px rgba(0,0,0,.40)",
             }}>
               {gf}
             </span>
@@ -367,215 +325,153 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* ── CONTENT BELOW PHOTO ──────────────────────────────────────── */}
-        <div className="content-shell" style={{
-          width: "100%",
-          maxWidth: "560px",
-          padding: "0 2.25rem 5rem",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
+        {/* ─── CONTENT SHELL ──────────────────────────────────────────── */}
+        <div className="shell" style={{
+          width:"100%", maxWidth:"540px",
+          padding:"0 2.25rem 5rem",
+          display:"flex", flexDirection:"column", alignItems:"center",
         }}>
 
-          {/* Hairline gold rule */}
-          <div className="rule-anim top-rule" style={{
-            width: "min(180px, 50%)", height: 1,
-            background: "linear-gradient(90deg, transparent, var(--gold), transparent)",
-            marginBottom: "clamp(1.5rem, 3vh, 2rem)",
+          {/* Gold hairline rule — grows in from centre */}
+          <div className="c-rule" style={{
+            width:"min(160px,48%)", height:1,
+            background:"linear-gradient(90deg,transparent,var(--gold),transparent)",
+            marginBottom:"clamp(1.4rem,2.8vh,2rem)",
           }} />
 
-          {/* Event cards */}
-          <div className="event-grid rise-2">
-            <div className="event-cell">
-              <p className="ev-label" style={{
-                fontFamily: "var(--bf)",
-                fontSize: "0.44rem",
-                letterSpacing: "0.40em",
-                textTransform: "uppercase",
-                color: "var(--gold)",
-                fontWeight: 700,
-                marginBottom: "0.45rem",
-              }}>
-                Ceremony
-              </p>
-              <p className="ev-venue" style={{
-                fontFamily: "var(--df)",
-                fontSize: "0.90rem",
-                fontWeight: 600,
-                color: "var(--ink)",
-                lineHeight: 1.3,
-                marginBottom: "0.3rem",
-              }}>
-                {weddingConfig.venueName}
-              </p>
+          {/* ── Event strip ── */}
+          <div className="ev-strip c-r1">
+
+            {/* Ceremony */}
+            <div className="ev-col">
+              <p className="ev-eyebrow" style={{
+                fontFamily:"var(--bf)",
+                fontSize:".42rem", letterSpacing:".38em",
+                textTransform:"uppercase", color:"var(--gold)", fontWeight:700,
+                marginBottom:".42rem",
+              }}>Ceremony</p>
+              <p className="ev-name" style={{
+                fontFamily:"var(--df)",
+                fontSize:".90rem", fontWeight:600,
+                color:"var(--ink)", lineHeight:1.28, marginBottom:".25rem",
+              }}>{weddingConfig.venueName}</p>
               <p className="ev-time" style={{
-                fontFamily: "var(--bf)",
-                fontSize: "0.70rem",
-                color: "var(--stone)",
-                lineHeight: 1.5,
-              }}>
-                {date} &middot; 3:00 pm
-              </p>
+                fontFamily:"var(--bf)",
+                fontSize:".68rem", color:"var(--stone)", lineHeight:1.5,
+              }}>{date} &middot; 3 pm</p>
             </div>
 
-            <div className="event-divider" />
+            <div className="ev-sep" />
 
-            <div className="event-cell">
-              <p className="ev-label" style={{
-                fontFamily: "var(--bf)",
-                fontSize: "0.44rem",
-                letterSpacing: "0.40em",
-                textTransform: "uppercase",
-                color: "var(--gold)",
-                fontWeight: 700,
-                marginBottom: "0.45rem",
-              }}>
-                Reception
-              </p>
-              <p className="ev-venue" style={{
-                fontFamily: "var(--df)",
-                fontSize: "0.90rem",
-                fontWeight: 600,
-                color: "var(--ink)",
-                lineHeight: 1.3,
-                marginBottom: "0.3rem",
-              }}>
-                {weddingConfig.receptionVenueName}
-              </p>
+            {/* Reception */}
+            <div className="ev-col">
+              <p className="ev-eyebrow" style={{
+                fontFamily:"var(--bf)",
+                fontSize:".42rem", letterSpacing:".38em",
+                textTransform:"uppercase", color:"var(--gold)", fontWeight:700,
+                marginBottom:".42rem",
+              }}>Reception</p>
+              <p className="ev-name" style={{
+                fontFamily:"var(--df)",
+                fontSize:".90rem", fontWeight:600,
+                color:"var(--ink)", lineHeight:1.28, marginBottom:".25rem",
+              }}>{weddingConfig.receptionVenueName}</p>
               <p className="ev-time" style={{
-                fontFamily: "var(--bf)",
-                fontSize: "0.70rem",
-                color: "var(--stone)",
-                lineHeight: 1.5,
-              }}>
-                {date} &middot; 6:00 pm
-              </p>
+                fontFamily:"var(--bf)",
+                fontSize:".68rem", color:"var(--stone)", lineHeight:1.5,
+              }}>{date} &middot; 6 pm</p>
             </div>
+
           </div>
 
-          {/* Rule below cards */}
-          <div className="cards-rule" style={{
-            width: "100%", height: 1,
-            background: "var(--border)",
-            marginBottom: "clamp(1.5rem, 3vh, 2rem)",
+          {/* Thin rule under cards */}
+          <div style={{
+            width:"100%", height:1, background:"var(--border)",
+            marginBottom:"clamp(1.4rem,2.8vh,1.9rem)",
           }} />
 
-          {/* Quote */}
-          <blockquote className="rise-3 quote-text" style={{
-            fontFamily: "var(--df)",
-            fontStyle: "italic",
-            fontSize: "clamp(0.90rem, 1.6vw, 1.0rem)",
-            color: "var(--stone)",
-            lineHeight: 1.92,
-            textAlign: "center",
-            width: "100%",
-            marginBottom: "clamp(1.75rem, 3vh, 2.25rem)",
-            padding: "1rem 1.25rem",
-            borderTop: "1px solid var(--border)",
-            borderBottom: "1px solid var(--border)",
+          {/* ── Quote ── */}
+          <blockquote className="quote c-r2" style={{
+            fontFamily:"var(--df)", fontStyle:"italic",
+            fontSize:"clamp(.88rem,1.5vw,.98rem)",
+            color:"var(--stone)", lineHeight:1.95,
+            textAlign:"center", width:"100%",
+            padding:".95rem 1.2rem",
+            borderTop:"1px solid var(--border)",
+            borderBottom:"1px solid var(--border)",
+            marginBottom:"clamp(1.6rem,3vh,2.2rem)",
           }}>
             &ldquo;{weddingConfig.introQuote}&rdquo;
           </blockquote>
 
-          {/* Private access label */}
-          <div className="rise-4 access-label" style={{
-            display: "flex", alignItems: "center", gap: 12,
-            marginBottom: "1.1rem", width: "100%",
+          {/* ── Private access divider ── */}
+          <div className="c-r3" style={{
+            display:"flex", alignItems:"center", gap:12,
+            marginBottom:"1rem", width:"100%",
           }}>
-            <div style={{ flex: 1, height: 1, background: "var(--border)" }} />
-            <span style={{
-              fontFamily: "var(--bf)",
-              fontSize: "0.44rem",
-              letterSpacing: "0.42em",
-              textTransform: "uppercase",
-              color: "var(--stone)",
-              fontWeight: 600,
-            }}>
-              Private access
-            </span>
-            <div style={{ flex: 1, height: 1, background: "var(--border)" }} />
+            <div style={{ flex:1, height:1, background:"var(--border)" }} />
+            <span className="div-label" style={{
+              fontFamily:"var(--bf)",
+              fontSize:".42rem", letterSpacing:".40em",
+              textTransform:"uppercase", color:"var(--stone)", fontWeight:600,
+            }}>Private access</span>
+            <div style={{ flex:1, height:1, background:"var(--border)" }} />
           </div>
 
-          {/* Buttons */}
-          <div className="btn-row rise-5" style={{
-            display: "flex", gap: "0.75rem",
-            flexWrap: "wrap", justifyContent: "center",
-            width: "100%",
-          }}>
+          {/* ── Buttons ── */}
+          <div className="btn-row c-r4">
 
             {/* Couple */}
-            <a href="/login?hint=couple&redirect=/admin"
-              className="btn btn-solid"
-              style={{ flex: "1 1 195px" }}>
-              <span style={{ display: "flex", flexDirection: "column", gap: "2px", flex: 1 }}>
-                <span className="btn-label-top" style={{
-                  fontSize: "0.42rem",
-                  letterSpacing: "0.28em",
-                  textTransform: "uppercase",
-                  color: "rgba(255,255,255,0.58)",
-                  fontWeight: 600,
-                }}>
-                  The couple
-                </span>
-                <span className="btn-label-name" style={{
-                  fontSize: "0.86rem",
-                  fontWeight: 700,
-                  color: "#ffffff",
-                  whiteSpace: "nowrap",
-                }}>
-                  {bf} &amp; {gf}
-                </span>
+            <a href="/login?hint=couple&redirect=/admin" className="btn btn-p">
+              <span style={{ display:"flex", flexDirection:"column", gap:"2px" }}>
+                <span className="btn-top" style={{
+                  fontFamily:"var(--bf)",
+                  fontSize:".40rem", letterSpacing:".26em",
+                  textTransform:"uppercase", color:"rgba(255,255,255,.55)", fontWeight:600,
+                }}>The couple</span>
+                <span className="btn-name" style={{
+                  fontFamily:"var(--bf)",
+                  fontSize:".84rem", fontWeight:700,
+                  color:"#fff", whiteSpace:"nowrap",
+                }}>{bf} &amp; {gf}</span>
               </span>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-                stroke="rgba(255,255,255,0.48)" strokeWidth="2"
-                strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+              <svg className="btn-arr" width="13" height="13" viewBox="0 0 24 24"
+                fill="none" stroke="rgba(255,255,255,.45)" strokeWidth="2"
+                strokeLinecap="round" strokeLinejoin="round" style={{flexShrink:0}}>
                 <path d="M5 12h14M12 5l7 7-7 7"/>
               </svg>
             </a>
 
             {/* Family */}
-            <a href="/login?hint=vault&redirect=/family"
-              className="btn btn-outline"
-              style={{ flex: "1 1 195px" }}>
-              <span style={{ display: "flex", flexDirection: "column", gap: "2px", flex: 1 }}>
-                <span className="btn-label-top" style={{
-                  fontSize: "0.42rem",
-                  letterSpacing: "0.28em",
-                  textTransform: "uppercase",
-                  color: "var(--stone)",
-                  fontWeight: 600,
-                }}>
-                  Family vault
-                </span>
-                <span className="btn-label-name" style={{
-                  fontSize: "0.86rem",
-                  fontWeight: 700,
-                  color: "var(--maroon)",
-                  whiteSpace: "nowrap",
-                }}>
-                  Family of the couple
-                </span>
+            <a href="/login?hint=vault&redirect=/family" className="btn btn-s">
+              <span style={{ display:"flex", flexDirection:"column", gap:"2px" }}>
+                <span className="btn-top" style={{
+                  fontFamily:"var(--bf)",
+                  fontSize:".40rem", letterSpacing:".26em",
+                  textTransform:"uppercase", color:"var(--stone)", fontWeight:600,
+                }}>Family vault</span>
+                <span className="btn-name" style={{
+                  fontFamily:"var(--bf)",
+                  fontSize:".84rem", fontWeight:700,
+                  color:"var(--maroon)", whiteSpace:"nowrap",
+                }}>Family login</span>
               </span>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-                stroke="var(--maroon)" strokeWidth="2"
+              <svg className="btn-arr" width="13" height="13" viewBox="0 0 24 24"
+                fill="none" stroke="var(--maroon)" strokeWidth="2"
                 strokeLinecap="round" strokeLinejoin="round"
-                style={{ flexShrink: 0, opacity: 0.60 }}>
+                style={{flexShrink:0,opacity:.6}}>
                 <path d="M5 12h14M12 5l7 7-7 7"/>
               </svg>
             </a>
 
           </div>
 
-          {/* Guest footnote */}
-          <p className="rise-6 footnote" style={{
-            marginTop: "1.5rem",
-            fontFamily: "var(--df)",
-            fontStyle: "italic",
-            fontSize: "0.70rem",
-            color: "var(--stone)",
-            textAlign: "center",
-            lineHeight: 1.75,
-            opacity: 0.72,
+          {/* ── Guest footnote ── */}
+          <p className="fnote c-r5" style={{
+            marginTop:"1.4rem",
+            fontFamily:"var(--df)", fontStyle:"italic",
+            fontSize:".70rem", color:"var(--stone)",
+            textAlign:"center", lineHeight:1.75, opacity:.72,
           }}>
             Are you a guest? Open the personal link that {bf} &amp; {gf} sent directly to you.
           </p>
