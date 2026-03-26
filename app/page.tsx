@@ -301,7 +301,7 @@ export default function HomePage() {
               fontWeight: 700,
               lineHeight: 0.88,
               letterSpacing: "-0.035em",
-              color: "#6B1020",
+              color: "#B8973A",
               marginBottom: "0.06em",
             }}>
               {bf}
@@ -328,7 +328,7 @@ export default function HomePage() {
               fontWeight: 700,
               lineHeight: 0.88,
               letterSpacing: "-0.035em",
-              color: "#6B1020",
+              color: "#7E1628",
               marginBottom: "1.5rem",
             }}>
               {gf}
