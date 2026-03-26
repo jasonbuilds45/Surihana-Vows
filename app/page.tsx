@@ -159,8 +159,7 @@ export default function HomePage() {
             padding: 6rem 1.5rem 2.5rem !important;
             justify-content: flex-start !important;
           }
-          .detail-row { flex-direction: column !important; align-items: center !important; gap: 0.4rem !important; }
-          .dot-sep { display: none !important; }
+          .detail-row { flex-wrap: wrap !important; gap: 0.4rem !important; padding: 0.5rem 0.75rem !important; border-radius: 999px !important; }
           .photo-strip { display: none !important; }
           .quote-text { font-size: 0.95rem !important; }
         }
@@ -345,39 +344,52 @@ export default function HomePage() {
             <div className="detail-row r6" style={{
               display: "flex", alignItems: "center",
               flexWrap: "wrap", justifyContent: "center",
-              gap: "0.75rem",
+              gap: "0.5rem",
               marginBottom: "1.25rem",
+              padding: "0.6rem 1rem",
+              background: "rgba(245,237,228,0.68)",
+              borderRadius: "999px",
+              border: "1px solid rgba(184,151,58,0.28)",
+              backdropFilter: "blur(8px)",
+              WebkitBackdropFilter: "blur(8px)",
             }}>
-              <span style={{
-                fontSize: "0.9rem", fontWeight: 700,
-                color: "#3D1018", letterSpacing: "0.04em",
-              }}>
-                {date}
-              </span>
-              <span className="dot-sep" style={{
-                width: 5, height: 5, borderRadius: "50%",
-                background: "#B8973A",
-                display: "inline-block", flexShrink: 0,
-                boxShadow: "0 0 6px rgba(184,151,58,0.55)",
-              }} />
-              <span style={{
-                fontSize: "0.875rem", color: "#5A1A28", fontWeight: 600,
-                letterSpacing: "0.03em",
-              }}>
-                {weddingConfig.venueName}
-              </span>
-              <span className="dot-sep" style={{
-                width: 5, height: 5, borderRadius: "50%",
-                background: "#B8973A",
-                display: "inline-block", flexShrink: 0,
-                boxShadow: "0 0 6px rgba(184,151,58,0.55)",
-              }} />
-              <span style={{
-                fontSize: "0.875rem", color: "#5A1A28", fontWeight: 600,
-                letterSpacing: "0.03em",
-              }}>
-                {weddingConfig.venueCity}
-              </span>
+              {/* Date chip */}
+              <div style={{ display: "flex", alignItems: "center", gap: "0.35rem" }}>
+                <svg width="11" height="11" viewBox="0 0 14 14" fill="none" aria-hidden>
+                  <rect x="1" y="2" width="12" height="11" rx="2" stroke="#B8973A" strokeWidth="1.4"/>
+                  <line x1="1" y1="5" x2="13" y2="5" stroke="#B8973A" strokeWidth="1.4"/>
+                  <line x1="4" y1="1" x2="4" y2="4" stroke="#B8973A" strokeWidth="1.4" strokeLinecap="round"/>
+                  <line x1="10" y1="1" x2="10" y2="4" stroke="#B8973A" strokeWidth="1.4" strokeLinecap="round"/>
+                </svg>
+                <span style={{ fontSize: "0.82rem", fontWeight: 700, color: "#3D1018", letterSpacing: "0.03em", whiteSpace: "nowrap" }}>
+                  {date}
+                </span>
+              </div>
+              {/* Diamond separator */}
+              <span style={{ color: "#B8973A", fontSize: "0.55rem", lineHeight: 1, flexShrink: 0 }}>✦</span>
+              {/* Venue chip */}
+              <div style={{ display: "flex", alignItems: "center", gap: "0.35rem" }}>
+                <svg width="10" height="12" viewBox="0 0 12 16" fill="none" aria-hidden>
+                  <path d="M6 1C3.24 1 1 3.24 1 6c0 4 5 9 5 9s5-5 5-9c0-2.76-2.24-5-5-5z" stroke="#B8973A" strokeWidth="1.4" fill="none"/>
+                  <circle cx="6" cy="6" r="1.5" fill="#B8973A"/>
+                </svg>
+                <span style={{ fontSize: "0.82rem", fontWeight: 600, color: "#5A1A28", letterSpacing: "0.02em", whiteSpace: "nowrap" }}>
+                  {weddingConfig.venueName}
+                </span>
+              </div>
+              {/* Diamond separator */}
+              <span style={{ color: "#B8973A", fontSize: "0.55rem", lineHeight: 1, flexShrink: 0 }}>✦</span>
+              {/* City chip */}
+              <div style={{ display: "flex", alignItems: "center", gap: "0.35rem" }}>
+                <svg width="12" height="10" viewBox="0 0 14 12" fill="none" aria-hidden>
+                  <path d="M1 11V5l4-4 4 4v6" stroke="#B8973A" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+                  <rect x="5" y="7" width="2" height="4" rx="0.5" fill="#B8973A"/>
+                  <path d="M9 11V7l3-2v6" stroke="#B8973A" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+                </svg>
+                <span style={{ fontSize: "0.82rem", fontWeight: 600, color: "#5A1A28", letterSpacing: "0.02em", whiteSpace: "nowrap" }}>
+                  {weddingConfig.venueCity}
+                </span>
+              </div>
             </div>
 
             {/* ── Quote ── */}
