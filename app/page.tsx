@@ -9,11 +9,6 @@ export const metadata: Metadata = {
 };
 
 export default function HomePage() {
-  const slides = getSlideshowPhotos();
-  const heroPhoto =
-    slides[0]?.imageUrl ??
-    "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1800&q=85";
-
   const bf   = weddingConfig.brideName.split(" ")[0]!;
   const gf   = weddingConfig.groomName.split(" ")[0]!;
   const date = formatDate(weddingConfig.weddingDate);
@@ -24,38 +19,36 @@ export default function HomePage() {
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         html, body { height: 100%; overflow-x: hidden; }
 
-        /* ── Palette ── */
+        /* ─── PALETTE ───────────────────────────────────────────────────── */
         :root {
-          --ivory:   #F5EFE6;
-          --parch:   #EDE3D4;
-          --maroon:  #6B1221;
-          --crimson: #8B1A2E;
-          --gold:    #A07828;
-          --gold-lt: #C9A84C;
-          --ink:     #180C0A;
-          --stone:   #5A4030;
-          --mist:    rgba(245,239,230,0.96);
-          --border:  rgba(160,120,40,0.18);
+          --ivory:  #F8F3EB;   /* warm parchment — page canvas             */
+          --cream:  #EFE7D9;   /* slightly darker parchment — panels        */
+          --vellum: #E6DAC8;   /* deepest parchment — borders, hairlines    */
+          --maroon: #6B1221;   /* deep crimson — primary                    */
+          --claret: #8C1B30;   /* slightly brighter maroon — hover          */
+          --gold:   #9C7520;   /* antique gold — rules, accents             */
+          --gilded: #C4973A;   /* lighter gold — eyebrows, gems             */
+          --ink:    #1A0D0B;   /* near-black — primary text                 */
+          --sepia:  #4A3020;   /* warm dark brown — secondary text          */
+          --stone:  #7A5C42;   /* mid stone — muted text                    */
+          --border: rgba(156,117,32,0.20);
+          --bdr-md: rgba(156,117,32,0.32);
           --df: var(--font-display),'Cormorant Garamond',Georgia,serif;
           --bf: var(--font-body),'Manrope',system-ui,sans-serif;
         }
 
-        /* ── Keyframes ── */
-        @keyframes bgPan {
-          0%   { transform: scale(1.06) translate(0,0); }
-          100% { transform: scale(1.06) translate(-1%,-1.5%); }
-        }
+        /* ─── KEYFRAMES ─────────────────────────────────────────────────── */
         @keyframes ticker {
           from { transform: translateX(0); }
           to   { transform: translateX(-50%); }
         }
         @keyframes rise {
-          from { opacity:0; transform:translateY(30px); }
+          from { opacity:0; transform:translateY(28px); }
           to   { opacity:1; transform:translateY(0); }
         }
-        @keyframes nameIn {
-          from { opacity:0; transform:translateY(48px) scaleY(0.96); }
-          to   { opacity:1; transform:translateY(0) scaleY(1); }
+        @keyframes nameReveal {
+          from { opacity:0; transform:translateY(52px); letter-spacing:-.04em; }
+          to   { opacity:1; transform:translateY(0);    letter-spacing:-.025em; }
         }
         @keyframes ruleIn {
           from { opacity:0; transform:scaleX(0); }
@@ -64,147 +57,219 @@ export default function HomePage() {
         @keyframes fadeIn {
           from { opacity:0; } to { opacity:1; }
         }
-
-        /* ── Stagger ── */
-        .c-fade { animation: fadeIn .8s ease both; }
-        .c-r0  { animation: rise  .9s .10s cubic-bezier(.16,1,.3,1) both; }
-        .c-na  { animation: nameIn 1.1s .22s cubic-bezier(.16,1,.3,1) both; }
-        .c-amp { animation: rise   .7s .42s cubic-bezier(.16,1,.3,1) both; }
-        .c-nb  { animation: nameIn 1.1s .36s cubic-bezier(.16,1,.3,1) both; }
-        .c-r1  { animation: rise  .9s .58s cubic-bezier(.16,1,.3,1) both; }
-        .c-r2  { animation: rise  .9s .70s cubic-bezier(.16,1,.3,1) both; }
-        .c-r3  { animation: rise  .9s .84s cubic-bezier(.16,1,.3,1) both; }
-        .c-r4  { animation: rise  .9s .98s cubic-bezier(.16,1,.3,1) both; }
-        .c-r5  { animation: rise  .9s 1.12s cubic-bezier(.16,1,.3,1) both; }
-        .c-r6  { animation: rise  .9s 1.26s cubic-bezier(.16,1,.3,1) both; }
-        .c-rule { transform-origin:center; animation: ruleIn 1.0s .55s ease both; }
-
-        /* ── Ticker ── */
-        .tk-shell {
-          position:fixed; top:0; left:0; right:0; z-index:80;
+        @keyframes sealPulse {
+          0%,100% { opacity:.55; transform:scale(1); }
+          50%      { opacity:.80; transform:scale(1.015); }
         }
+
+        /* ─── REVEALS ───────────────────────────────────────────────────── */
+        .c-fade { animation: fadeIn    1.0s 0.0s  ease both; }
+        .c-r0   { animation: rise      0.9s 0.08s cubic-bezier(.16,1,.3,1) both; }
+        .c-na   { animation: nameReveal 1.2s 0.20s cubic-bezier(.16,1,.3,1) both; }
+        .c-amp  { animation: rise      0.7s 0.44s cubic-bezier(.16,1,.3,1) both; }
+        .c-nb   { animation: nameReveal 1.2s 0.34s cubic-bezier(.16,1,.3,1) both; }
+        .c-r1   { animation: rise      0.9s 0.58s cubic-bezier(.16,1,.3,1) both; }
+        .c-r2   { animation: rise      0.9s 0.70s cubic-bezier(.16,1,.3,1) both; }
+        .c-r3   { animation: rise      0.9s 0.82s cubic-bezier(.16,1,.3,1) both; }
+        .c-r4   { animation: rise      0.9s 0.94s cubic-bezier(.16,1,.3,1) both; }
+        .c-r5   { animation: rise      0.9s 1.06s cubic-bezier(.16,1,.3,1) both; }
+        .c-r6   { animation: rise      0.9s 1.18s cubic-bezier(.16,1,.3,1) both; }
+        .c-rule { transform-origin:center; animation: ruleIn 1.0s 0.52s ease both; }
+
+        /* ─── TICKER ────────────────────────────────────────────────────── */
+        .tk-shell { position:fixed; top:0; left:0; right:0; z-index:80; }
         .tk-stripe {
           height:2px;
           background: linear-gradient(90deg,
-            transparent 0%, var(--maroon) 20%,
-            var(--gold-lt) 50%, var(--maroon) 80%, transparent 100%);
+            transparent 0%, var(--maroon) 22%,
+            var(--gilded) 50%, var(--maroon) 78%, transparent 100%);
         }
         .tk-bar {
           overflow:hidden; padding:5px 0;
-          background: rgba(245,239,230,0.97);
-          backdrop-filter: blur(20px);
-          -webkit-backdrop-filter: blur(20px);
+          background: rgba(248,243,235,0.98);
+          backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
           border-bottom: 1px solid var(--border);
         }
         .tk-track {
-          display:flex; gap:3.5rem;
+          display:flex; gap:3rem;
           white-space:nowrap; width:max-content;
           animation: ticker 72s linear infinite;
         }
         .tk-item {
-          font-family: var(--bf);
-          font-size:.45rem; letter-spacing:.44em;
+          font-family:var(--bf);
+          font-size:.46rem; letter-spacing:.44em;
           text-transform:uppercase; font-weight:600;
-          color: var(--stone);
+          color:var(--stone);
         }
-        .tk-gem { color: var(--gold); margin:0 .05em; }
+        .tk-gem { color:var(--gilded); margin:0 .06em; }
 
-        /* ── Name ── */
+        /* ─── PAGE TEXTURE BACKGROUND ───────────────────────────────────── */
+        /* SVG grain overlay gives the ivory a paper/vellum feel            */
+        .page-bg {
+          background-color: var(--ivory);
+          /* Subtle cross-hatch texture via SVG data URI */
+          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4'%3E%3Crect width='4' height='4' fill='%23F8F3EB'/%3E%3Cpath d='M0 4L4 0' stroke='%23C4973A' stroke-width='.15' opacity='.12'/%3E%3C/svg%3E");
+        }
+
+        /* ─── NAMES ─────────────────────────────────────────────────────── */
         .name {
           font-family: var(--df);
-          font-size: clamp(4.2rem,12.5vw,10.5rem);
+          font-size: clamp(4.4rem,13vw,11rem);
           font-weight: 300;
           line-height: .88;
-          letter-spacing: -.02em;
+          letter-spacing: -.025em;
           display: block;
           text-align: center;
         }
 
-        /* ── Event strip ── */
-        .ev-strip {
-          display:grid;
-          grid-template-columns: 1fr 1px 1fr;
-          width:100%;
-          max-width:420px;
-          border: 1px solid var(--border);
-          border-radius: 2px;
-        }
-        .ev-col { padding:16px 18px; text-align:center; }
-        .ev-sep { background: var(--border); }
+        /* ─── ORNAMENT SVG ──────────────────────────────────────────────── */
+        /* Inline SVG floral divider — rendered at the exact point needed    */
+        .ornament { display:block; margin:0 auto; }
 
-        /* ── Buttons ── */
-        .btn-row { display:flex; gap:.75rem; width:100%; }
+        /* ─── EVENT STRIP ───────────────────────────────────────────────── */
+        .ev-strip {
+          display:grid; grid-template-columns:1fr 1px 1fr;
+          width:100%; max-width:420px;
+          border:1px solid var(--bdr-md);
+          background: var(--cream);
+        }
+        .ev-col { padding:18px 20px; text-align:center; }
+        .ev-sep { background:var(--bdr-md); }
+
+        /* ─── QUOTE ─────────────────────────────────────────────────────── */
+        .quote-wrap {
+          width:100%; position:relative;
+          padding:1.1rem 1.4rem;
+          background: var(--cream);
+          border-left:2px solid var(--gold);
+        }
+
+        /* ─── BUTTONS ───────────────────────────────────────────────────── */
+        /* Refined rectangular access buttons — no radius, no gradients,    */
+        /* just precise weight and colour. London club-house aesthetic.      */
+        .btn-row { display:flex; gap:.875rem; width:100%; }
+
         .btn {
-          flex:1;
-          display:inline-flex; align-items:center; justify-content:space-between;
-          gap:10px; padding:14px 20px; border-radius:2px;
+          flex:1; display:inline-flex;
+          align-items:center; justify-content:space-between;
+          gap:12px; padding:0; border-radius:0;
           text-decoration:none; cursor:pointer;
           font-family:var(--bf);
-          transition: transform .2s cubic-bezier(.16,1,.3,1), box-shadow .2s ease;
+          border:1px solid transparent;
+          transition:
+            transform .22s cubic-bezier(.16,1,.3,1),
+            box-shadow .22s ease,
+            background .15s ease;
+          overflow:hidden;
+          position:relative;
         }
-        .btn-p {
-          background: var(--maroon);
-          border: 1px solid rgba(107,18,33,.30);
-          box-shadow: 0 4px 22px rgba(107,18,33,.26),
-                      inset 0 1px 0 rgba(255,255,255,.08);
-        }
-        .btn-p:hover { transform:translateY(-2px); box-shadow:0 10px 32px rgba(107,18,33,.36); }
-        .btn-s {
-          background: transparent;
-          border: 1px solid rgba(107,18,33,.45);
-        }
-        .btn-s:hover { transform:translateY(-2px); background:rgba(107,18,33,.04); }
 
-        /* ── Foot rule ── */
+        /* Primary — solid maroon, white text, gold left accent */
+        .btn-p {
+          background:var(--maroon);
+          border-color:rgba(107,18,33,.25);
+          box-shadow: 0 2px 0 rgba(107,18,33,.35),
+                      0 6px 24px rgba(107,18,33,.20);
+        }
+        .btn-p::before {
+          content:'';
+          position:absolute; left:0; top:0; bottom:0; width:3px;
+          background:var(--gilded);
+        }
+        .btn-p:hover {
+          transform:translateY(-2px);
+          background:var(--claret);
+          box-shadow: 0 4px 0 rgba(107,18,33,.30),
+                      0 12px 36px rgba(107,18,33,.28);
+        }
+        .btn-p .btn-inner { padding:14px 20px 14px 22px; }
+
+        /* Secondary — ivory bg, maroon border, maroon text */
+        .btn-s {
+          background:var(--ivory);
+          border-color:rgba(107,18,33,.40);
+          box-shadow: 0 2px 0 rgba(107,18,33,.12),
+                      0 4px 18px rgba(107,18,33,.08);
+        }
+        .btn-s::before {
+          content:'';
+          position:absolute; left:0; top:0; bottom:0; width:3px;
+          background:var(--bdr-md);
+        }
+        .btn-s:hover {
+          transform:translateY(-2px);
+          background:var(--cream);
+          border-color:rgba(107,18,33,.65);
+          box-shadow: 0 4px 0 rgba(107,18,33,.18),
+                      0 10px 28px rgba(107,18,33,.12);
+        }
+        .btn-s .btn-inner { padding:14px 20px 14px 22px; }
+
+        .btn-inner {
+          display:flex; align-items:center;
+          justify-content:space-between;
+          gap:10px; width:100%;
+        }
+        .btn-text { display:flex; flex-direction:column; gap:2px; }
+        .btn-eyebrow {
+          font-family:var(--bf);
+          font-size:.38rem; letter-spacing:.32em;
+          text-transform:uppercase; font-weight:700;
+        }
+        .btn-label {
+          font-family:var(--df);
+          font-size:1.05rem; font-weight:400;
+          letter-spacing:.01em; line-height:1;
+        }
+
+        /* ─── FOOT RULE ─────────────────────────────────────────────────── */
         .foot-rule {
           position:fixed; bottom:0; left:0; right:0; height:2px; z-index:80;
-          background: linear-gradient(90deg,
-            transparent 0%, var(--maroon) 20%,
-            var(--gold-lt) 50%, var(--maroon) 80%, transparent 100%);
+          background:linear-gradient(90deg,
+            transparent 0%, var(--maroon) 22%,
+            var(--gilded) 50%, var(--maroon) 78%, transparent 100%);
         }
 
-        /* ─────────────────────────────────────────────
-           MOBILE ≤ 600px
-        ───────────────────────────────────────────── */
+        /* ─── MOBILE ≤ 600px ────────────────────────────────────────────── */
         @media (max-width:600px) {
-          .photo-zone {
-            height: 56vw !important;
-            min-height: 210px !important;
-            max-height: 300px !important;
-          }
-          .name { font-size: 12.5vw !important; }
-          .amp  { font-size: 7vw   !important; }
-          .c-r0 .eyebrow-lbl { font-size:.38rem !important; letter-spacing:.28em !important; }
 
-          .shell { padding: 0 1.25rem 3.5rem !important; }
+          .name { font-size:12.5vw !important; letter-spacing:-.02em !important; }
 
-          .ev-col { padding: 11px 10px !important; }
-          .ev-eyebrow { font-size:.36rem !important; letter-spacing:.26em !important; margin-bottom:.28rem !important; }
-          .ev-name    { font-size:.82rem !important; }
+          .shell { padding:0 1.25rem 3.5rem !important; }
+          .names-zone { padding:3.2rem 1.25rem 0 !important; }
+
+          .ev-col { padding:12px 10px !important; }
+          .ev-eyebrow { font-size:.34rem !important; letter-spacing:.22em !important; margin-bottom:.28rem !important; }
+          .ev-name    { font-size:.84rem !important; }
           .ev-time    { font-size:.64rem !important; }
 
-          .quote { font-size:.86rem !important; padding:.85rem 1rem !important; }
+          .quote-wrap  { padding:.85rem 1rem !important; }
+          .quote-text  { font-size:.86rem !important; line-height:1.80 !important; }
 
-          .div-label { font-size:.38rem !important; letter-spacing:.28em !important; }
+          .div-label   { font-size:.36rem !important; letter-spacing:.24em !important; }
 
-          /* Buttons: compact side-by-side pills, no two-line label */
-          .btn { padding: 11px 14px !important; }
-          .btn-top { display:none !important; }
-          .btn-name { font-size:.80rem !important; }
-          .btn-arr  { display:none !important; }
+          /* Buttons on mobile — compact, no eyebrow */
+          .btn-row     { gap:.6rem !important; }
+          .btn-p .btn-inner,
+          .btn-s .btn-inner { padding:11px 14px 11px 16px !important; }
+          .btn-eyebrow { display:none !important; }
+          .btn-label   { font-size:.88rem !important; }
+          .btn-arr     { display:none !important; }
 
           .fnote { font-size:.68rem !important; }
+
+          .orn-sm { width:140px !important; }
         }
 
-        /* TABLET */
+        /* ─── TABLET ────────────────────────────────────────────────────── */
         @media (min-width:601px) and (max-width:960px) {
-          .photo-zone { height:58vh !important; }
-          .name { font-size: clamp(4rem,10.5vw,7rem) !important; }
-          .shell { padding: 0 2rem 4rem !important; }
+          .name { font-size:clamp(4rem,11vw,7.5rem) !important; }
+          .shell { padding:0 2rem 4rem !important; }
+          .names-zone { padding:5rem 2rem 0 !important; }
         }
       `}</style>
 
-      {/* ═══ TICKER ═══════════════════════════════════════════════════════ */}
+      {/* ═══ TICKER ══════════════════════════════════════════════════════ */}
       <div className="tk-shell c-fade">
         <div className="tk-stripe" />
         <div className="tk-bar">
@@ -226,252 +291,234 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* ═══ PAGE ═════════════════════════════════════════════════════════ */}
-      <main style={{
+      {/* ═══ PAGE ════════════════════════════════════════════════════════ */}
+      <main className="page-bg" style={{
         minHeight:"100dvh",
-        background:"var(--ivory)",
         display:"flex", flexDirection:"column", alignItems:"center",
-        fontFamily:"var(--bf)",
-        overflowX:"hidden",
+        fontFamily:"var(--bf)", overflowX:"hidden",
       }}>
 
-        {/* ─── HERO PHOTO ZONE ────────────────────────────────────────── */}
-        {/* Full-width, edge-to-edge. Photo is properly dark.             */}
-        {/* Names sit centered over it — they are the headline.           */}
-        <div className="photo-zone" style={{
-          position:"relative",
-          width:"100%",
-          height:"clamp(280px,75vh,680px)",
-          overflow:"hidden",
-          /* Top margin just clears the ticker bar */
-          marginTop:"clamp(1.8rem,4vh,3rem)",
+        {/* ─── NAMES ZONE — top of page, generous space ─────────────── */}
+        {/* No photo. The names own this space entirely.                 */}
+        <div className="names-zone" style={{
+          width:"100%", maxWidth:"700px",
+          padding:"clamp(4rem,9vh,6.5rem) 2rem 0",
+          display:"flex", flexDirection:"column", alignItems:"center",
+          textAlign:"center",
         }}>
 
-          {/* ── Photo ── dark, desaturated, sepia-warm ── */}
-          <div style={{
-            position:"absolute", inset:"-5%",
-            backgroundImage:`url(${heroPhoto})`,
-            backgroundSize:"cover",
-            backgroundPosition:"center 30%",
-            filter:"saturate(.45) brightness(.62) sepia(.12)",
-            animation:"bgPan 30s ease-in-out infinite alternate",
-          }} />
-
-          {/* ── Gradient — top & bottom ONLY fade to ivory ── */}
-          {/* Centre stays open so photo breathes clearly     */}
-          <div style={{
-            position:"absolute", inset:0,
-            background:`linear-gradient(to bottom,
-              var(--ivory) 0%,
-              rgba(245,239,230,.08) 16%,
-              rgba(245,239,230,.08) 76%,
-              var(--ivory) 100%)`,
-          }} />
-
-          {/* ── Names ────────────────────────────────────── */}
-          <div style={{
-            position:"absolute", inset:0,
-            display:"flex", flexDirection:"column",
-            alignItems:"center", justifyContent:"center",
-            textAlign:"center", padding:"0 1.5rem",
+          {/* Occasion eyebrow */}
+          <div className="c-r0" style={{
+            display:"flex", alignItems:"center", gap:14,
+            marginBottom:"clamp(1.4rem,3vh,2.25rem)",
           }}>
-
-            {/* Occasion eyebrow */}
-            <div className="c-r0" style={{
-              display:"flex", alignItems:"center", gap:12,
-              marginBottom:"clamp(.9rem,2vh,1.6rem)",
+            <div style={{ width:40, height:1, background:"var(--gilded)", opacity:.7 }} />
+            <span style={{
+              fontFamily:"var(--bf)",
+              fontSize:".46rem", letterSpacing:".52em",
+              textTransform:"uppercase", color:"var(--gilded)", fontWeight:700,
             }}>
-              <div style={{ width:24, height:1, background:"var(--gold-lt)" }} />
-              <span className="eyebrow-lbl" style={{
-                fontFamily:"var(--bf)",
-                fontSize:".46rem", letterSpacing:".48em",
-                textTransform:"uppercase", color:"var(--gold-lt)", fontWeight:700,
-              }}>
-                {weddingConfig.celebrationTitle}
-              </span>
-              <div style={{ width:24, height:1, background:"var(--gold-lt)" }} />
-            </div>
-
-            {/* MARION — white, large, commanding */}
-            <span className="name c-na" style={{
-              color:"#FFFFFF",
-              textShadow:"0 1px 0 rgba(0,0,0,.18), 0 4px 28px rgba(0,0,0,.40)",
-            }}>
-              {bf}
+              {weddingConfig.celebrationTitle}
             </span>
-
-            {/* & — italic crimson, smaller */}
-            <span className="amp c-amp" style={{
-              fontFamily:"var(--df)",
-              fontSize:"clamp(1.5rem,4.2vw,3rem)",
-              fontWeight:300, fontStyle:"italic",
-              color:"var(--gold-lt)",
-              letterSpacing:".14em", lineHeight:1.1,
-              display:"block",
-              margin:".06em 0",
-            }}>
-              &amp;
-            </span>
-
-            {/* LIVINGSTON — warm parchment, slightly lighter so it reads */}
-            {/* distinctly from Marion but equally present               */}
-            <span className="name c-nb" style={{
-              color:"#EDD9BF",
-              textShadow:"0 1px 0 rgba(0,0,0,.18), 0 4px 28px rgba(0,0,0,.40)",
-            }}>
-              {gf}
-            </span>
-
+            <div style={{ width:40, height:1, background:"var(--gilded)", opacity:.7 }} />
           </div>
+
+          {/* ── MARION — deep ink, enormous, weight 300 ── */}
+          {/* On ivory with no photo competing, weight 300  */}
+          {/* Cormorant at this size is undeniably commanding */}
+          <span className="name c-na" style={{ color:"var(--ink)" }}>
+            {bf}
+          </span>
+
+          {/* ── & ── gold italic, breathing room either side ── */}
+          <span className="c-amp" style={{
+            fontFamily:"var(--df)",
+            fontSize:"clamp(1.6rem,4.5vw,3.2rem)",
+            fontWeight:300, fontStyle:"italic",
+            color:"var(--gold)",
+            letterSpacing:".18em", lineHeight:1.1,
+            display:"block",
+            margin:".05em 0",
+          }}>
+            &amp;
+          </span>
+
+          {/* ── LIVINGSTON — deep maroon, same scale ── */}
+          <span className="name c-nb" style={{ color:"var(--maroon)" }}>
+            {gf}
+          </span>
+
+          {/* Floral ornamental divider — SVG inline */}
+          {/* Classic engraved-invitation style motif  */}
+          <svg className="ornament orn-sm c-r1" style={{
+            width:"clamp(160px,36%,260px)",
+            marginTop:"clamp(1.6rem,3.5vh,2.75rem)",
+            marginBottom:0, overflow:"visible",
+          }} viewBox="0 0 260 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+            {/* Left arm */}
+            <line x1="0" y1="14" x2="100" y2="14" stroke="#9C7520" strokeWidth=".8" opacity=".5"/>
+            <line x1="0" y1="14" x2="80"  y2="14" stroke="#9C7520" strokeWidth="1.4" opacity=".25"/>
+            {/* Right arm */}
+            <line x1="160" y1="14" x2="260" y2="14" stroke="#9C7520" strokeWidth=".8" opacity=".5"/>
+            <line x1="180" y1="14" x2="260" y2="14" stroke="#9C7520" strokeWidth="1.4" opacity=".25"/>
+            {/* Centre diamond cluster */}
+            <polygon points="130,7 136,14 130,21 124,14" fill="none" stroke="#9C7520" strokeWidth="1"/>
+            <polygon points="130,10 134,14 130,18 126,14" fill="#9C7520" opacity=".55"/>
+            <circle cx="110" cy="14" r="1.5" fill="#9C7520" opacity=".55"/>
+            <circle cx="150" cy="14" r="1.5" fill="#9C7520" opacity=".55"/>
+            <circle cx="103" cy="14" r="1"   fill="#9C7520" opacity=".35"/>
+            <circle cx="157" cy="14" r="1"   fill="#9C7520" opacity=".35"/>
+            {/* Small leaves either side of diamond */}
+            <path d="M118 14 Q122 9 126 14 Q122 19 118 14Z" fill="#9C7520" opacity=".28"/>
+            <path d="M142 14 Q138 9 134 14 Q138 19 142 14Z" fill="#9C7520" opacity=".28"/>
+          </svg>
+
         </div>
 
-        {/* ─── CONTENT SHELL ──────────────────────────────────────────── */}
+        {/* ─── CONTENT SHELL ─────────────────────────────────────────── */}
         <div className="shell" style={{
           width:"100%", maxWidth:"540px",
-          padding:"0 2.25rem 5rem",
+          padding:"0 2.25rem 5.5rem",
           display:"flex", flexDirection:"column", alignItems:"center",
+          marginTop:"clamp(1.4rem,3vh,2.2rem)",
         }}>
 
-          {/* Gold hairline rule — grows in from centre */}
-          <div className="c-rule" style={{
-            width:"min(160px,48%)", height:1,
-            background:"linear-gradient(90deg,transparent,var(--gold),transparent)",
-            marginBottom:"clamp(1.4rem,2.8vh,2rem)",
-          }} />
-
           {/* ── Event strip ── */}
-          <div className="ev-strip c-r1">
-
-            {/* Ceremony */}
+          <div className="ev-strip c-r2">
             <div className="ev-col">
               <p className="ev-eyebrow" style={{
                 fontFamily:"var(--bf)",
                 fontSize:".42rem", letterSpacing:".38em",
-                textTransform:"uppercase", color:"var(--gold)", fontWeight:700,
-                marginBottom:".42rem",
+                textTransform:"uppercase", color:"var(--gilded)", fontWeight:700,
+                marginBottom:".44rem",
               }}>Ceremony</p>
               <p className="ev-name" style={{
                 fontFamily:"var(--df)",
-                fontSize:".90rem", fontWeight:600,
-                color:"var(--ink)", lineHeight:1.28, marginBottom:".25rem",
+                fontSize:".92rem", fontWeight:600,
+                color:"var(--ink)", lineHeight:1.28, marginBottom:".28rem",
               }}>{weddingConfig.venueName}</p>
               <p className="ev-time" style={{
                 fontFamily:"var(--bf)",
-                fontSize:".68rem", color:"var(--stone)", lineHeight:1.5,
+                fontSize:".70rem", color:"var(--stone)", lineHeight:1.5,
               }}>{date} &middot; 3 pm</p>
             </div>
-
             <div className="ev-sep" />
-
-            {/* Reception */}
             <div className="ev-col">
               <p className="ev-eyebrow" style={{
                 fontFamily:"var(--bf)",
                 fontSize:".42rem", letterSpacing:".38em",
-                textTransform:"uppercase", color:"var(--gold)", fontWeight:700,
-                marginBottom:".42rem",
+                textTransform:"uppercase", color:"var(--gilded)", fontWeight:700,
+                marginBottom:".44rem",
               }}>Reception</p>
               <p className="ev-name" style={{
                 fontFamily:"var(--df)",
-                fontSize:".90rem", fontWeight:600,
-                color:"var(--ink)", lineHeight:1.28, marginBottom:".25rem",
+                fontSize:".92rem", fontWeight:600,
+                color:"var(--ink)", lineHeight:1.28, marginBottom:".28rem",
               }}>{weddingConfig.receptionVenueName}</p>
               <p className="ev-time" style={{
                 fontFamily:"var(--bf)",
-                fontSize:".68rem", color:"var(--stone)", lineHeight:1.5,
+                fontSize:".70rem", color:"var(--stone)", lineHeight:1.5,
               }}>{date} &middot; 6 pm</p>
             </div>
-
           </div>
 
-          {/* Thin rule under cards */}
+          {/* Thin rule under event strip */}
           <div style={{
-            width:"100%", height:1, background:"var(--border)",
-            marginBottom:"clamp(1.4rem,2.8vh,1.9rem)",
+            width:"100%", height:1,
+            background:"linear-gradient(90deg,transparent,var(--bdr-md),transparent)",
+            marginBottom:"clamp(1.4rem,2.8vh,2rem)",
           }} />
 
           {/* ── Quote ── */}
-          <blockquote className="quote c-r2" style={{
-            fontFamily:"var(--df)", fontStyle:"italic",
-            fontSize:"clamp(.88rem,1.5vw,.98rem)",
-            color:"var(--stone)", lineHeight:1.95,
-            textAlign:"center", width:"100%",
-            padding:".95rem 1.2rem",
-            borderTop:"1px solid var(--border)",
-            borderBottom:"1px solid var(--border)",
-            marginBottom:"clamp(1.6rem,3vh,2.2rem)",
-          }}>
-            &ldquo;{weddingConfig.introQuote}&rdquo;
-          </blockquote>
-
-          {/* ── Private access divider ── */}
-          <div className="c-r3" style={{
-            display:"flex", alignItems:"center", gap:12,
-            marginBottom:"1rem", width:"100%",
-          }}>
-            <div style={{ flex:1, height:1, background:"var(--border)" }} />
-            <span className="div-label" style={{
-              fontFamily:"var(--bf)",
-              fontSize:".42rem", letterSpacing:".40em",
-              textTransform:"uppercase", color:"var(--stone)", fontWeight:600,
-            }}>Private access</span>
-            <div style={{ flex:1, height:1, background:"var(--border)" }} />
+          <div className="quote-wrap c-r3" style={{ marginBottom:"clamp(1.6rem,3vh,2.2rem)" }}>
+            {/* Gold bracket — top-left */}
+            <svg style={{ position:"absolute", top:10, left:10 }} width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden>
+              <path d="M13 1H1V13" stroke="#9C7520" strokeWidth="1.2" strokeLinecap="round" opacity=".55"/>
+            </svg>
+            {/* Gold bracket — bottom-right */}
+            <svg style={{ position:"absolute", bottom:10, right:10 }} width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden>
+              <path d="M1 13H13V1" stroke="#9C7520" strokeWidth="1.2" strokeLinecap="round" opacity=".55"/>
+            </svg>
+            <blockquote className="quote-text" style={{
+              fontFamily:"var(--df)", fontStyle:"italic",
+              fontSize:"clamp(.88rem,1.5vw,.98rem)",
+              color:"var(--sepia)", lineHeight:1.95,
+              textAlign:"center",
+              padding:"0 .5rem",
+            }}>
+              &ldquo;{weddingConfig.introQuote}&rdquo;
+            </blockquote>
           </div>
 
-          {/* ── Buttons ── */}
-          <div className="btn-row c-r4">
+          {/* ── Private access divider ── */}
+          <div className="c-r4" style={{
+            display:"flex", alignItems:"center", gap:14,
+            marginBottom:"1.1rem", width:"100%",
+          }}>
+            <div style={{ flex:1, height:1,
+              background:"linear-gradient(90deg,transparent,var(--bdr-md))" }} />
+            <span className="div-label" style={{
+              fontFamily:"var(--bf)",
+              fontSize:".42rem", letterSpacing:".42em",
+              textTransform:"uppercase", color:"var(--stone)", fontWeight:600,
+            }}>Private access</span>
+            <div style={{ flex:1, height:1,
+              background:"linear-gradient(90deg,var(--bdr-md),transparent)" }} />
+          </div>
 
-            {/* Couple */}
+          {/* ── BUTTONS ── */}
+          {/* Two distinct, elegant access cards. No border-radius.        */}
+          {/* Primary: maroon filled with gilded left accent stripe.       */}
+          {/* Secondary: ivory with maroon border and left accent stripe.  */}
+          <div className="btn-row c-r5">
+
+            {/* Couple — primary */}
             <a href="/login?hint=couple&redirect=/admin" className="btn btn-p">
-              <span style={{ display:"flex", flexDirection:"column", gap:"2px" }}>
-                <span className="btn-top" style={{
-                  fontFamily:"var(--bf)",
-                  fontSize:".40rem", letterSpacing:".26em",
-                  textTransform:"uppercase", color:"rgba(255,255,255,.55)", fontWeight:600,
-                }}>The couple</span>
-                <span className="btn-name" style={{
-                  fontFamily:"var(--bf)",
-                  fontSize:".84rem", fontWeight:700,
-                  color:"#fff", whiteSpace:"nowrap",
-                }}>{bf} &amp; {gf}</span>
-              </span>
-              <svg className="btn-arr" width="13" height="13" viewBox="0 0 24 24"
-                fill="none" stroke="rgba(255,255,255,.45)" strokeWidth="2"
-                strokeLinecap="round" strokeLinejoin="round" style={{flexShrink:0}}>
-                <path d="M5 12h14M12 5l7 7-7 7"/>
-              </svg>
+              <div className="btn-inner">
+                <div className="btn-text">
+                  <span className="btn-eyebrow" style={{ color:"rgba(255,255,255,.52)" }}>
+                    The couple
+                  </span>
+                  <span className="btn-label" style={{ color:"#FFFFFF" }}>
+                    {bf} &amp; {gf}
+                  </span>
+                </div>
+                <svg className="btn-arr" width="14" height="14" viewBox="0 0 24 24"
+                  fill="none" stroke="rgba(255,255,255,.42)" strokeWidth="1.8"
+                  strokeLinecap="round" strokeLinejoin="round" style={{flexShrink:0}}>
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+              </div>
             </a>
 
-            {/* Family */}
+            {/* Family — secondary */}
             <a href="/login?hint=vault&redirect=/family" className="btn btn-s">
-              <span style={{ display:"flex", flexDirection:"column", gap:"2px" }}>
-                <span className="btn-top" style={{
-                  fontFamily:"var(--bf)",
-                  fontSize:".40rem", letterSpacing:".26em",
-                  textTransform:"uppercase", color:"var(--stone)", fontWeight:600,
-                }}>Family vault</span>
-                <span className="btn-name" style={{
-                  fontFamily:"var(--bf)",
-                  fontSize:".84rem", fontWeight:700,
-                  color:"var(--maroon)", whiteSpace:"nowrap",
-                }}>Family login</span>
-              </span>
-              <svg className="btn-arr" width="13" height="13" viewBox="0 0 24 24"
-                fill="none" stroke="var(--maroon)" strokeWidth="2"
-                strokeLinecap="round" strokeLinejoin="round"
-                style={{flexShrink:0,opacity:.6}}>
-                <path d="M5 12h14M12 5l7 7-7 7"/>
-              </svg>
+              <div className="btn-inner">
+                <div className="btn-text">
+                  <span className="btn-eyebrow" style={{ color:"var(--stone)" }}>
+                    Family vault
+                  </span>
+                  <span className="btn-label" style={{ color:"var(--maroon)" }}>
+                    Family login
+                  </span>
+                </div>
+                <svg className="btn-arr" width="14" height="14" viewBox="0 0 24 24"
+                  fill="none" stroke="var(--maroon)" strokeWidth="1.8"
+                  strokeLinecap="round" strokeLinejoin="round"
+                  style={{flexShrink:0,opacity:.55}}>
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+              </div>
             </a>
 
           </div>
 
           {/* ── Guest footnote ── */}
-          <p className="fnote c-r5" style={{
-            marginTop:"1.4rem",
+          <p className="fnote c-r6" style={{
+            marginTop:"1.5rem",
             fontFamily:"var(--df)", fontStyle:"italic",
             fontSize:".70rem", color:"var(--stone)",
-            textAlign:"center", lineHeight:1.75, opacity:.72,
+            textAlign:"center", lineHeight:1.80, opacity:.72,
           }}>
             Are you a guest? Open the personal link that {bf} &amp; {gf} sent directly to you.
           </p>
