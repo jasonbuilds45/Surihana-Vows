@@ -119,7 +119,7 @@ export default function HomePage() {
         .name-hero {
           font-family: var(--df);
           font-size: clamp(3.6rem, 11vw, 11rem);
-          font-weight: 300;
+          font-weight: 600;
           line-height: 0.90;
           letter-spacing: -0.02em;
           display: block;
@@ -216,11 +216,12 @@ export default function HomePage() {
           .access-label span { font-size: 0.40rem !important; letter-spacing: 0.30em !important; }
           .access-label { margin-bottom: 0.9rem !important; }
 
-          /* Buttons — full width stacked */
-          .btn-row   { flex-direction: column !important; gap: 0.6rem !important; }
-          .btn       { padding: 13px 18px !important; width: 100% !important; justify-content: space-between !important; }
-          .btn-label-top   { font-size: 0.40rem !important; }
-          .btn-label-name  { font-size: 0.82rem !important; }
+          /* Buttons — compact pills on mobile, side by side */
+          .btn-row   { flex-direction: row !important; gap: 0.5rem !important; }
+          .btn       { padding: 10px 14px !important; flex: 1 !important; min-width: 0 !important; }
+          .btn-label-top   { display: none !important; }
+          .btn-label-name  { font-size: 0.78rem !important; white-space: nowrap !important; overflow: hidden !important; text-overflow: ellipsis !important; }
+          .btn svg { display: none !important; }
 
           /* Footnote */
           .footnote { font-size: 0.70rem !important; margin-top: 1.25rem !important; }
@@ -286,7 +287,7 @@ export default function HomePage() {
             backgroundImage: `url(${heroPhoto})`,
             backgroundSize: "cover",
             backgroundPosition: "center 28%",
-            filter: "saturate(0.50) brightness(0.88) sepia(0.10)",
+            filter: "saturate(0.55) brightness(0.68) sepia(0.08)",
           }} />
 
           {/* Ivory overlay — only top 18% and bottom 22% fade to page bg  */}
@@ -301,16 +302,7 @@ export default function HomePage() {
             )`,
           }} />
 
-          {/* Very light centre brightener — keeps names readable without   */}
-          {/* killing the photo. White at 35% opacity only in the middle.   */}
-          <div style={{
-            position: "absolute", inset: 0,
-            background: `radial-gradient(
-              ellipse 70% 55% at 50% 46%,
-              rgba(247,242,234,0.42) 0%,
-              transparent 100%
-            )`,
-          }} />
+
 
           {/* ── Names centred over photo ─────────────────────────────── */}
           <div style={{
@@ -342,9 +334,8 @@ export default function HomePage() {
 
             {/* MARION */}
             <span className="name-hero name-a" style={{
-              color: "var(--ink)",
-              /* Subtle text shadow so name reads over any photo brightness */
-              textShadow: "0 2px 32px rgba(247,242,234,0.60)",
+              color: "#FFFFFF",
+              textShadow: "0 2px 24px rgba(0,0,0,0.35), 0 1px 4px rgba(0,0,0,0.20)",
             }}>
               {bf}
             </span>
@@ -367,8 +358,8 @@ export default function HomePage() {
 
             {/* LIVINGSTON */}
             <span className="name-hero name-b" style={{
-              color: "var(--maroon)",
-              textShadow: "0 2px 32px rgba(247,242,234,0.55)",
+              color: "#F2C4AF",
+              textShadow: "0 2px 24px rgba(0,0,0,0.35), 0 1px 4px rgba(0,0,0,0.18)",
             }}>
               {gf}
             </span>
