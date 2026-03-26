@@ -81,8 +81,8 @@ export async function POST(request: NextRequest) {
     wedding_id:    weddingId,
     display_title: displayTitle.trim(),
     sub_text:      subText?.trim() || "joyfully invite you to celebrate",
-    side:          resolvedSide,
-    sender_type:   resolvedType,
+    side:          resolvedSide as "bride" | "groom" | "both",
+    sender_type:   resolvedType as "parents" | "sibling" | "joint" | "other",
     sender_code:   resolvedCode,
     created_at:    new Date().toISOString(),
   };
