@@ -103,13 +103,67 @@ export default function HomePage() {
         }
         .tk-gem { color:var(--gilded); margin:0 .06em; }
 
-        /* ─── PAGE TEXTURE BACKGROUND ───────────────────────────────────── */
-        /* SVG grain overlay gives the ivory a paper/vellum feel            */
+        /* ─── PAGE BACKGROUND ─────────────────────────────────────────────── */
+        /* Annie Spratt — old English church wedding aisle, Unsplash          */
+        /* Photo: wooden pews, stone walls, baby's breath, natural daylight    */
+        /* Overlay calculation:                                                */
+        /*   brightness(0.60) — brings stone/wood into parchment tonal range  */
+        /*   saturate(0.38)   — strips grey-green stone, keeps warm honey     */
+        /*   sepia(0.18)      — nudges into the ivory-gold family              */
+        /* Result: photo reads as warm parchment texture, not a photograph    */
         .page-bg {
           background-color: var(--ivory);
-          /* Subtle cross-hatch texture via SVG data URI */
-          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4'%3E%3Crect width='4' height='4' fill='%23F8F3EB'/%3E%3Cpath d='M0 4L4 0' stroke='%23C4973A' stroke-width='.15' opacity='.12'/%3E%3C/svg%3E");
+          position: relative;
         }
+        .page-bg::before {
+          content: '';
+          position: fixed;
+          inset: 0;
+          z-index: 0;
+          background-image: url('https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?auto=format&fit=crop&w=1800&q=80');
+          background-size: cover;
+          background-position: center 30%;
+          background-attachment: fixed;
+          /* ── Overlay values — engineered for this palette ── */
+          /* The photo has warm stone, cream flowers, wooden pews.            */
+          /* At these values it becomes an ivory-toned texture layer that     */
+          /* whispers through the page without competing with any text.       */
+          filter: saturate(0.35) brightness(0.58) sepia(0.20);
+          opacity: 1;
+        }
+        /* Ivory wash sits between photo and content                          */
+        /* 78% opacity = photo contributes 22% of visual weight               */
+        /* Just enough to feel like textured paper, not a photograph          */
+        .page-bg::after {
+          content: '';
+          position: fixed;
+          inset: 0;
+          z-index: 1;
+          background: rgba(248,243,235,0.78);
+          pointer-events: none;
+        }
+        /* All page content must sit above the two pseudo-element overlays */
+        .tk-shell, .tk-shell ~ *, .foot-rule { position: relative; z-index: 2; }
+
+        /* ─── NAMES ZONE — local contrast boost ──────────────────────────── */
+        /* Names sit directly over the photo texture. A very subtle cream    */
+        /* panel behind them improves contrast without boxing the text.       */
+        .names-zone {
+          position: relative;
+        }
+        .names-zone::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background: radial-gradient(
+            ellipse 85% 80% at 50% 50%,
+            rgba(248,243,235,0.22) 0%,
+            transparent 100%
+          );
+          pointer-events: none;
+          z-index: 0;
+        }
+        .names-zone > * { position: relative; z-index: 1; }
 
         /* ─── NAMES ─────────────────────────────────────────────────────── */
         .name {
