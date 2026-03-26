@@ -120,7 +120,8 @@ function buildPreviewGuest(inviteCode: string): GuestRow | null {
     opened_at: null,
     guest_role: null,
     city: null,
-    country: null
+    country: null,
+    sender_id: null
   };
 }
 
@@ -184,7 +185,8 @@ export async function createGuestRecord(input: GuestMutationInput) {
     opened_at: null,
     guest_role: input.guestRole ?? null,
     city: null,
-    country: null
+    country: null,
+    sender_id: null
   };
 
   const client = getConfiguredSupabaseClient(true);
