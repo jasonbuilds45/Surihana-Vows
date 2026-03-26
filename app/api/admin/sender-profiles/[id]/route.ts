@@ -1,21 +1,28 @@
 // PATCH /api/admin/sender-profiles/[id]   { displayTitle?, subText?, side?, senderType?, senderCode? }
 // DELETE /api/admin/sender-profiles/[id]
 
-import { cookies } from "next/headers";
 import { NextResponse, type NextRequest } from "next/server";
-import { getSessionFromCookieStore } from "@/lib/auth";
+import { extractToken, verifyAuthToken } from "@/lib/auth";
 import { getConfiguredSupabaseClient, shouldFallbackToDemoData } from "@/lib/supabaseClient";
 
 function slugify(text: string): string {
   return text.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
 }
 
+async function getAdminSession(request: NextRequest) {
+  const token = extractToken(request);
+  if (!token) return null;
+  const session = await verifyAuthToken(token);
+  if (!session || session.role !== "admin") return null;
+  return session;
+}
+
 export async function PATCH(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const session = await getSessionFromCookieStore(cookies());
-  if (!session || session.role !== "admin") {
+  const session = await getAdminSession(request);
+  if (!session) {
     return NextResponse.json({ success: false, message: "Admin only." }, { status: 401 });
   }
 
@@ -59,11 +66,11 @@ export async function PATCH(
 }
 
 export async function DELETE(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const session = await getSessionFromCookieStore(cookies());
-  if (!session || session.role !== "admin") {
+  const session = await getAdminSession(request);
+  if (!session) {
     return NextResponse.json({ success: false, message: "Admin only." }, { status: 401 });
   }
 

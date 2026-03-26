@@ -1,9 +1,8 @@
 // GET  /api/admin/sender-profiles?weddingId=
 // POST /api/admin/sender-profiles           { weddingId, displayTitle, subText, side, senderType, senderCode }
 
-import { cookies } from "next/headers";
 import { NextResponse, type NextRequest } from "next/server";
-import { getSessionFromCookieStore } from "@/lib/auth";
+import { extractToken, verifyAuthToken } from "@/lib/auth";
 import { getConfiguredSupabaseClient, shouldFallbackToDemoData } from "@/lib/supabaseClient";
 
 function slugify(text: string): string {
@@ -14,9 +13,17 @@ function slugify(text: string): string {
     .replace(/^-+|-+$/g, "");
 }
 
+async function getAdminSession(request: NextRequest) {
+  const token = extractToken(request);
+  if (!token) return null;
+  const session = await verifyAuthToken(token);
+  if (!session || session.role !== "admin") return null;
+  return session;
+}
+
 export async function GET(request: NextRequest) {
-  const session = await getSessionFromCookieStore(cookies());
-  if (!session || session.role !== "admin") {
+  const session = await getAdminSession(request);
+  if (!session) {
     return NextResponse.json({ success: false, message: "Admin only." }, { status: 401 });
   }
 
@@ -43,8 +50,8 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  const session = await getSessionFromCookieStore(cookies());
-  if (!session || session.role !== "admin") {
+  const session = await getAdminSession(request);
+  if (!session) {
     return NextResponse.json({ success: false, message: "Admin only." }, { status: 401 });
   }
 

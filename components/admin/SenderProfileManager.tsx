@@ -18,6 +18,7 @@ import { type FormEvent, useEffect, useRef, useState } from "react";
 import {
   Check, Copy, Edit2, ExternalLink, Loader2, Plus, Trash2, X,
 } from "lucide-react";
+import { authFetch } from "@/lib/client/token";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 interface SenderProfile {
@@ -233,7 +234,7 @@ function ProfileForm({
         ? `/api/admin/sender-profiles/${editing.id}`
         : "/api/admin/sender-profiles";
 
-      const res  = await fetch(url, {
+      const res  = await authFetch(url, {
         method:  isEdit ? "PATCH" : "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ weddingId, displayTitle, subText, side, senderType, senderCode }),
@@ -368,7 +369,7 @@ export function SenderProfileManager({ weddingId }: SenderProfileManagerProps) {
     : "";
 
   useEffect(() => {
-    void fetch(`/api/admin/sender-profiles?weddingId=${weddingId}`)
+    void authFetch(`/api/admin/sender-profiles?weddingId=${weddingId}`)
       .then(r => r.json())
       .then((d: { success: boolean; data?: SenderProfile[] }) => {
         if (d.success) setProfiles(d.data ?? []);
@@ -389,7 +390,7 @@ export function SenderProfileManager({ weddingId }: SenderProfileManagerProps) {
 
   async function handleDelete(id: string) {
     if (!window.confirm("Delete this sender profile? The invite links using it will fall back to the couple's names.")) return;
-    const res  = await fetch(`/api/admin/sender-profiles/${id}`, { method: "DELETE" });
+    const res  = await authFetch(`/api/admin/sender-profiles/${id}`, { method: "DELETE" });
     const data = await res.json() as { success: boolean };
     if (data.success) setProfiles(prev => prev.filter(p => p.id !== id));
   }
