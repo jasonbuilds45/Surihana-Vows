@@ -301,7 +301,7 @@ export default function HomePage() {
               fontWeight: 700,
               lineHeight: 0.88,
               letterSpacing: "-0.035em",
-              color: "#FFFFFF",
+              color: "#1A0D0A",
               marginBottom: "0.06em",
             }}>
               {bf}
@@ -389,7 +389,10 @@ export default function HomePage() {
               maxWidth: "34rem",
               lineHeight: 1.85,
               marginBottom: "2.75rem",
-              padding: "0 0.5rem",
+              padding: "0.75rem 1.25rem",
+              background: "rgba(245,237,228,0.72)",
+              borderRadius: "12px",
+              border: "1px solid rgba(184,151,58,0.22)",
             }}>
               &ldquo;{weddingConfig.introQuote}&rdquo;
             </p>
