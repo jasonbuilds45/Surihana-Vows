@@ -159,7 +159,9 @@ export default function HomePage() {
             padding: 6rem 1.5rem 2.5rem !important;
             justify-content: flex-start !important;
           }
-          .detail-row { flex-wrap: wrap !important; gap: 0.4rem !important; padding: 0.5rem 0.75rem !important; border-radius: 999px !important; }
+          .detail-row { flex-wrap: wrap !important; gap: 0.3rem !important; padding: 0.4rem 0.7rem !important; border-radius: 999px !important; }
+          .detail-row span, .detail-row div { font-size: 0.62rem !important; }
+          .detail-row svg { width: 8px !important; height: 8px !important; }
           .photo-strip { display: none !important; }
           .quote-text { font-size: 0.95rem !important; }
         }
