@@ -43,7 +43,8 @@ export const demoGuests: GuestRow[] = [
     opened_at: "2026-03-01T10:20:00.000Z",
     guest_role: "bride_side",
     city: "Chennai",
-    country: "India"
+    country: "India",
+    sender_id: null
   },
   {
     id: "f6b4132b-e29b-430d-88d7-a5f0f4ca0012",
@@ -57,7 +58,8 @@ export const demoGuests: GuestRow[] = [
     opened_at: "2026-03-03T18:15:00.000Z",
     guest_role: "friends",
     city: "Dubai",
-    country: "UAE"
+    country: "UAE",
+    sender_id: null
   },
   {
     id: "f6b4132b-e29b-430d-88d7-a5f0f4ca0013",
@@ -71,7 +73,8 @@ export const demoGuests: GuestRow[] = [
     opened_at: null,
     guest_role: "groom_side",
     city: "Bangalore",
-    country: "India"
+    country: "India",
+    sender_id: null
   },
   {
     id: "f6b4132b-e29b-430d-88d7-a5f0f4ca0014",
@@ -85,7 +88,8 @@ export const demoGuests: GuestRow[] = [
     opened_at: "2026-03-05T07:45:00.000Z",
     guest_role: "vip",
     city: "Singapore",
-    country: "Singapore"
+    country: "Singapore",
+    sender_id: null
   }
 ];
 
